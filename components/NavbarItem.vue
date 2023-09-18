@@ -1,7 +1,7 @@
 <template>
   <li :class="['nav-item', isCurrentPath() ? 'disabled active' : '']">
     <a :class="['nav-link', isCurrentPath() ? 'active disabled': '']" :href="href" :target="external ? '_blank' : ''">
-      <i v-if="fa_icon" :class="['fa', fa_icon, 'me-2']"></i>
+      <i v-if="faIcon" :class="['fa', faIcon, 'me-2']"></i>
       {{ name }}
     </a>
   </li>
@@ -16,7 +16,7 @@ export default defineComponent({
   props: {
     name: String,
     href: String,
-    fa_icon: {
+    faIcon: {
       type: String,
       default: null
     },
