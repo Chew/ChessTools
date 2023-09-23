@@ -9,7 +9,10 @@
       <div class="col-md-10">
         <div class="card-body">
           <h5 class="card-title">{{ name }} Elo</h5>
-          <p class="card-text">
+          <p v-if="placeholder" class="card-text placeholder-glow">
+            <span class="placeholder">This is just placeholder text.</span>
+          </p>
+          <p v-else class="card-text">
             Current:
             <span v-if="data.current.elo == null">
               No rating
@@ -38,7 +41,18 @@ export default defineComponent({
   props: {
     data: {
       type: Object as () => USCFMemberRating,
-      required: true
+      default: () => ({
+        current: {
+          date: null,
+          elo: null,
+          games: null
+        },
+        future: {
+          date: null,
+          elo: null,
+          games: null
+        }
+      })
     },
     name: {
       type: String,
@@ -51,6 +65,10 @@ export default defineComponent({
     cardColor: {
       type: String,
       default: "primary"
+    },
+    placeholder: {
+      type: Boolean,
+      default: false
     }
   }
 })
