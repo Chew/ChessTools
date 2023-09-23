@@ -10,6 +10,34 @@
 
   <main v-if="mPending">
     <p>Please wait, we're retrieving their data :)</p>
+    <h2>Member Info</h2>
+    <p class="placeholder-glow">
+      State: <span class="placeholder">:3</span><br/>
+      Gender: <span class="placeholder">:3</span><br/>
+    </p>
+    <h2>Ratings</h2>
+    <div class="row">
+      <div class="col-md-4 col-sm-12">
+        <rating-card name="Regular" :placeholder="true" fa-icon="fas fa-stopwatch"></rating-card>
+      </div>
+      <div class="col-md-4 col-sm-12">
+        <rating-card name="Quick" :placeholder="true" fa-icon="fas fa-bolt"></rating-card>
+      </div>
+      <div class="col-md-4 col-sm-12">
+        <rating-card name="Blitz" :placeholder="true" fa-icon="fas fa-forward-fast"></rating-card>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4 col-sm-12">
+        <rating-card name="Regular" :placeholder="true" fa-icon="fas fa-stopwatch" card-color="success"></rating-card>
+      </div>
+      <div class="col-md-4 col-sm-12">
+        <rating-card name="Quick" :placeholder="true" fa-icon="fas fa-bolt" card-color="success"></rating-card>
+      </div>
+      <div class="col-md-4 col-sm-12">
+        <rating-card name="Blitz" :placeholder="true" fa-icon="fas fa-forward-fast" card-color="success"></rating-card>
+      </div>
+    </div>
   </main>
   <main v-else>
     <h2>Member Info</h2>
