@@ -1,63 +1,34 @@
-# Nuxt 3 Minimal Starter
+# Chess.Tools Site
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+View all your chess stats across federations and chess websites on one site!
 
-## Setup
+## Features
 
-Make sure to install the dependencies:
+(All in progress, but planned!)
 
-```bash
-# npm
-npm install
+- [x] View your USCF stats
+- [x] View your Lichess stats
+- [x] View your Chess.com stats
+- [x] View your Chess24 stats
+- [x] View your FIDE stats
 
-# pnpm
-pnpm install
+More!
 
-# yarn
-yarn install
-```
+## Development
 
-## Development Server
+If you want to help contribute, you're more than welcome to! Just fork the repo and make a pull request.
 
-Start the development server on `http://localhost:3000`:
+This site uses Nuxt, a Vue framework. We use Bun as our package manager.
 
-```bash
-# npm
-npm run dev
+### Prerequisites
 
-# pnpm
-pnpm run dev
+- [Bun](https://bun.sh)
+- Some knowledge of Vue/JS
 
-# yarn
-yarn dev
-```
+### Setting Up Development Environment
 
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+1. Clone the repo
+2. Run `bun install` to install dependencies
+3. Run `bun run dev` to start the development server
+4. Go to `localhost:3000` to view the site
+5. Make changes and submit a pull request!
