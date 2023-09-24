@@ -76,6 +76,7 @@
       We're loading their tournament history, please wait...
     </div>
     <div v-else>
+      <p>Total events (since late 1991): {{ tournaments.totalEvents }}</p>
       <div class="table-responsive">
         <table class="table table-striped table-bordered table-hover">
           <thead class="table-dark">
@@ -154,7 +155,7 @@ const { data: memberInfo, pending: mPending, error: mError, refresh: mRefresh } 
 const { data: tournaments, pending: tPending, error: tError, refresh: tRefresh } = await useLazyFetch(`/api/uscf/member/${uscfUserId}/tournaments`, {
   key: `uscf-member-${uscfUserId}-tournaments`,
   server: false
-}) as { data: { success: boolean, tournaments: USCFMemberTournament[], page: number, totalPages: number } };
+}) as { data: { success: boolean, tournaments: USCFMemberTournament[], page: number, totalPages: number,totalEvents: number } };
 </script>
 
 <style scoped>

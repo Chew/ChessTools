@@ -49,6 +49,10 @@ export default defineEventHandler(async (event) => {
         }
     }
 
+    const totalEvents = parseInt(data.innerHTML.split("\n")
+        .find(element => element.includes("Events for this player since late 1991"))
+        .split("1991: ")[1]);
+
     // believe it or not, this is the table. would it kill them to use IDs?
     const tables = data.querySelectorAll('table');
     const tourneyTable = tables[1];
@@ -105,6 +109,7 @@ export default defineEventHandler(async (event) => {
         tournaments,
         page,
         totalPages,
+        totalEvents,
         success: true
     }
 })
