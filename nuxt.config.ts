@@ -13,6 +13,18 @@ export default defineNuxtConfig({
         src: 'https://kit.fontawesome.com/4ae5eef027.js',
         crossorigin: 'anonymous',
       }],
+    },
+  },
+
+  supabase: {
+    redirectOptions: {
+      exclude: ['/', '/api/auth/*', '/uscf/*', '/register'],
     }
-  }
+  },
+
+  turnstile: {
+    siteKey: '0x4AAAAAAAKsKEdr-d1daiqG',
+  },
+
+  modules: ['@nuxtjs/supabase', '@nuxtjs/turnstile']
 })

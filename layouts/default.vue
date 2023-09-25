@@ -10,6 +10,15 @@
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <navbar-item name="Home" href="/" :current-path="useRoute().path" />
           </ul>
+
+          <ul v-if="user" class="navbar-nav">
+            <li class="navbar-item">
+              <a @click="logout" class="nav-link" href="#">Log Out</a>
+            </li>
+          </ul>
+          <ul v-else class="navbar-nav">
+            <navbar-item name="Login" href="/login" current-path="/" />
+          </ul>
         </div>
       </div>
     </nav>
@@ -23,6 +32,15 @@
 
 <script setup lang="ts">
 import NavbarItem from "~/components/NavbarItem.vue";
+import {useSupabaseClient} from "#imports";
+
+const user = useSupabaseUser();
+
+async function logout() {
+  await useSupabaseClient().auth.signOut();
+
+  window.location.reload();
+}
 </script>
 
 <style>
