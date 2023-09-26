@@ -3,17 +3,18 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a href="/" class="navbar-brand">Chess Tools</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon" />
         </button>
-        <div class="collapse navbar-collapse" id="navbarText">
+        <div id="navbarText" class="collapse navbar-collapse">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <navbar-item name="Home" href="/" :current-path="useRoute().path" />
           </ul>
 
           <ul v-if="user" class="navbar-nav">
             <li class="navbar-item">
-              <a @click="logout" class="nav-link" href="#">Log Out</a>
+              <a class="nav-link" href="#" @click="logout">Log Out</a>
             </li>
           </ul>
           <ul v-else class="navbar-nav">
@@ -31,15 +32,15 @@
 </template>
 
 <script setup lang="ts">
-import NavbarItem from "~/components/NavbarItem.vue";
-import {useSupabaseClient} from "#imports";
+import NavbarItem from '~/components/NavbarItem.vue'
+import { useSupabaseClient } from '#imports'
 
-const user = useSupabaseUser();
+const user = useSupabaseUser()
 
 async function logout() {
-  await useSupabaseClient().auth.signOut();
+  await useSupabaseClient().auth.signOut()
 
-  window.location.reload();
+  window.location.reload()
 }
 </script>
 

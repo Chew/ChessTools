@@ -8,23 +8,29 @@ export default defineNuxtConfig({
         href: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css'
       }],
       script: [{
-        src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
+        src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js'
       }, {
         src: 'https://kit.fontawesome.com/4ae5eef027.js',
-        crossorigin: 'anonymous',
-      }],
-    },
+        crossorigin: 'anonymous'
+      }]
+    }
   },
 
   supabase: {
     redirectOptions: {
-      exclude: ['/', '/api/auth/*', '/uscf/*', '/register'],
+      login: '/login',
+      callback: '/callback',
+      exclude: ['/', '/api/auth/*', '/uscf/*', '/register']
     }
   },
 
   turnstile: {
-    siteKey: '0x4AAAAAAAKsKEdr-d1daiqG',
+    siteKey: '0x4AAAAAAAKsKEdr-d1daiqG'
   },
 
-  modules: ['@nuxtjs/supabase', '@nuxtjs/turnstile']
+  eslint: {
+
+  },
+
+  modules: ['@nuxtjs/supabase', '@nuxtjs/turnstile', '@nuxtjs/eslint-module']
 })

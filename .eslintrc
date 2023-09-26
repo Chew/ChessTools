@@ -1,0 +1,38 @@
+{
+  "extends": ["@nuxtjs/eslint-config"],
+  "parserOptions": {
+    "parser": "@typescript-eslint/parser"
+  },
+  "rules": {
+    "vue/max-attributes-per-line": ["warn", {
+      "singleline": {
+        "max": 6
+      },
+      "multiline": {
+        "max": 6
+      }
+    }],
+    "vue/html-closing-bracket-newline": ["off"],
+    "vue/first-attribute-linebreak": ["off"],
+    // rule for no console.log stuff
+    "no-console": ["warn", {
+      "allow": ["warn", "error"]
+    }],
+    // Don't put a space before function parentheses, because it's ugly
+    "space-before-function-paren": ["off"]
+  },
+  "overrides": [{
+    "files": ["*.ts", "*.vue"],
+    "rules": {
+      // We don't need this no-undef rule because TypeScript will catch it
+      "no-undef": "off"
+    }
+  }, {
+    "files": ["*.ts"],
+    "excludedFiles": ["nuxt.config.ts"],
+    "rules": {
+      // We want indent 4 spaces for TS files
+      "indent": ["warn", 4]
+    }
+  }]
+}

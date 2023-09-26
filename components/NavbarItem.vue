@@ -1,21 +1,27 @@
 <template>
   <li :class="['nav-item', isCurrentPath() ? 'disabled active' : '']">
     <NuxtLink :class="['nav-link', isCurrentPath() ? 'active disabled': '']" :href="href" :target="external ? '_blank' : ''">
-      <i v-if="faIcon" :class="['fa', faIcon, 'me-2']"></i>
+      <i v-if="faIcon" :class="['fa', faIcon, 'me-2']" />
       {{ name }}
     </NuxtLink>
   </li>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
+import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: "NavbarItem",
+  name: 'NavbarItem',
 
   props: {
-    name: String,
-    href: String,
+    name: {
+      type: String,
+      default: 'Item'
+    },
+    href: {
+      type: String,
+      default: '/'
+    },
     faIcon: {
       type: String,
       default: null
@@ -32,7 +38,7 @@ export default defineComponent({
 
   methods: {
     isCurrentPath() {
-      return this.currentPath == this.href;
+      return this.currentPath === this.href
     }
   }
 })

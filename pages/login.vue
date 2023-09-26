@@ -1,63 +1,74 @@
 <template>
   <main class="form-signin w-100 m-auto">
     <form @submit.prevent="login">
-      <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
-      <p>Don't have an account? <NuxtLink to="/register">Create One!</NuxtLink></p>
+      <h1 class="h3 mb-3 fw-normal">
+        Please sign in
+      </h1>
+      <p>
+        Don't have an account?
+        <NuxtLink to="/register">
+          Create One!
+        </NuxtLink>
+      </p>
 
       <p v-if="invalidPassword" class="text-danger">
-        <img src="https://cdn.discordapp.com/emojis/823648979194740746.webp?size=240&quality=lossless" alt="blunder icon" style="width: 20px;" />
+        <img src="https://cdn.discordapp.com/emojis/823648979194740746.webp?size=240&quality=lossless" alt="blunder icon" style="width: 20px;">
         Invalid email or password.
       </p>
 
       <div class="form-floating">
-        <input type="email" class="form-control" id="floatingInput" v-model="email">
+        <input id="floatingInput" v-model="email" type="email" class="form-control">
         <label for="floatingInput">Email Address</label>
       </div>
       <div class="form-floating">
-        <input type="password" class="form-control" id="floatingPassword" v-model="password">
+        <input id="floatingPassword" v-model="password" type="password" class="form-control">
         <label for="floatingPassword">Password</label>
       </div>
 
       <div class="form-check text-start my-3">
-        <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+        <input id="flexCheckDefault" class="form-check-input" type="checkbox" value="remember-me">
         <label class="form-check-label" for="flexCheckDefault">
           Remember me
         </label>
       </div>
-      <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
-      <p class="mt-5 mb-3 text-body-secondary">&copy; 2023–{{ new Date().getFullYear() }} Chess.Tools</p>
+      <button class="btn btn-primary w-100 py-2" type="submit">
+        Sign in
+      </button>
+      <p class="mt-5 mb-3 text-body-secondary">
+        &copy; 2023–{{ new Date().getFullYear() }} Chess.Tools
+      </p>
     </form>
   </main>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import {useSupabaseClient} from "#imports";
+import { defineComponent } from 'vue'
+import { useSupabaseClient } from '#imports'
 
 export default defineComponent({
-  name: "login",
+  name: 'Login',
 
   setup() {
     definePageMeta({
-      layout: "auth",
-    });
-
-    useSeoMeta({
-      title: "Login to Chess.Tools",
-      ogTitle: "Login to Chess.Tools",
+      layout: 'auth'
     })
 
-    const user = useSupabaseUser();
+    useSeoMeta({
+      title: 'Login to Chess.Tools',
+      ogTitle: 'Login to Chess.Tools'
+    })
 
-    //if (user) {
+    // const user = useSupabaseUser()
+
+    // if (user) {
     //  navigateTo("/")
-    //}
+    // }
   },
 
   data() {
     return {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       invalidPassword: false
     }
   },
@@ -65,10 +76,10 @@ export default defineComponent({
   watch: {
     // if email or password changes, hide the invalid password message
     email() {
-      this.invalidPassword = false;
+      this.invalidPassword = false
     },
     password() {
-      this.invalidPassword = false;
+      this.invalidPassword = false
     }
   },
 
@@ -81,15 +92,15 @@ export default defineComponent({
         password: this.password.toString()
       }
 
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword(input);
+      const { error: loginError } = await supabase.auth.signInWithPassword(input)
 
       if (loginError) {
-        if (loginError.message == "Invalid login credentials") {
-          this.invalidPassword = true;
+        if (loginError.message === 'Invalid login credentials') {
+          this.invalidPassword = true
         }
       }
 
-      navigateTo("/")
+      navigateTo('/')
     }
   }
 })

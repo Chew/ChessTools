@@ -3,12 +3,14 @@
     <div class="row g-0">
       <div class="col-md-2">
         <div class="card-body h-100">
-          <i :class="`${faIcon} fa-3x`"></i>
+          <i :class="`${faIcon} fa-3x`" />
         </div>
       </div>
       <div class="col-md-10">
         <div class="card-body">
-          <h5 class="card-title">{{ name }} Elo</h5>
+          <h5 class="card-title">
+            {{ name }} Elo
+          </h5>
           <p v-if="placeholder" class="card-text placeholder-glow">
             <span class="placeholder">This is just placeholder text.</span>
           </p>
@@ -22,7 +24,7 @@
             </span>
             <span v-if="data.current.elo != data.future.elo">
               <br>
-              Future ({{ data.future.date }}): {{ data.future.elo }} ({{data.future.games }} games)
+              Future ({{ data.future.date }}): {{ data.future.elo }} ({{ data.future.games }} games)
             </span>
           </p>
         </div>
@@ -32,11 +34,11 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue'
-import {USCFMemberRating} from "~/types/uscf";
+import { defineComponent } from 'vue'
+import { USCFMemberRating } from '~/types/uscf'
 
 export default defineComponent({
-  name: "RatingCard",
+  name: 'RatingCard',
 
   props: {
     data: {
@@ -64,7 +66,7 @@ export default defineComponent({
     },
     cardColor: {
       type: String,
-      default: "primary"
+      default: 'primary'
     },
     placeholder: {
       type: Boolean,
