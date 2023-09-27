@@ -19,7 +19,8 @@
       "allow": ["warn", "error"]
     }],
     // Don't put a space before function parentheses, because it's ugly
-    "space-before-function-paren": ["off"]
+    "space-before-function-paren": ["off"],
+    "multiline-ternary": ["off"]
   },
   "overrides": [{
     "files": ["*.ts", "*.vue"],
