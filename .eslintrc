@@ -20,7 +20,8 @@
     }],
     // Don't put a space before function parentheses, because it's ugly
     "space-before-function-paren": ["off"],
-    "multiline-ternary": ["off"]
+    "multiline-ternary": ["off"],
+    "vue/component-definition-name-casing": ["off"]
   },
   "overrides": [{
     "files": ["*.ts", "*.vue"],

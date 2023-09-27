@@ -1,44 +1,21 @@
 <template>
-  <main v-if="memberPending || memberInfo == null">
-    <h1>US Chess Member: Loading...</h1>
+  <main>
+    <h1 v-if="memberPending || memberInfo == null">
+      US Chess Member: Loading...
+    </h1>
+    <h1 v-else>
+      US Chess Member: {{ memberInfo.member.name }}
+    </h1>
 
-    <p>Please wait, we're retrieving their data :)</p>
+    <p>Member ID: {{ memberId }}</p>
+    <p><a :href="`https://www.uschess.org/msa/MbrDtlMain.php?${memberId}`">View on USChess MSA</a></p>
+
     <h2>Member Info</h2>
-    <p class="placeholder-glow">
+    <p v-if="memberPending || memberInfo == null" class="placeholder-glow">
       State: <span class="placeholder">:3</span><br>
       Gender: <span class="placeholder">:3</span><br>
     </p>
-    <h2>Ratings</h2>
-    <div class="row">
-      <div class="col-md-4 col-sm-12">
-        <rating-card name="Regular" :placeholder="true" fa-icon="fas fa-stopwatch" />
-      </div>
-      <div class="col-md-4 col-sm-12">
-        <rating-card name="Quick" :placeholder="true" fa-icon="fas fa-bolt" />
-      </div>
-      <div class="col-md-4 col-sm-12">
-        <rating-card name="Blitz" :placeholder="true" fa-icon="fas fa-forward-fast" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-4 col-sm-12">
-        <rating-card name="Regular" :placeholder="true" fa-icon="fas fa-stopwatch" card-color="success" />
-      </div>
-      <div class="col-md-4 col-sm-12">
-        <rating-card name="Quick" :placeholder="true" fa-icon="fas fa-bolt" card-color="success" />
-      </div>
-      <div class="col-md-4 col-sm-12">
-        <rating-card name="Blitz" :placeholder="true" fa-icon="fas fa-forward-fast" card-color="success" />
-      </div>
-    </div>
-  </main>
-  <main v-else>
-    <h1>US Chess Member: {{ memberInfo.member.name }}</h1>
-    <p>Member ID: {{ memberInfo.member.id }}</p>
-    <p><a :href="`https://www.uschess.org/msa/MbrDtlMain.php?${memberInfo.member.id}`">View on USChess MSA</a></p>
-
-    <h2>Member Info</h2>
-    <p>
+    <p v-else>
       State: {{ memberInfo.state }}<br>
       Gender: {{ memberInfo.gender }}<br>
       <span v-if="memberInfo.fide.id">
@@ -48,24 +25,24 @@
     <h2>Ratings</h2>
     <div class="row">
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Regular" :data="memberInfo.ratings.regular" fa-icon="fas fa-stopwatch" />
+        <rating-card name="Regular" :data="memberInfo?.ratings?.regular" fa-icon="fas fa-stopwatch" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Quick" :data="memberInfo.ratings.quick" fa-icon="fas fa-bolt" />
+        <rating-card name="Quick" :data="memberInfo?.ratings?.quick" fa-icon="fas fa-bolt" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Blitz" :data="memberInfo.ratings.blitz" fa-icon="fas fa-forward-fast" />
+        <rating-card name="Blitz" :data="memberInfo?.ratings?.blitz" fa-icon="fas fa-forward-fast" />
       </div>
     </div>
     <div class="row">
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Regular" :data="memberInfo.ratings.online_regular" fa-icon="fas fa-stopwatch" card-color="success" />
+        <rating-card name="Online Regular" :data="memberInfo?.ratings?.online_regular" fa-icon="fas fa-stopwatch" card-color="success" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Quick" :data="memberInfo.ratings.online_quick" fa-icon="fas fa-bolt" card-color="success" />
+        <rating-card name="Online Quick" :data="memberInfo?.ratings?.online_quick" fa-icon="fas fa-bolt" card-color="success" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Blitz" :data="memberInfo.ratings.online_blitz" fa-icon="fas fa-forward-fast" card-color="success" />
+        <rating-card name="Online Blitz" :data="memberInfo?.ratings?.online_blitz" fa-icon="fas fa-forward-fast" card-color="success" />
       </div>
     </div>
     <h2>Tournament History</h2>
@@ -136,6 +113,8 @@ export default defineComponent({
 
   data() {
     return {
+      memberId: '',
+
       memberInfo: null as USCFMember | null,
       memberPending: true,
 
@@ -146,13 +125,15 @@ export default defineComponent({
 
   beforeMount() {
     const route = useRoute()
-    const uscfUserId = route.params.id
+    const uscfUserId = route.params.id.toString()
+    this.memberId = uscfUserId
 
     this.memberPending = true
     useLazyFetch<USCFMember>(`/api/uscf/member/${uscfUserId}`, {
       key: `uscf-member-${uscfUserId}`,
       server: false
     }).then(({ data }) => {
+      // @ts-ignore TS Really seems to think data is a ref, it's not
       this.memberInfo = data
       this.memberPending = false
     })
@@ -162,6 +143,7 @@ export default defineComponent({
       key: `uscf-member-${uscfUserId}-tournaments`,
       server: false
     }).then(({ data }) => {
+      // @ts-ignore TS Really seems to think data is a ref, it's not
       this.tournaments = data
       this.tournamentsPending = false
     })
