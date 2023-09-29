@@ -2,8 +2,8 @@ import { serverSupabaseServiceRole } from '#supabase/server'
 import { Database } from '~/types/supabase'
 
 export default defineEventHandler(async (event) => {
-    const client = serverSupabaseServiceRole < Database > (event)
-    const username = getRouterParam(event, 'username')
+    const client = serverSupabaseServiceRole<Database>(event)
+    const username = getRouterParam(event, 'id')
     if (!username) {
         return {
             success: false,
@@ -22,6 +22,6 @@ export default defineEventHandler(async (event) => {
 
     return {
         success: true,
-        data: userData[0]
+        data: userData
     }
 })

@@ -1,6 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: {
+    enabled: true,
+
+    timeline: {
+      enabled: true
+    }
+  },
+
   app: {
     head: {
       link: [{
@@ -20,7 +27,7 @@ export default defineNuxtConfig({
     redirectOptions: {
       login: '/login',
       callback: '/callback',
-      exclude: ['/', '/api/auth/*', '/uscf/*', '/register']
+      exclude: ['/', '/api/*', '/uscf/*', '/register']
     }
   },
 

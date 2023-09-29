@@ -9,6 +9,33 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      integrations: {
+        Row: TableIntegrations
+        Insert: {
+          created_at?: string
+          data: Json
+          id?: string
+          platform: string
+          user_id?: string | null
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          platform?: string
+          user_id?: string | null
+          verified?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integrations_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       users: {
         Row: TableUser
         Insert: {
@@ -55,4 +82,13 @@ export interface TableUser {
   id: string
   last_name: string | null
   username: string | null
+}
+
+export interface TableIntegrations {
+  created_at: string
+  data: { id: number, username?: string }
+  id: string
+  platform: string
+  user_id: string | null
+  verified: boolean
 }

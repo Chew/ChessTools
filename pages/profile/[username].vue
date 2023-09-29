@@ -14,7 +14,6 @@ import { useFetch } from '#app'
 import { TableUser } from '~/types/supabase'
 
 export default defineComponent({
-  // eslint-disable-next-line vue/component-definition-name-casing
   name: '[username]',
 
   setup() {
