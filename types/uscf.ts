@@ -76,7 +76,7 @@ export interface USCFMember {
     fide: {
         id: string | null,
         country: string | null,
-        titles: [],
+        titles: string[],
     },
     lastChange: string,
 }

@@ -4,11 +4,20 @@
       US Chess Member: Loading...
     </h1>
     <h1 v-else>
-      US Chess Member: {{ memberInfo.member.name }}
+      US Chess Member: <ChessTitle v-if="title() !== 'Untitled'" :title="title()" /> {{ memberInfo.member.name }}
     </h1>
 
     <p>Member ID: {{ memberId }}</p>
     <p><a :href="`https://www.uschess.org/msa/MbrDtlMain.php?${memberId}`">View on USChess MSA</a></p>
+
+    <h2 v-if="titles().length > 0">
+      Titles
+    </h2>
+    <ul v-if="titles().length > 0">
+      <li v-for="chessTitle in titles()" :key="chessTitle">
+        {{ chessTitle }}
+      </li>
+    </ul>
 
     <h2>Member Info</h2>
     <p v-if="memberPending || memberInfo == null" class="placeholder-glow">
@@ -147,6 +156,42 @@ export default defineComponent({
       this.tournaments = data
       this.tournamentsPending = false
     })
+  },
+
+  methods: {
+    title() {
+      if (this.memberInfo == null) {
+        return 'Loading...'
+      }
+
+      // check for fide titles
+      if (this.memberInfo.fide.titles.length > 0) {
+        return this.memberInfo.fide.titles[0]
+      }
+
+      // check for NM title
+      if (this.memberInfo.titles.includes('National Master')) {
+        return 'National Master'
+      }
+
+      return 'Untitled'
+    },
+
+    titles() {
+      if (this.memberInfo == null) {
+        return []
+      }
+
+      let titles: string[] = []
+
+      // add FIDE titles, but suffix them with (FIDE)
+      titles = titles.concat(this.memberInfo.fide.titles.map(title => `${title} (FIDE)`))
+
+      // add uscf titles
+      titles = titles.concat(this.memberInfo.titles)
+
+      return titles
+    }
   }
 })
 </script>
