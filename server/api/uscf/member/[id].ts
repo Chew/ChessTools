@@ -22,7 +22,14 @@ export default defineEventHandler(async (event) => {
         const childrenArray = []
         for (let i = 0; i < children.length; i++) {
             // sometimes the children text is nested in a <nobr> tag, already inside a <b> tag, we still want the text of that tag
-            childrenArray.push(children[i].innerText.trim().replaceAll('&nbsp;', ''))
+            const child = children[i].innerText.trim()
+            // OBSCURE EDGE CASE
+            if (i === 1 && childrenArray[0] === 'FIDE Title(s)') {
+                // push as is
+                childrenArray.push(child)
+            } else {
+                childrenArray.push(child.replaceAll('&nbsp;', ''))
+            }
         }
 
         elements.push(childrenArray)
@@ -126,19 +133,21 @@ export default defineEventHandler(async (event) => {
         ratings,
         rankings,
         lastRatedEvent: lastRatedEventInfo || null,
+        titles: findElement(elements, 'US Chess Titles Earned', false)?.split(', ') || [],
         state: findElement(elements, 'State'),
         gender: findElement(elements, 'Gender'),
         expiration: findElement(elements, 'Expiration Dt.'),
         fide: {
             id: findElement(elements, 'FIDE ID')?.replace('Latest FIDE Rating', ''),
-            country: findElement(elements, 'FIDE Country')
+            country: findElement(elements, 'FIDE Country'),
+            titles: findElement(elements, 'FIDE Title(s)')?.split('&nbsp;').map(title => title.trim()).filter(title => title !== '') || []
         },
         lastChange: findElement(elements, 'Last Change Dt.')
     }
 })
 
-function findElement(elements: string[][], text: string) {
-    const element = elements.find(element => element[0] === text)
+function findElement(elements: string[][], text: string, exact: boolean = true) {
+    const element = elements.find(element => exact ? element[0] === text : element[0].includes(text))
 
     if (!element) {
         return null

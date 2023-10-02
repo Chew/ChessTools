@@ -69,12 +69,14 @@ export interface USCFMember {
         gender: USCFMemberRanking | {},
         state: USCFMemberRanking | {},
     }
+    titles: string[],
     state: string,
     gender: string,
     expiration: string,
     fide: {
         id: string | null,
         country: string | null,
+        titles: [],
     },
     lastChange: string,
 }
