@@ -1,36 +1,29 @@
 <template>
-  <div :class="`card text-bg-${cardColor} mb-3`">
-    <div class="row g-0">
-      <div class="col-md-2">
-        <div class="card-body h-100">
-          <i :class="`${faIcon} fa-3x`" />
-        </div>
+  <v-card class="mb-3" :color="cardColor" :prepend-icon="`mdi-${icon}`">
+    <template #title>
+      {{ name }} Elo
+    </template>
+    <v-card-text v-if="data === null">
+      <div class="placeholder-glow">
+        <span class="placeholder">
+          This is just placeholder text.
+        </span>
       </div>
-      <div class="col-md-10">
-        <div class="card-body">
-          <h5 class="card-title">
-            {{ name }} Elo
-          </h5>
-          <p v-if="data == null" class="card-text placeholder-glow">
-            <span class="placeholder">This is just placeholder text.</span>
-          </p>
-          <p v-else class="card-text">
-            Current:
-            <span v-if="data.current.elo == null">
-              No rating
-            </span>
-            <span v-else>
-              ({{ data.current.date }}): {{ data.current.elo }} ({{ data.current.games }} games)
-            </span>
-            <span v-if="data.current.elo != data.future.elo">
-              <br>
-              Future ({{ data.future.date }}): {{ data.future.elo }} ({{ data.future.games }} games)
-            </span>
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
+    </v-card-text>
+    <v-card-text v-else>
+      Current:
+      <span v-if="data.current.elo == null">
+        No rating
+      </span>
+      <span v-else>
+        ({{ data.current.date }}): {{ data.current.elo }} ({{ data.current.games }} games)
+      </span>
+      <span v-if="data.current.elo != data.future.elo">
+        <br>
+        Future ({{ data.future.date }}): {{ data.future.elo }} ({{ data.future.games }} games)
+      </span>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -50,13 +43,13 @@ export default defineComponent({
       type: String,
       required: true
     },
-    faIcon: {
+    icon: {
       type: String,
       default: null
     },
     cardColor: {
       type: String,
-      default: 'primary'
+      default: 'blue'
     },
     placeholder: {
       type: Boolean,

@@ -34,24 +34,24 @@
     <h2>Ratings</h2>
     <div class="row">
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Regular" :data="memberInfo?.ratings?.regular" fa-icon="fas fa-stopwatch" />
+        <rating-card name="Regular" :data="memberInfo?.ratings?.regular" icon="timer-outline" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Quick" :data="memberInfo?.ratings?.quick" fa-icon="fas fa-bolt" />
+        <rating-card name="Quick" :data="memberInfo?.ratings?.quick" icon="flash" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Blitz" :data="memberInfo?.ratings?.blitz" fa-icon="fas fa-forward-fast" />
+        <rating-card name="Blitz" :data="memberInfo?.ratings?.blitz" icon="fast-forward" />
       </div>
     </div>
     <div class="row">
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Online Regular" :data="memberInfo?.ratings?.online_regular" fa-icon="fas fa-stopwatch" card-color="success" />
+        <rating-card name="Online Regular" :data="memberInfo?.ratings?.online_regular" icon="timer-outline" card-color="success" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Online Quick" :data="memberInfo?.ratings?.online_quick" fa-icon="fas fa-bolt" card-color="success" />
+        <rating-card name="Online Quick" :data="memberInfo?.ratings?.online_quick" icon="flash" card-color="success" />
       </div>
       <div class="col-md-4 col-sm-12">
-        <rating-card name="Online Blitz" :data="memberInfo?.ratings?.online_blitz" fa-icon="fas fa-forward-fast" card-color="success" />
+        <rating-card name="Online Blitz" :data="memberInfo?.ratings?.online_blitz" icon="fast-forward" card-color="success" />
       </div>
     </div>
     <h2>Tournament History</h2>
