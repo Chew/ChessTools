@@ -1,5 +1,9 @@
 <template>
-  <span ref="titleElement" class="badge text-bg-danger title-badge" data-bs-toggle="tooltip" :title="title">{{ abbreviation() }}</span>
+  <v-tooltip :text="title" location="top">
+    <template #activator="{ props }">
+      <span v-bind="props" ref="titleElement" class="badge text-bg-danger title-badge" data-bs-toggle="tooltip" :title="title">{{ abbreviation() }}</span>
+    </template>
+  </v-tooltip>
 </template>
 
 <script lang="ts">
@@ -28,16 +32,10 @@ export default defineComponent({
 
   methods: {
     abbreviation() {
-      let title = this.title.split(' ')
-
-      // edge cases
-      if (title.includes('Grandmaster')) {
-        // make it "Grand Master" for the purposes of abbreviation
-        title = title.map(word => word === 'Grandmaster' ? 'Grand Master' : word)
-      }
+      const title = this.title.replaceAll('Grandmaster', 'Grand Master').split(' ')
 
       // first letter of every word in the title
-      return this.title.split(' ').map(word => word[0]).join('')
+      return title.map(word => word[0]).join('')
     }
   }
 })
