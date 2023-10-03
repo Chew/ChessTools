@@ -13,9 +13,12 @@
           </ul>
 
           <ul v-if="user" class="navbar-nav">
-            <li class="navbar-item">
-              <a class="nav-link" href="#" @click="logout">Log Out</a>
-            </li>
+            <nav-dropdown name="You">
+              <nav-dropdown-item name="Profile" href="/profile/me" fa-icon="fas fa-user" />
+              <nav-dropdown-item name="Settings" href="/settings" fa-icon="fas fa-cog" />
+              <nav-dropdown-divider />
+              <nav-dropdown-item name="Log Out" @click="logout" />
+            </nav-dropdown>
           </ul>
           <ul v-else class="navbar-nav">
             <navbar-item name="Login" href="/login" current-path="/" />
@@ -50,9 +53,19 @@ async function logout() {
 body {
   background-color: #b98761;
 }
-
 /*noinspection CssUnusedSymbol*/
 .v-application {
   background: unset!important;
+}
+
+/*noinspection CssUnusedSymbol*/
+.v-application__wrap {
+  min-height: unset!important;
+}
+
+/*noinspection CssUnusedSymbol*/
+.nav-link {
+  /*noinspection All*/
+  color: var(--bs-nav-link-color)!important;
 }
 </style>
