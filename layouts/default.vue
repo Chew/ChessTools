@@ -25,7 +25,9 @@
     </nav>
     <div class="container move-container">
       <div class="p-4 bg-body-tertiary rounded-3">
-        <slot />
+        <v-app>
+          <slot />
+        </v-app>
       </div>
     </div>
   </div>
@@ -47,5 +49,10 @@ async function logout() {
 <style>
 body {
   background-color: #b98761;
+}
+
+/*noinspection CssUnusedSymbol*/
+.v-application {
+  background: unset!important;
 }
 </style>
