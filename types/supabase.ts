@@ -9,6 +9,47 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      games: {
+        Row: TableGames
+        Insert: {
+          black_player?: string | null
+          created_at?: string
+          id?: string
+          pgn?: string | null
+          result?: number | null
+          user_id: string
+          white_player?: string | null
+        }
+        Update: {
+          black_player?: string | null
+          created_at?: string
+          id?: string
+          pgn?: string | null
+          result?: number | null
+          user_id?: string
+          white_player?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "games_black_player_fkey"
+            columns: ["black_player"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "games_white_player_fkey"
+            columns: ["white_player"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       integrations: {
         Row: TableIntegrations
         Insert: {
@@ -16,7 +57,7 @@ export interface Database {
           data: Json
           id?: string
           platform: string
-          user_id?: string | null
+          user_id: string
           verified?: boolean
         }
         Update: {
@@ -24,7 +65,7 @@ export interface Database {
           data?: Json
           id?: string
           platform?: string
-          user_id?: string | null
+          user_id?: string
           verified?: boolean
         }
         Relationships: [
@@ -91,4 +132,14 @@ export interface TableIntegrations {
   platform: string
   user_id: string | null
   verified: boolean
+}
+
+export interface TableGames {
+  black_player: string | null
+  created_at: string
+  id: string
+  pgn: string
+  result: number | null
+  user_id: string
+  white_player: string | null
 }
