@@ -181,5 +181,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
+/*noinspection CssUnusedSymbol*/
+.main-wrap {
+  width: unset!important
+}
 </style>
