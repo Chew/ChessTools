@@ -1,46 +1,41 @@
 <template>
-  <div class="row">
+  <div class="row" autofocus tabindex="-1" @keydown.prevent="keyDown">
     <div class="col-md-8">
       <div class="mb-3">
         <v-btn @click="boardAPI?.toggleOrientation()">
-          Toggle orientation
+          Toggle Orientation
         </v-btn>
-        <v-btn @click="handleReset">
-          Reset
+        <v-btn @click="switchMove(true)">
+          Previous Move
         </v-btn>
-        <v-btn @click="handleUndo">
-          Undo
-        </v-btn>
-        <v-btn @click="boardAPI?.toggleMoves()">
-          Threats
-        </v-btn>
-        <v-btn @click="randomMove">
-          Random Move
+        <v-btn @click="switchMove(false)">
+          Next Move
         </v-btn>
       </div>
       <the-chessboard
         :board-config="boardConfig"
-        @board-created="(api) => (boardAPI = api)"
-        @check="handleCheck"
+        @board-created="(api) => handleBoardCreated(api)"
         @move="handleMove"
-        @checkmate="handleCheckmate"
       />
     </div>
     <div class="col-md-4">
       <h2>Moves</h2>
+      <p v-if="opening">
+        Opening: {{ opening }}
+      </p>
       <table class="table">
         <tr>
           <th>Move #</th>
           <th>White</th>
           <th>Black</th>
         </tr>
-        <tr v-for="(move, index) in history" :key="index">
-          <td>{{ index + 1 }}</td>
+        <tr v-for="(move, i) in history" :key="i">
+          <td>{{ i + 1 }}</td>
           <td v-if="move[0]">
-            {{ move[0].san }}
+            <a href="#" @click="historyAt(((i + 1) * 2) - 1)">{{ move[0].san }}</a>
           </td>
           <td v-if="move[1]">
-            {{ move[1].san }}
+            <a href="#" @click="historyAt((i + 1) * 2)">{{ move[1].san }}</a>
           </td>
         </tr>
       </table>
@@ -52,11 +47,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { BoardApi, Promotion, TheChessboard } from 'vue3-chessboard'
+import { BoardApi, BoardConfig, TheChessboard } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
 
 // eslint-disable-next-line import/named
 import { Move } from 'chess.js'
+import { useSupabaseClient } from '#imports'
+import { Database, TableGames } from '~/types/supabase'
 
 export default defineComponent({
   name: '[id]',
@@ -69,28 +66,59 @@ export default defineComponent({
     return {
       boardAPI: null as BoardApi | null,
       boardConfig: {
-        coordinates: true
-      },
-      history: [[]] as Move[][]
+        coordinates: true,
+        viewOnly: false
+      } as BoardConfig,
+      history: [[]] as Move[][],
+      game: null as TableGames | null,
+      index: 0,
+      opening: '' as string | null
     }
   },
 
+  beforeMount() {
+    const route = useRoute()
+    const id = route.params.id
+
+    useSupabaseClient<Database>().from('games').select('*').eq('id', id).then((res) => {
+      const data = res.data
+      if (!data) {
+        // throw 404
+        throw showError({ statusCode: 500, statusMessage: 'Error fetching game! DATA IS GONE??' })
+      }
+
+      if (data.length === 0) {
+        // throw 404
+        throw showError({ statusCode: 404, statusMessage: 'Game Not Found' })
+      }
+
+      this.game = data[0]
+
+      if (this.game == null) {
+        throw showError({ statusCode: 404, statusMessage: 'Game Not Found' })
+      }
+
+      this.boardAPI?.loadPgn(this.game.pgn)
+      this.createHistory()
+      this.boardAPI?.getOpeningName().then((data) => {
+        this.opening = data
+      })
+    })
+  },
+
   methods: {
-    handleCheck() {
-      const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-check.mp3')
-      audio.play()
-    },
+    async handleMove(move: Move, addToHistory: boolean = true) {
+      if (addToHistory) {
+        this.addToHistory(move)
+      }
 
-    handleCheckmate() {
-      // play audio from https://www.chess.com/sounds/_MP3_/default/game-end.mp3
-      const audio = new Audio('https://www.chess.com/sounds/_MP3_/default/game-end.mp3')
-      audio.play()
-    },
-
-    async handleMove(move: Move) {
-      this.addToHistory(move)
-
-      if (move.san.includes('O-O')) {
+      if (move.san.includes('#')) {
+        const audio = new Audio('https://www.chess.com/sounds/_MP3_/default/game-end.mp3')
+        await audio.play()
+      } else if (move.san.includes('+')) {
+        const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-check.mp3')
+        await audio.play()
+      } else if (move.san.includes('O-O')) {
         const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/castle.mp3')
         await audio.play()
       } else if (move.san.includes('x')) {
@@ -99,45 +127,9 @@ export default defineComponent({
       } else if (move.san.includes('=')) {
         const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/promote.mp3')
         await audio.play()
-      } else if (!move.san.includes('#') && !move.san.includes('+')) {
+      } else {
         const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3')
         await audio.play()
-      }
-    },
-
-    randomMove() {
-      const moves = this.boardAPI?.getPossibleMoves()
-
-      if (moves) {
-        const randomPiece = Math.floor(Math.random() * moves.size)
-        const piece = moves.get(Array.from(moves.keys())[randomPiece])
-        if (!piece) {
-          return
-        }
-        const randomPosition = Math.floor(Math.random() * piece.length)
-        const position = piece[randomPosition]
-        if (!position) {
-          return
-        }
-
-        const from = Array.from(moves.keys())[randomPiece]
-
-        let promotion
-        if (this.boardAPI?.getSquare(from !== 'a0' ? from : 'a1')?.type === 'p' && (position.split('')[1] === '8' || position.split('')[1] === '1')) {
-          // random promotion
-          const possiblePromotions = ['q', 'r', 'b', 'n']
-          const randomPromotion = Math.floor(Math.random() * possiblePromotions.length)
-          promotion = possiblePromotions[randomPromotion] as Promotion
-        }
-
-        let data
-        if (promotion) {
-          data = { from, to: position, promotion }
-        } else {
-          data = { from, to: position }
-        }
-
-        this.boardAPI?.move(data)
       }
     },
 
@@ -150,17 +142,21 @@ export default defineComponent({
       }
     },
 
-    handleUndo() {
-      this.boardAPI?.undoLastMove()
-      this.history[this.history.length - 1].pop()
-      if (this.history[this.history.length - 1].length === 0) {
-        this.history.pop()
+    createHistory() {
+      this.history = [[]]
+      const history = this.boardAPI?.getHistory(true)
+      if (!history) {
+        return
+      }
+
+      for (const move of history) {
+        this.addToHistory(move)
+        this.index += 1
       }
     },
 
-    handleReset() {
-      this.boardAPI?.resetBoard()
-      this.history = [[]]
+    handleBoardCreated(api: BoardApi) {
+      this.boardAPI = api
     },
 
     downloadPGN() {
@@ -175,6 +171,44 @@ export default defineComponent({
       document.body.appendChild(element)
       element.click()
       document.body.removeChild(element)
+    },
+
+    switchMove(previous: boolean = false) {
+      if (previous) {
+        this.index -= 1
+        this.boardAPI?.viewHistory(this.index)
+      } else {
+        this.index += 1
+        this.boardAPI?.viewHistory(this.index)
+      }
+
+      const move = this.boardAPI?.getHistory(true)[previous ? this.index - 1 : this.index - 1]
+      if (!move) {
+        return
+      }
+      this.handleMove(move, false)
+    },
+
+    historyAt(index: number) {
+      this.index = index
+      this.boardAPI?.viewHistory(this.index)
+
+      const move = this.boardAPI?.getHistory(true)[this.index - 1]
+      if (!move) {
+        return
+      }
+      this.handleMove(move, false)
+    },
+
+    keyDown(event: KeyboardEvent) {
+      switch (event.key) {
+        case 'ArrowLeft':
+          this.switchMove(true)
+          break
+        case 'ArrowRight':
+          this.switchMove(false)
+          break
+      }
     }
   }
 })
