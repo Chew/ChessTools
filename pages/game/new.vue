@@ -2,19 +2,19 @@
   <div class="row">
     <div class="col-md-8">
       <div class="mb-3">
-        <v-btn @click="boardAPI?.toggleOrientation()">
-          Toggle orientation
+        <v-btn color="blue" class="mr-1" @click="boardAPI?.toggleOrientation()">
+          Switch Sides
         </v-btn>
-        <v-btn @click="handleReset">
+        <v-btn color="red" class="mr-1" @click="handleReset">
           Reset
         </v-btn>
-        <v-btn @click="handleUndo">
+        <v-btn color="orange" class="mr-1" @click="handleUndo">
           Undo
         </v-btn>
-        <v-btn @click="boardAPI?.toggleMoves()">
-          Threats
+        <v-btn color="yellow" class="mr-1" @click="boardAPI?.toggleMoves()">
+          Possible Moves
         </v-btn>
-        <v-btn @click="randomMove">
+        <v-btn color="green" class="mr-1" @click="randomMove">
           Random Move
         </v-btn>
       </div>
@@ -28,24 +28,32 @@
     </div>
     <div class="col-md-4">
       <h2>Moves</h2>
-      <table class="table">
-        <tr>
-          <th>Move #</th>
-          <th>White</th>
-          <th>Black</th>
-        </tr>
-        <tr v-for="(move, index) in history" :key="index">
-          <td>{{ index + 1 }}</td>
-          <td v-if="move[0]">
-            {{ move[0].san }}
-          </td>
-          <td v-if="move[1]">
-            {{ move[1].san }}
-          </td>
-        </tr>
-      </table>
 
-      <a href="#" @click="downloadPGN">Download PGN</a>
+      <div class="mb-3">
+        <a href="#" class="btn btn-primary" @click="downloadPGN">Download PGN</a>
+        <!-- <a v-if="useSupabaseUser()" href="#" class="btn btn-success">Save to Profile</a>-->
+      </div>
+
+      <v-table theme="dark" density="compact" height="650px">
+        <thead>
+          <tr>
+            <th>Move #</th>
+            <th>White</th>
+            <th>Black</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(move, index) in history" :key="index">
+            <td>{{ index + 1 }}</td>
+            <td v-if="move[0]">
+              {{ move[0].san }}
+            </td>
+            <td v-if="move[1]">
+              {{ move[1].san }}
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
     </div>
   </div>
 </template>
@@ -138,6 +146,9 @@ export default defineComponent({
         }
 
         this.boardAPI?.move(data)
+
+        // TODO: Add way to add PGN info. https://github.com/qwerty084/vue3-chessboard/pull/224
+        // this.boardAPI?.setPgnInfo({ Event: 'Test' })
       }
     },
 

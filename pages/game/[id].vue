@@ -2,13 +2,13 @@
   <div class="row" autofocus tabindex="-1" @keydown.prevent="keyDown">
     <div class="col-md-8">
       <div class="mb-3">
-        <v-btn @click="boardAPI?.toggleOrientation()">
+        <v-btn color="blue" class="mr-1" @click="boardAPI?.toggleOrientation()">
           Toggle Orientation
         </v-btn>
-        <v-btn @click="switchMove(true)">
+        <v-btn color="green" class="mr-1" @click="switchMove(true)">
           Previous Move
         </v-btn>
-        <v-btn @click="switchMove(false)">
+        <v-btn color="green" class="mr-1" @click="switchMove(false)">
           Next Move
         </v-btn>
       </div>
@@ -20,27 +20,38 @@
     </div>
     <div class="col-md-4">
       <h2>Moves</h2>
+
       <p v-if="opening">
         Opening: {{ opening }}
       </p>
-      <table class="table">
-        <tr>
-          <th>Move #</th>
-          <th>White</th>
-          <th>Black</th>
-        </tr>
-        <tr v-for="(move, i) in history" :key="i">
-          <td>{{ i + 1 }}</td>
-          <td v-if="move[0]">
-            <a href="#" @click="historyAt(((i + 1) * 2) - 1)">{{ move[0].san }}</a>
-          </td>
-          <td v-if="move[1]">
-            <a href="#" @click="historyAt((i + 1) * 2)">{{ move[1].san }}</a>
-          </td>
-        </tr>
-      </table>
 
-      <a href="#" @click="downloadPGN">Download PGN</a>
+      <div class="mb-3">
+        <a href="#" class="btn btn-primary" @click="downloadPGN">Download PGN</a>
+      </div>
+
+      <v-table theme="dark" density="compact" height="610px">
+        <thead>
+          <tr>
+            <th>Move #</th>
+            <th>White</th>
+            <th>Black</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(move, i) in history" :key="i">
+            <td>{{ i + 1 }}</td>
+            <td v-if="move[0]" :class="index == ((i + 1) * 2) - 1 ? `text-bg-info` : ''">
+              <a href="#" :class="['text-decoration-none', index == ((i + 1) * 2) - 1 ? 'text-grey-lighten-3' : 'text-grey']"
+                 @click.prevent="historyAt(((i + 1) * 2) - 1)">{{ move[0].san }}
+              </a>
+            </td>
+            <td v-if="move[1]" :class="index == ((i + 1) * 2) ? `text-bg-info` : ''">
+              <a href="#" :class="['text-decoration-none', index == ((i + 1) * 2) ? 'text-grey-lighten-3' : 'text-grey']"
+                 @click.prevent="historyAt((i + 1) * 2)">{{ move[1].san }}</a>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
     </div>
   </div>
 </template>
@@ -107,11 +118,7 @@ export default defineComponent({
   },
 
   methods: {
-    async handleMove(move: Move, addToHistory: boolean = true) {
-      if (addToHistory) {
-        this.addToHistory(move)
-      }
-
+    async handleMove(move: Move) {
       if (move.san.includes('#')) {
         const audio = new Audio('https://www.chess.com/sounds/_MP3_/default/game-end.mp3')
         await audio.play()
@@ -186,7 +193,7 @@ export default defineComponent({
       if (!move) {
         return
       }
-      this.handleMove(move, false)
+      this.handleMove(move)
     },
 
     historyAt(index: number) {
@@ -197,7 +204,7 @@ export default defineComponent({
       if (!move) {
         return
       }
-      this.handleMove(move, false)
+      this.handleMove(move)
     },
 
     keyDown(event: KeyboardEvent) {
