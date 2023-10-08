@@ -73,6 +73,13 @@ export default defineComponent({
     TheChessboard
   },
 
+  setup() {
+    useSeoMeta({
+      title: 'Game Scorecard',
+      description: 'Create a game of chess, with no distractions, no analysis, mobile friendly, and undo. Download as a PGN when you are done.'
+    })
+  },
+
   data() {
     return {
       boardAPI: null as BoardApi | null,

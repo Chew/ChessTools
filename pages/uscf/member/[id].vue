@@ -120,6 +120,13 @@ import { useLazyFetch } from '#app'
 export default defineComponent({
   name: '[id]',
 
+  setup() {
+    useSeoMeta({
+      title: 'View USCF Member',
+      description: 'See all the stats for this USCF member. View ratings, tournaments, and more!'
+    })
+  },
+
   data() {
     return {
       memberId: '',
