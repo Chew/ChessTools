@@ -26,11 +26,14 @@
     </p>
     <p v-else>
       State: {{ memberInfo.state }}<br>
-      Gender: {{ memberInfo.gender }}<br>
+      <v-tooltip text="'Gender' is referring to this player's legal sex and may not accurately reflect their gender identity." location="top">
+        <template #activator="{ props }"><span v-bind="props" style="text-decoration: underline dotted">Gender</span></template>
+      </v-tooltip>: {{ memberInfo.gender }}<br>
       <span v-if="memberInfo.fide.id">
         FIDE ID: {{ memberInfo.fide.id }} ({{ memberInfo.fide.country }})<br>
       </span>
     </p>
+
     <h2>Ratings</h2>
     <div class="row">
       <div class="col-md-4 col-sm-12">
@@ -54,6 +57,44 @@
         <rating-card name="Online Blitz" :data="memberInfo?.ratings?.online_blitz" icon="fast-forward" card-color="success" />
       </div>
     </div>
+
+    <h2>Rankings</h2>
+    <div v-if="memberInfo?.rankings" class="row">
+      <div v-if="memberInfo.rankings.overall" class="col-md-4">
+        <h3>Overall</h3>
+        <p>
+          {{ memberInfo.rankings.overall.rank }}
+          <span v-if="memberInfo.rankings.overall.tied">(tied)</span>
+          out of {{ memberInfo.rankings.overall.total }}<br>
+          {{ memberInfo.rankings.overall.percentile }} percentile
+        </p>
+        <rank-pie-chart :member-info="memberInfo.rankings.overall" />
+      </div>
+      <div v-if="memberInfo.rankings.gender" class="col-md-4">
+        <h3>Gender</h3>
+        <p>
+          {{ memberInfo.rankings.gender.rank }}
+          <span v-if="memberInfo.rankings.gender.tied">(tied)</span>
+          out of {{ memberInfo.rankings.gender.total }}<br>
+          {{ memberInfo.rankings.gender.percentile }} percentile
+        </p>
+        <rank-pie-chart :member-info="memberInfo.rankings.gender" />
+      </div>
+      <div v-if="memberInfo.rankings.state" class="col-md-4">
+        <h3>State</h3>
+        <p>
+          {{ memberInfo.rankings.state.rank }}
+          <span v-if="memberInfo.rankings.state.tied">(tied)</span>
+          out of {{ memberInfo.rankings.state.total }}<br>
+          {{ memberInfo.rankings.state.percentile }} percentile
+        </p>
+        <rank-pie-chart :member-info="memberInfo.rankings.state" />
+      </div>
+    </div>
+    <p v-else>
+      No rankings available. Rankings are only available to players who have played a rated tournament in the last 12 months.
+    </p>
+
     <h2>Tournament History</h2>
     <div v-if="tournamentsPending || tournaments == null">
       We're loading their tournament history, please wait...

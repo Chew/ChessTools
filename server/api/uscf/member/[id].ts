@@ -1,4 +1,5 @@
 import { parse } from 'node-html-parser'
+import { USCFMemberRanking } from '~/types/uscf'
 
 export default defineEventHandler(async (event) => {
     const id = parseInt(getRouterParam(event, 'id') || '0')
@@ -90,10 +91,10 @@ export default defineEventHandler(async (event) => {
     }
 
     // handle rankings
-    const rankings: Record<string, object> = {
-        overall: {},
-        gender: {},
-        state: {}
+    const rankings: Record<string, USCFMemberRanking | null> = {
+        overall: null,
+        gender: null,
+        state: null
     }
 
     const rankingData: Record<string, string[] | undefined> = {

@@ -65,9 +65,9 @@ export interface USCFMember {
         online_blitz: USCFMemberRating,
     },
     rankings: {
-        overall: USCFMemberRanking | {},
-        gender: USCFMemberRanking | {},
-        state: USCFMemberRanking | {},
+        overall: USCFMemberRanking | null,
+        gender: USCFMemberRanking | null,
+        state: USCFMemberRanking | null,
     }
     titles: string[],
     state: string,
