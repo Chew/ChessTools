@@ -27,7 +27,9 @@
     <p v-else>
       State: {{ memberInfo.state }}<br>
       <v-tooltip text="'Gender' is referring to this player's legal sex and may not accurately reflect their gender identity." location="top">
-        <template #activator="{ props }"><span v-bind="props" style="text-decoration: underline dotted">Gender</span></template>
+        <template #activator="{ props }">
+          <span v-bind="props" style="text-decoration: underline dotted">Gender</span>
+        </template>
       </v-tooltip>: {{ memberInfo.gender }}<br>
       <span v-if="memberInfo.fide.id">
         FIDE ID: {{ memberInfo.fide.id }} ({{ memberInfo.fide.country }})<br>

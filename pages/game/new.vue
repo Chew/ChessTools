@@ -171,7 +171,7 @@ export default defineComponent({
     handleUndo() {
       this.boardAPI?.undoLastMove()
       this.history[this.history.length - 1].pop()
-      if (this.history[this.history.length - 1].length === 0) {
+      if (this.history.length > 1 && this.history[this.history.length - 1].length === 0) {
         this.history.pop()
       }
     },
