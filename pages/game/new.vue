@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-8">
       <div class="mb-3">
-        <v-btn color="blue" class="mr-1" @click="boardAPI?.toggleOrientation()">
+        <v-btn color="blue" class="mr-1" @click="handleOrientation">
           Switch Sides
         </v-btn>
         <v-btn color="red" class="mr-1" @click="handleReset">
@@ -18,6 +18,15 @@
           Random Move
         </v-btn>
       </div>
+      <div class="row g-3 align-items-center mb-3">
+        <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">{{ whiteOnBottom ? 'Black' : 'White' }} Player</label>
+        </div>
+        <div class="col-auto">
+          <input v-if="whiteOnBottom" v-model="black" type="text" class="form-control" aria-describedby="passwordHelpInline">
+          <input v-else v-model="white" type="text" class="form-control" aria-describedby="passwordHelpInline">
+        </div>
+      </div>
       <the-chessboard
         :board-config="boardConfig"
         @board-created="(api) => (boardAPI = api)"
@@ -25,13 +34,36 @@
         @move="handleMove"
         @checkmate="handleCheckmate"
       />
+
+      <div class="row g-3 align-items-center mt-3">
+        <div class="col-auto">
+          <label for="inputPassword6" class="col-form-label">{{ whiteOnBottom ? 'White' : 'Black' }} Player</label>
+        </div>
+        <div class="col-auto">
+          <input v-if="whiteOnBottom" v-model="white" type="text" class="form-control" aria-describedby="passwordHelpInline">
+          <input v-else v-model="black" type="text" class="form-control" aria-describedby="passwordHelpInline">
+        </div>
+      </div>
     </div>
     <div class="col-md-4">
       <h2>Moves</h2>
 
       <div class="mb-3">
-        <a href="#" class="btn btn-primary" @click="downloadPGN">Download PGN</a>
-        <!-- <a v-if="useSupabaseUser()" href="#" class="btn btn-success">Save to Profile</a>-->
+        <a href="#" class="btn btn-primary mr-3" @click="downloadPGN">Download PGN</a>
+        <a v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" href="#" class="btn btn-primary" @click.prevent="saveToProfile">
+          Save to Profile
+        </a>
+        <button v-else-if="saveToProfileStatus === 'sending'" class="btn btn-secondary" disabled>
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+          Saving...
+        </button>
+        <button v-else-if="saveToProfileStatus === 'success'" class="btn btn-success" disabled>
+          <i class="fas fa-check" /> Saved!
+        </button>
+        <button v-else class="btn btn-danger" disabled>
+          <!-- failure -->
+          <i class="fas fa-times" /> {{ saveToProfileStatus }}
+        </button>
       </div>
 
       <v-table theme="dark" density="compact" height="650px">
@@ -86,7 +118,12 @@ export default defineComponent({
       boardConfig: {
         coordinates: true
       },
-      history: [[]] as Move[][]
+      history: [[]] as Move[][],
+
+      saveToProfileStatus: 'pending',
+      black: 'Player',
+      white: 'Player',
+      whiteOnBottom: true
     }
   },
 
@@ -166,6 +203,13 @@ export default defineComponent({
       } else {
         currentMove.push(move)
       }
+
+      this.saveToProfileStatus = 'pending'
+    },
+
+    handleOrientation() {
+      this.boardAPI?.toggleOrientation()
+      this.whiteOnBottom = !this.whiteOnBottom
     },
 
     handleUndo() {
@@ -179,6 +223,38 @@ export default defineComponent({
     handleReset() {
       this.boardAPI?.resetBoard()
       this.history = [[]]
+    },
+
+    saveToProfile() {
+      this.saveToProfileStatus = 'sending'
+
+      // TODO: Customize this :)
+      const pgn = this.boardAPI?.getPgn()
+      const data = [
+         `[White "${this.white}"]`,
+         `[Black "${this.black}"]`,
+         '[Result "*"]'
+      ]
+
+      $fetch<{success: boolean, message: string}>('/api/games/save', {
+        headers: useRequestHeaders(['cookie']),
+        method: 'POST',
+        body: {
+          pgn: data.join('\n') + '\n' + pgn
+        }
+      }).then((data) => {
+        if (!data) {
+          this.saveToProfileStatus = 'Unknown error'
+          return
+        }
+
+        if (!data.success) {
+          this.saveToProfileStatus = data.message
+          return
+        }
+
+        this.saveToProfileStatus = 'success'
+      })
     },
 
     downloadPGN() {
