@@ -1,5 +1,6 @@
 import { parse } from 'node-html-parser'
 import { USCFMemberRanking } from '~/types/uscf'
+import { gatherElements, findElement } from '~/utils/elements'
 
 export default defineEventHandler(async (event) => {
     const id = parseInt(getRouterParam(event, 'id') || '0')
@@ -16,25 +17,7 @@ export default defineEventHandler(async (event) => {
         })
 
     // Gather all the <tr> elements and put their children into a matrix
-    const elements: string[][] = []
-    data.querySelectorAll('tr').forEach((element) => {
-        // we only want children, so just the tds.
-        const children = element.querySelectorAll('td')
-        const childrenArray = []
-        for (let i = 0; i < children.length; i++) {
-            // sometimes the children text is nested in a <nobr> tag, already inside a <b> tag, we still want the text of that tag
-            const child = children[i].innerText.trim()
-            // OBSCURE EDGE CASE
-            if (i === 1 && childrenArray[0] === 'FIDE Title(s)') {
-                // push as is
-                childrenArray.push(child)
-            } else {
-                childrenArray.push(child.replaceAll('&nbsp;', ''))
-            }
-        }
-
-        elements.push(childrenArray)
-    })
+    const elements: string[][] = gatherElements(data)
 
     // important indexes
     const startOfRatings = elements.find(element => element.join(' ').includes('Current Published'))
@@ -146,13 +129,3 @@ export default defineEventHandler(async (event) => {
         lastChange: findElement(elements, 'Last Change Dt.')
     }
 })
-
-function findElement(elements: string[][], text: string, exact: boolean = true) {
-    const element = elements.find(element => exact ? element[0] === text : element[0].includes(text))
-
-    if (!element) {
-        return null
-    }
-
-    return element[1]
-}
