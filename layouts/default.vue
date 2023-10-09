@@ -9,7 +9,11 @@
         </button>
         <div id="navbarText" class="collapse navbar-collapse">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <navbar-item name="Home" href="/" :current-path="useRoute().path" />
+            <navbar-item name="Home" href="/" :current-path="useRoute().path" fa-icon="fas fa-home" />
+            <nav-dropdown name="Games">
+              <nav-dropdown-item name="New Game" href="/game/new" fa-icon="fas fa-plus" />
+              <nav-dropdown-item v-if="user" name="My Games" href="/games" fa-icon="fas fa-chess" />
+            </nav-dropdown>
           </ul>
 
           <ul v-if="user" class="navbar-nav">
@@ -49,23 +53,27 @@ async function logout() {
 }
 </script>
 
+<!--suppress CssUnusedSymbol -->
 <style>
 body {
   background-color: #b98761;
 }
-/*noinspection CssUnusedSymbol*/
+
 .v-application {
   background: unset!important;
 }
 
-/*noinspection CssUnusedSymbol*/
 .v-application__wrap {
   min-height: unset!important;
 }
 
-/*noinspection CssUnusedSymbol*/
 .nav-link {
   /*noinspection All*/
   color: var(--bs-nav-link-color)!important;
+}
+
+.nav-link.active {
+  /*noinspection All*/
+  color: var(--bs-navbar-active-color)!important;
 }
 </style>

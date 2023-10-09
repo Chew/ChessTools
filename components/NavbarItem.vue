@@ -1,8 +1,7 @@
 <template>
   <li :class="['nav-item', isCurrentPath() ? 'disabled active' : '']">
     <NuxtLink :class="['nav-link', isCurrentPath() ? 'active disabled': '']" :href="href" :target="external ? '_blank' : ''">
-      <i v-if="faIcon" :class="['fa', faIcon, 'me-2']" />
-      {{ name }}
+      <i v-if="faIcon" :class="['fa', faIcon]" /> {{ name }}
     </NuxtLink>
   </li>
 </template>
