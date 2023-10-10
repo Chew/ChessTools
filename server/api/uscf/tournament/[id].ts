@@ -95,7 +95,7 @@ export default defineEventHandler(async (event) => {
                     roundNumber: j + 1,
                     result: info[0][3 + j].split(' ')[0],
                     color: info[1][3 + j],
-                    opponentPairNumber: parseInt(info[0][3 + j].split('   ')[1])
+                    opponentPairNumber: parseInt(info[0][3 + j].split('  ')[1])
                 }
 
                 rounds.push(round)
@@ -108,6 +108,10 @@ export default defineEventHandler(async (event) => {
                 let rating = info[j + 1][1]
                 if (j === 0) {
                     rating = rating.split('/')[1]
+                }
+
+                if (rating == null || !rating.includes(':')) {
+                    continue
                 }
 
                 const type: keyof typeof USCFTournamentRatingType = rating.split(':')[0].trim() as keyof typeof USCFTournamentRatingType

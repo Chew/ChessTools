@@ -35,6 +35,12 @@ export default defineNuxtConfig({
     siteKey: '0x4AAAAAAAKsKEdr-d1daiqG'
   },
 
+  vuetify: {
+    vuetifyOptions: {
+      labComponents: 'VDataTable'
+    }
+  },
+
   eslint: {
 
   },

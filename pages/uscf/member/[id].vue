@@ -118,7 +118,12 @@
           </thead>
           <tbody>
             <tr v-for="tournament in tournaments.tournaments" :key="tournament.eventId">
-              <td>{{ tournament.date }}<br>{{ tournament.eventId }}</td>
+              <td>
+                {{ tournament.date }}<br>
+                <NuxtLink :to="`/uscf/tournament/${tournament.eventId}`">
+                  {{ tournament.eventId }}
+                </NuxtLink>
+              </td>
               <td>{{ tournament.name }}<br>{{ tournament.section.id }}: {{ tournament.section.name }}</td>
 
               <!-- Regular -->
