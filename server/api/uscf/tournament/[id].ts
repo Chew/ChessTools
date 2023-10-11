@@ -155,7 +155,7 @@ export default defineEventHandler(async (event) => {
 
         summary: {
             event: nameAndIdFormatter(findElement(elements, 'Event') || ''),
-            location: findElement(elements, 'Location'),
+            location: findElement(elements, 'Location')?.trim(),
             eventDates: findElement(elements, 'Event Date(s)'),
             affiliate: nameAndIdFormatter(findElement(elements, 'Sponsoring Affiliate') || ''),
             chiefTd: nameAndIdFormatter(findElement(elements, 'Chief TD') || ''),

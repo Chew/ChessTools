@@ -60,7 +60,7 @@ export function findElement(elements: string[][], text: string, exact: boolean =
 export function nameAndIdFormatter(info: string) {
     // convert BRUH (ID) => { name: 'BRUH', id: 'ID' }
     const name = info.split(' (')[0]
-    const id = info.split(' (')[1].replace(')', '')
+    const id = info.split('(')[1].replace(')', '')
 
     return {
         name,
