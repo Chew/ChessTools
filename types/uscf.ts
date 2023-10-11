@@ -125,13 +125,13 @@ export interface USCFTournamentSectionPlayer {
 export interface USCFTournamentSection {
     id: number;
     name: string;
-    processed: {
+    processed?: {
         received: string;
         entered: string;
         rated: string;
         reRated?: string
     };
-    stats: {
+    stats?: {
         rounds: number;
         players: number;
         kFactor: string;

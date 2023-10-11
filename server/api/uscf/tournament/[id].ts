@@ -52,20 +52,31 @@ export default defineEventHandler(async (event) => {
 
         const sectionID = sectionInfo[0][0]
 
-        const processedData = sectionInfo[2][1]
+        const processedData = findElement(sectionInfo, 'Processed')
 
-        const processedInfo = {
+        const processedInfo = processedData ? {
             received: processedData.split('Received: ')[1].split(' ')[0],
             entered: processedData.split('Entered: ')[1].split(' ')[0],
             rated: processedData.split('Rated: ')[1].split(' ')[0],
             reRated: undefined as string | undefined
-        }
+        } : undefined
 
-        if (processedData.includes('Re-Rated')) {
+        if (processedData?.includes('Re-Rated') && processedInfo) {
             processedInfo.reRated = processedData.split('Re-Rated: ')[1].split(' ')[0]
         }
 
-        const statsData = sectionInfo[3][1]
+        const statsData = findElement(sectionInfo, 'Stats')
+        if (statsData == null) {
+            sections.push({
+                id: parseInt(sectionID.split(' - ')[0].split('Section ')[1]),
+                name: sectionID.split(' - ')[1],
+                processed: processedInfo,
+                stats: undefined,
+                players: []
+            })
+            continue
+        }
+
         const statsInfo = {
             rounds: parseInt(statsData.split(' ')[0]),
             players: parseInt(statsData.split(' Rounds, ')[1].split(' Players')[0]),
@@ -76,7 +87,17 @@ export default defineEventHandler(async (event) => {
         }
 
         const players: USCFTournamentSectionPlayer[] = []
-        const playerInfo = section[5][0].split('\n')
+        const playerInfo = findElement(section, '---------------', false, 0)?.split('\n')
+        if (!playerInfo) {
+            sections.push({
+                id: parseInt(sectionID.split(' - ')[0].split('Section ')[1]),
+                name: sectionID.split(' - ')[1],
+                processed: processedInfo,
+                stats: statsInfo,
+                players: []
+            })
+            continue
+        }
         const base = 13
         let rowsOfData = 0
         while (!playerInfo[base + (rowsOfData)].includes('---------')) {

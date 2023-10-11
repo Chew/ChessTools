@@ -15,7 +15,7 @@
       <div v-for="section in gameData.sections" :key="section.id" class="col-md-12 mb-3">
         <h3>{{ titleize(section.name) }}</h3>
 
-        <div class="row">
+        <div v-if="section.stats" class="row">
           <div class="col-md-6">
             <h4>Stats</h4>
             <p>
@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <v-data-table v-model:expanded="expanded[section.id - 1]" show-expand
+        <v-data-table v-if="section.stats && section.players.length > 0" v-model:expanded="expanded[section.id - 1]" show-expand
                       :items-per-page="section.players.length > 10 ? 10 : -1"
                       :headers="buildHeaders(section.stats.rounds)" :items="section.players"
                       theme="dark" item-value="pairNumber" :search="search">

@@ -41,15 +41,16 @@ export function gatherElements(data: HTMLElement) {
  * @param elements The elements
  * @param text The string to find in the first box
  * @param exact Whether or not to match the text exactly
+ * @param key The key to return
  */
-export function findElement(elements: string[][], text: string, exact: boolean = true) {
+export function findElement(elements: string[][], text: string, exact: boolean = true, key: number = 1) {
     const element = elements.find(element => exact ? element[0] === text : element[0].includes(text))
 
     if (!element) {
         return null
     }
 
-    return element[1]
+    return element[key]
 }
 
 /**
