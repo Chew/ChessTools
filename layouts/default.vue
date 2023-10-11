@@ -33,7 +33,30 @@
     <div class="container move-container">
       <div class="p-4 bg-body-tertiary rounded-3">
         <v-app>
-          <slot />
+          <div v-if="!useRoute().path.includes('settings')" class="row">
+            <div class="col-12">
+              <slot />
+            </div>
+          </div>
+          <div v-else>
+            <v-layout>
+              <v-navigation-drawer :width="200" density="compact" :location="isMobile ? 'top' : 'left'" :permanent="true">
+                <v-list-item title="Settings Navigation" />
+                <v-divider />
+
+                <NuxtLink href="/settings/profile" style="text-decoration: none">
+                  <v-list-item prepend-icon="mdi-account" :link="true" title="Profile" color="blue" />
+                </NuxtLink>
+                <NuxtLink href="/settings/integrations" style="text-decoration: none">
+                  <v-list-item prepend-icon="mdi-link-variant" :link="true" title="Integrations" color="primary" />
+                </NuxtLink>
+              </v-navigation-drawer>
+
+              <v-main :class="isMobile ? '' : 'ml-5'">
+                <slot />
+              </v-main>
+            </v-layout>
+          </div>
         </v-app>
       </div>
     </div>
@@ -45,6 +68,16 @@ import NavbarItem from '~/components/NavbarItem.vue'
 import { useSupabaseClient } from '#imports'
 
 const user = useSupabaseUser()
+
+let isMobile = ref(false)
+if (process.browser) {
+  isMobile = ref(window.innerWidth < 768)
+
+  // watch for window resize
+  window.addEventListener('resize', () => {
+    isMobile.value = window.innerWidth < 768
+  })
+}
 
 async function logout() {
   await useSupabaseClient().auth.signOut()
@@ -59,7 +92,7 @@ body {
   background-color: #b98761;
 }
 
-.v-application {
+.v-application, .v-navigation-drawer {
   background: unset!important;
 }
 

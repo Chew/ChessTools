@@ -41,6 +41,10 @@ export default defineNuxtConfig({
     }
   },
 
+  routeRules: {
+    '/settings': { redirect: '/settings/profile' }
+  },
+
   eslint: {
 
   },
