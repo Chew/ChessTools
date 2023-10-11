@@ -73,7 +73,7 @@
         <rank-pie-chart :member-info="memberInfo.rankings.overall" />
       </div>
       <div v-if="memberInfo.rankings.gender" class="col-md-4">
-        <h3>Gender</h3>
+        <h3>Gender ({{ memberInfo.gender }})</h3>
         <p>
           {{ memberInfo.rankings.gender.rank }}
           <span v-if="memberInfo.rankings.gender.tied">(tied)</span>
@@ -83,7 +83,7 @@
         <rank-pie-chart :member-info="memberInfo.rankings.gender" />
       </div>
       <div v-if="memberInfo.rankings.state" class="col-md-4">
-        <h3>State</h3>
+        <h3>State ({{ memberInfo.state }})</h3>
         <p>
           {{ memberInfo.rankings.state.rank }}
           <span v-if="memberInfo.rankings.state.tied">(tied)</span>

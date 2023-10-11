@@ -16,9 +16,11 @@
         No rating
       </span>
       <span v-else>
-        ({{ data.current.date }}): {{ data.current.elo }} ({{ data.current.games }} games)
+        ({{ data.current.date }}): {{ data.current.elo }}
+        <span v-if="data.current.games">({{ data.current.games }} games)</span>
+        <span v-else-if="data.current.floor">(floor: {{ data.current.floor }})</span>
       </span>
-      <span v-if="data.current.elo != data.future.elo">
+      <span v-if="data.future">
         <br>
         Future ({{ data.future.date }}): {{ data.future.elo }} ({{ data.future.games }} games)
       </span>

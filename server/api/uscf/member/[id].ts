@@ -54,14 +54,15 @@ export default defineEventHandler(async (event) => {
         ratings[ratingType] = {
             current: {
                 elo: parseInt(currentRating.split(' ')[0]),
-                games: parseInt(currentRating.split(' ')[3]),
+                games: currentRating.includes('Based on') ? parseInt(currentRating.split(' ')[3]) : undefined,
+                floor: currentRating.includes('floor') ? parseInt(currentRating.split(' ')[3]) : undefined,
                 date: currentRating.split('\n')[1]
             },
             future: futureRating ? {
                 elo: parseInt(futureRating.split(' ')[0]),
-                games: parseInt(futureRating.split(' ')[3]),
+                games: futureRating.includes('Based on') ? parseInt(futureRating.split(' ')[3]) : undefined,
                 date: futureDate
-            } : {}
+            } : undefined
         }
     }
 

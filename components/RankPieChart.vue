@@ -1,13 +1,13 @@
 <template>
   <Pie id="overallRankGraph"
        :data="{
-         labels: ['Remaining', 'Ranked'],
+         labels: ['Current Percentile', 'Remaining Percentile'],
          datasets: [{
-           data: [ memberInfo.total, (memberInfo.total) - (memberInfo.rank) ],
+           data: [ (memberInfo.percentile), 100 - memberInfo.percentile ],
 
            backgroundColor: [
-             '#FF6384',
-             '#4ee081'
+             '#4ee081',
+             '#FF6384'
            ]
          }],
        }" />

@@ -32,14 +32,15 @@ export interface USCFMemberTournament {
 export interface USCFMemberRating {
     current: {
         elo: number;
-        games: number;
+        games?: number;
+        floor?: number;
         date: string;
     },
-    future: {
+    future?: {
         elo: number;
-        games: number;
+        games?: number;
         date: string;
-    } // | {}
+    }
 }
 
 export interface USCFMemberRanking {
