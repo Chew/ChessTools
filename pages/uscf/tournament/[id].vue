@@ -72,8 +72,13 @@ export default defineComponent({
       return data
     })
 
+    const title = 'Viewing Tournament ' + gameData.summary.event.name
+    const description = 'View tournament info, players, rating changes, round breakdowns, and more!'
     useSeoMeta({
-      title: 'Viewing Tournament ' + gameData.summary.event.name
+      title,
+      description,
+      ogTitle: title,
+      ogDescription: description
     })
 
     return {

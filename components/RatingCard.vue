@@ -38,7 +38,7 @@ export default defineComponent({
   props: {
     data: {
       type: Object as () => USCFMemberRating | null,
-      required: true,
+      required: false,
       default: null
     },
     name: {

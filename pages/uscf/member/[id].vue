@@ -173,12 +173,16 @@ export default defineComponent({
       title: 'View USCF Member',
       description: 'See all the stats for this USCF member. View ratings, tournaments, and more!'
     })
+
+    const route = useRoute()
+    const uscfUserId = route.params.id.toString()
+    return {
+      memberId: uscfUserId
+    }
   },
 
   data() {
     return {
-      memberId: '',
-
       memberInfo: null as USCFMember | null,
       memberPending: true,
 
@@ -190,7 +194,6 @@ export default defineComponent({
   beforeMount() {
     const route = useRoute()
     const uscfUserId = route.params.id.toString()
-    this.memberId = uscfUserId
 
     this.memberPending = true
     useLazyFetch<USCFMember>(`/api/uscf/member/${uscfUserId}`, {
