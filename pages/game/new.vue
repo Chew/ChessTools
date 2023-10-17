@@ -17,7 +17,59 @@
         <v-btn color="green" class="mr-1" @click="randomMove">
           Random Move
         </v-btn>
+        <v-dialog v-model="dialog" :persistent="true" width="1024">
+          <template #activator="{ props }">
+            <v-btn color="primary" v-bind="props">
+              Edit Details
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">Edit Game Details</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="8" sm="8" md="8">
+                    <v-text-field v-model="white" label="White Player" />
+                  </v-col>
+                  <v-col cols="4" sm="4" md="4">
+                    <v-text-field v-model="whiteElo" label="Elo" />
+                  </v-col>
+                  <v-col cols="8" sm="8" md="8">
+                    <v-text-field v-model="black" label="Black Player" />
+                  </v-col>
+                  <v-col cols="4" sm="4" md="4">
+                    <v-text-field v-model="blackElo" label="Elo" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-select v-model="result" :items="results" :item-props="resultProps" label="Result" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-text-field v-model="event" label="Event" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-text-field v-model="timeControl" label="Time Control" />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
+      <p>Game State: {{ status }}</p>
       <div class="row g-3 align-items-center mb-3">
         <div class="col-auto">
           <label for="inputPassword6" class="col-form-label">{{ whiteOnBottom ? 'Black' : 'White' }} Player</label>
@@ -97,6 +149,7 @@ import 'vue3-chessboard/style.css'
 
 // eslint-disable-next-line import/named
 import { Move } from 'chess.js'
+import { buildDate } from '~/utils/pgn'
 
 export default defineComponent({
   name: '[id]',
@@ -110,6 +163,24 @@ export default defineComponent({
       title: 'Game Scorecard',
       description: 'Create a game of chess, with no distractions, no analysis, mobile friendly, and undo. Download as a PGN when you are done.'
     })
+
+    const results = [{
+      title: '*',
+      subtitle: 'No Result'
+    }, {
+      title: '1-0',
+      subtitle: 'White Wins'
+    }, {
+      title: '0-1',
+      subtitle: 'Black Wins'
+    }, {
+      title: '1/2-1/2',
+      subtitle: 'Draw'
+    }]
+
+    return {
+      results
+    }
   },
 
   data() {
@@ -120,10 +191,21 @@ export default defineComponent({
       },
       history: [[]] as Move[][],
 
+      // State
       saveToProfileStatus: 'pending',
+      status: 'Pending',
+      whiteOnBottom: true,
+
+      // PGN Info
       black: 'Player',
+      blackElo: null as number | null,
       white: 'Player',
-      whiteOnBottom: true
+      whiteElo: null as number | null,
+      event: '',
+      timeControl: '',
+      result: '*',
+
+      dialog: false
     }
   },
 
@@ -141,6 +223,7 @@ export default defineComponent({
 
     async handleMove(move: Move) {
       this.addToHistory(move)
+      this.gameStatus()
 
       if (move.san.includes('O-O')) {
         const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/castle.mp3')
@@ -190,9 +273,6 @@ export default defineComponent({
         }
 
         this.boardAPI?.move(data)
-
-        // TODO: Add way to add PGN info. https://github.com/qwerty084/vue3-chessboard/pull/224
-        // this.boardAPI?.setPgnInfo({ Event: 'Test' })
       }
     },
 
@@ -222,25 +302,25 @@ export default defineComponent({
 
     handleReset() {
       this.boardAPI?.resetBoard()
+      this.status = 'Pending'
+      this.saveToProfileStatus = 'pending'
       this.history = [[]]
     },
 
+    /**
+     * Saves the game to your profile.
+     */
     saveToProfile() {
       this.saveToProfileStatus = 'sending'
 
-      // TODO: Customize this :)
+      this.updatePGN()
       const pgn = this.boardAPI?.getPgn()
-      const data = [
-         `[White "${this.white}"]`,
-         `[Black "${this.black}"]`,
-         '[Result "*"]'
-      ]
 
       $fetch<{success: boolean, message: string}>('/api/games/save', {
         headers: useRequestHeaders(['cookie']),
         method: 'POST',
         body: {
-          pgn: data.join('\n') + '\n' + pgn
+          pgn
         }
       }).then((data) => {
         if (!data) {
@@ -257,7 +337,32 @@ export default defineComponent({
       })
     },
 
+    updatePGN() {
+      const data: Record<string, string> = {
+        White: this.white,
+        Black: this.black,
+        Result: this.result,
+        Site: 'Chess.Tools Game Scorecard',
+        Date: buildDate()
+      }
+      if (this.whiteElo) {
+        data.WhiteElo = this.whiteElo.toString()
+      }
+      if (this.blackElo) {
+        data.BlackElo = this.blackElo.toString()
+      }
+      if (this.event) {
+        data.Event = this.event
+      }
+      if (this.timeControl) {
+        data.TimeControl = this.timeControl
+      }
+
+      this.boardAPI?.setPgnInfo(data)
+    },
+
     downloadPGN() {
+      this.updatePGN()
       const pgn = this.boardAPI?.getPgn()
       if (!pgn) {
         return
@@ -269,6 +374,46 @@ export default defineComponent({
       document.body.appendChild(element)
       element.click()
       document.body.removeChild(element)
+    },
+
+    /**
+     * Updates the game status based on the current board state.
+     */
+    gameStatus(): void {
+      const api = this.boardAPI
+      if (!api) {
+        return
+      }
+
+      const toPlay = api.getTurnColor()
+
+      if (!api.getIsGameOver()) {
+        this.status = `In Progress, ${toPlay} to play`
+        return
+      }
+
+      if (api.getIsCheckmate()) {
+        this.status = `${toPlay === 'white' ? 'Black' : 'White'} wins by Checkmate`
+        this.result = toPlay === 'white' ? '0-1' : '1-0'
+      } else if (api.getIsStalemate()) {
+        this.status = 'Draw by Stalemate'
+      } else if (api.getIsThreefoldRepetition()) {
+        this.status = 'Draw by Threefold Repetition'
+      } else if (api.getIsInsufficientMaterial()) {
+        this.status = 'Draw by Insufficient Material'
+      } else if (api.getIsDraw()) {
+        this.status = 'Draw'
+        this.result = '1/2-1/2'
+      } else {
+        this.status = 'Game Over'
+      }
+    },
+
+    resultProps(item: {title: any, subtitle: any}) {
+      return {
+        title: item.title,
+        subtitle: item.subtitle
+      }
     }
   }
 })
