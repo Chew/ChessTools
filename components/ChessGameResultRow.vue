@@ -2,11 +2,11 @@
   <tr>
     <td>
       <span class="d-flex align-center">
-        <span :class="['play-icon', unknownColor ? 'unknown' : 'white', cleanResult[0] === 1 ? 'winner' : '']" />
+        <span :class="['play-icon', unknownColor ? 'unknown' : 'white', cleanResult[0] == 1 ? 'winner' : '']" />
         {{ whitePlayer.name }} <span v-if="whitePlayer.elo" class="text-grey">&nbsp;({{ whitePlayer.elo }})</span>
       </span>
       <span class="d-flex align-center">
-        <span :class="['play-icon', unknownColor ? 'unknown' : 'black', cleanResult[1] === 1 ? 'winner' : '']" />
+        <span :class="['play-icon', unknownColor ? 'unknown' : 'black', cleanResult[1] == 1 ? 'winner' : '']" />
         {{ blackPlayer.name }} <span v-if="blackPlayer.elo" class="text-grey">&nbsp;({{ blackPlayer.elo }})</span>
       </span>
     </td>
@@ -39,11 +39,11 @@ export default {
   name: 'ChessGameResultRow',
   props: {
     whitePlayer: {
-      type: Object as PropType<{name: string, elo?: number}>,
+      type: Object as PropType<{name: string, elo?: string|number}>,
       required: true
     },
     blackPlayer: {
-      type: Object as PropType<{name: string, elo?: number}>,
+      type: Object as PropType<{name: string, elo?: string|number}>,
       required: true
     },
     unknownColor: {
