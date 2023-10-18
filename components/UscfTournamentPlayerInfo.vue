@@ -27,46 +27,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="round in player.rounds" :key="round.roundNumber">
-            <td v-if="round.color == 'B'">
-              <span class="d-flex align-center">
-                <span :class="['play-icon', 'white', friendlyResult(round.result).includes('Loss') ? 'winner' : '']" />
-                {{ findMember(players, round.opponentPairNumber)?.name || 'Unpaired' }}
-              </span>
-              <span class="d-flex align-center">
-                <span :class="['play-icon', 'black', friendlyResult(round.result).includes('Win') ? 'winner' : '']" />
-                {{ player.name }}
-              </span>
-            </td>
-            <td v-else>
-              <span class="d-flex align-center">
-                <span :class="['play-icon', 'white', friendlyResult(round.result).includes('Win') ? 'winner' : '']" />
-                {{ player.name }}
-              </span>
-              <span class="d-flex align-center">
-                <span :class="['play-icon', 'black', friendlyResult(round.result).includes('Loss') ? 'winner' : '']" />
-                {{ findMember(players, round.opponentPairNumber)?.name || 'Unpaired' }}
-              </span>
-            </td>
-
-            <td>
-              <div class="d-flex align-center">
-                <div style="width: 0.9rem">
-                  {{ cleanResult(round)[0] }}<br>
-                  {{ cleanResult(round)[1] }}
-                </div>
-                <div class="ml-2">
-                  <v-tooltip :text="friendlyResult(round.result)">
-                    <template #activator="{ props }">
-                      <i v-if="friendlyResult(round.result).includes('Win')" v-bind="props" class="fa-solid fa-square-plus text-green-lighten-1" />
-                      <i v-else-if="friendlyResult(round.result).includes('Loss')" v-bind="props" class="fa-solid fa-square-minus text-red-lighten-1" />
-                      <i v-else v-bind="props" class="fa-solid fa-square text-gray-lighten-1" />
-                    </template>
-                  </v-tooltip>
-                </div>
-              </div>
-            </td>
-          </tr>
+          <ChessGameResultRow v-for="round in player.rounds" :key="round.roundNumber" :player="player.name"
+                              :opponent="findMember(players, round.opponentPairNumber)?.name || 'Unpaired'"
+                              :player-color="round.color === 'B' ? 'black' : 'white'"
+                              :clean-result="cleanResult(round)" :friendly-result="friendlyResult(round.result)"
+          />
         </tbody>
       </v-table>
     </div>
@@ -74,12 +39,14 @@
 </template>
 
 <script lang="ts">
-import { capitalize, defineComponent } from 'vue'
 import type { PropType } from 'vue'
+import { capitalize, defineComponent } from 'vue'
 import { USCFTournamentSectionPlayer } from '~/types/uscf'
+import ChessGameResultRow from '~/components/ChessGameResultRow.vue'
 
 export default defineComponent({
   name: 'UscfTournamentPlayerInfo',
+  components: { ChessGameResultRow },
 
   props: {
     player: {
@@ -149,29 +116,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-/*noinspection CssUnusedSymbol*/
-.winner {
-  border: 0.2rem solid #81b64c;
-}
-
-.white {
-  background-color: #fff;
-}
-
-.black {
-  background-color: #565352;
-}
-
-.play-icon {
-  border-radius: 0.2rem;
-  display: block;
-  flex-shrink: 0;
-  height: 1rem;
-  margin-right: 0.5rem;
-  width: 1rem;
-}
-
-.align-center {
-  align-items: center;
-}
 </style>
