@@ -45,7 +45,7 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12">
-                    <v-select v-model="result" :items="results" :item-props="resultProps" label="Result" />
+                    <v-select v-model="result" :items="results()" :item-props="resultProps" label="Result" />
                   </v-col>
                 </v-row>
                 <v-row>
@@ -146,9 +146,8 @@
 import { defineComponent } from 'vue'
 import { BoardApi, Promotion, TheChessboard } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
-// eslint-disable-next-line import/named
-import { Move } from 'chess.js'
-import { buildDate } from '~/utils/pgn'
+import type { Move } from 'chess.js'
+import { buildDate, resultProps, results } from '~/utils/pgn'
 
 export default defineComponent({
   name: '[id]',
@@ -162,24 +161,6 @@ export default defineComponent({
       title: 'Game Scorecard',
       description: 'Create a game of chess, with no distractions, no analysis, mobile friendly, and undo. Download as a PGN when you are done.'
     })
-
-    const results = [{
-      title: '*',
-      subtitle: 'No Result'
-    }, {
-      title: '1-0',
-      subtitle: 'White Wins'
-    }, {
-      title: '0-1',
-      subtitle: 'Black Wins'
-    }, {
-      title: '1/2-1/2',
-      subtitle: 'Draw'
-    }]
-
-    return {
-      results
-    }
   },
 
   data() {
@@ -209,6 +190,11 @@ export default defineComponent({
   },
 
   methods: {
+    resultProps,
+    results() {
+      return results
+    },
+
     handleCheck() {
       const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-check.mp3')
       audio.play()
@@ -409,13 +395,6 @@ export default defineComponent({
 
       if (api.getIsDraw()) {
         this.result = '1/2-1/2'
-      }
-    },
-
-    resultProps(item: Record<string, string>): Record<string, string> {
-      return {
-        title: item.title,
-        subtitle: item.subtitle
       }
     }
   }

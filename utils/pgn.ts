@@ -8,3 +8,24 @@ export function buildDate() {
     const day = date.getDate()
     return `${year}.${month}.${day}`
 }
+
+export const results = [{
+    title: '*',
+    subtitle: 'No Result'
+}, {
+    title: '1-0',
+    subtitle: 'White Wins'
+}, {
+    title: '0-1',
+    subtitle: 'Black Wins'
+}, {
+    title: '1/2-1/2',
+    subtitle: 'Draw'
+}]
+
+export function resultProps(item: Record<string, string>): Record<string, string> {
+    return {
+        title: item.title,
+        subtitle: item.subtitle
+    }
+}
