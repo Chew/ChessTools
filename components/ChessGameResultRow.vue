@@ -30,6 +30,12 @@
         </div>
       </div>
     </td>
+
+    <td v-if="link !== ''">
+      <NuxtLink :to="link" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-external-link" />
+      </NuxtLink>
+    </td>
   </tr>
 </template>
 <script lang="ts">
@@ -57,6 +63,10 @@ export default {
     friendlyResult: {
       type: String,
       required: true
+    },
+    link: {
+      type: String,
+      default: ''
     }
   }
 }

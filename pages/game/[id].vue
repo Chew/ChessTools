@@ -2,7 +2,7 @@
   <div class="row" autofocus tabindex="-1" @keydown.prevent="keyDown">
     <div class="col-md-8">
       <div class="mb-3">
-        <v-btn color="blue" class="mr-1" @click="boardAPI?.toggleOrientation()">
+        <v-btn color="blue" class="mr-1" @click="handleToggleOrientation">
           Toggle Orientation
         </v-btn>
         <v-btn color="green" class="mr-1" @click="switchMove(true)">
@@ -11,12 +11,87 @@
         <v-btn color="green" class="mr-1" @click="switchMove(false)">
           Next Move
         </v-btn>
+        <v-dialog v-if="userId === game?.user_id" v-model="dialog" :persistent="true" width="1024">
+          <template #activator="{ props }">
+            <v-btn color="primary" v-bind="props">
+              Edit Details
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">Edit Game Details</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="8" sm="8" md="8">
+                    <v-text-field v-model="white" label="White Player" />
+                  </v-col>
+                  <v-col cols="4" sm="4" md="4">
+                    <v-text-field v-model="whiteElo" label="Elo" />
+                  </v-col>
+                  <v-col cols="8" sm="8" md="8">
+                    <v-text-field v-model="black" label="Black Player" />
+                  </v-col>
+                  <v-col cols="4" sm="4" md="4">
+                    <v-text-field v-model="blackElo" label="Elo" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-select v-model="result" :items="results()" :item-props="resultProps" label="Result" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-text-field v-model="event" label="Event" />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="12" md="12">
+                    <v-text-field v-model="timeControl" label="Time Control" />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
+                Close
+              </v-btn>
+              <v-btn color="blue-darken-1" variant="text" @click="savePGN">
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
+
+      <div class="row g-3 align-items-center mb-3">
+        <div class="col-auto">
+          <label for="topPlayer" class="col-form-label">{{ whiteOnBottom ? 'Black' : 'White' }} Player</label>
+        </div>
+        <div class="col-auto">
+          <input v-if="whiteOnBottom" id="topPlayer" v-model="black" type="text" class="form-control" readonly>
+          <input v-else id="topPlayer" v-model="white" type="text" class="form-control" readonly>
+        </div>
+      </div>
+
       <the-chessboard
         :board-config="boardConfig"
         @board-created="(api) => handleBoardCreated(api)"
         @move="handleMove"
       />
+
+      <div class="row g-3 align-items-center mt-3">
+        <div class="col-auto">
+          <label for="bottomPlayer" class="col-form-label">{{ whiteOnBottom ? 'White' : 'Black' }} Player</label>
+        </div>
+        <div class="col-auto">
+          <input v-if="whiteOnBottom" id="bottomPlayer" v-model="white" type="text" class="form-control" readonly>
+          <input v-else id="bottomPlayer" v-model="black" type="text" class="form-control" readonly>
+        </div>
+      </div>
     </div>
     <div class="col-md-4">
       <h2>Moves</h2>
@@ -60,17 +135,24 @@
 import { defineComponent } from 'vue'
 import { BoardApi, BoardConfig, TheChessboard } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
-
-// eslint-disable-next-line import/named
-import { Move } from 'chess.js'
+import type { Move } from 'chess.js'
 import { useSupabaseClient } from '#imports'
 import { Database, TableGames } from '~/types/supabase'
+import { resultProps, results } from '~/utils/pgn'
 
 export default defineComponent({
   name: '[id]',
 
   components: {
     TheChessboard
+  },
+
+  setup() {
+    const user = useSupabaseUser().value
+
+    return {
+      userId: user?.id
+    }
   },
 
   data() {
@@ -83,7 +165,18 @@ export default defineComponent({
       history: [[]] as Move[][],
       game: null as TableGames | null,
       index: 0,
-      opening: '' as string | null
+      opening: '' as string | null,
+      whiteOnBottom: true,
+      dialog: false,
+
+      // PGN Info
+      black: 'Player',
+      blackElo: null as string | null,
+      white: 'Player',
+      whiteElo: null as string | null,
+      event: '',
+      timeControl: '',
+      result: '*'
     }
   },
 
@@ -114,15 +207,44 @@ export default defineComponent({
       this.boardAPI?.getOpeningName().then((data) => {
         this.opening = data
       })
+
+      const pgn = this.boardAPI?.getPgnInfo()
+      if (!pgn) {
+        return
+      }
+
+      if (pgn.White) {
+        this.white = pgn.White
+      }
+      if (pgn.Black) {
+        this.black = pgn.Black
+      }
+      if (pgn.WhiteElo) {
+        this.whiteElo = pgn.WhiteElo
+      }
+      if (pgn.BlackElo) {
+        this.blackElo = pgn.BlackElo
+      }
+      if (pgn.Event) {
+        this.event = pgn.Event
+      }
+      if (pgn.TimeControl) {
+        this.timeControl = pgn.TimeControl
+      }
+      if (pgn.Result) {
+        this.result = pgn.Result
+      }
     })
   },
 
   methods: {
+    handleToggleOrientation() {
+      this.boardAPI?.toggleOrientation()
+      this.whiteOnBottom = !this.whiteOnBottom
+    },
+
     async handleMove(move: Move) {
-      if (move.san.includes('#')) {
-        const audio = new Audio('https://www.chess.com/sounds/_MP3_/default/game-end.mp3')
-        await audio.play()
-      } else if (move.san.includes('+')) {
+      if (move.san.includes('#') || move.san.includes('+')) {
         const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-check.mp3')
         await audio.play()
       } else if (move.san.includes('O-O')) {
@@ -216,6 +338,47 @@ export default defineComponent({
           this.switchMove(false)
           break
       }
+    },
+
+    async savePGN() {
+      const data: Record<string, string> = {
+        White: this.white,
+        Black: this.black,
+        Result: this.result
+      }
+
+      if (this.whiteElo) {
+        data.WhiteElo = this.whiteElo.toString()
+      }
+      if (this.blackElo) {
+        data.BlackElo = this.blackElo.toString()
+      }
+      if (this.event) {
+        data.Event = this.event
+      }
+      if (this.timeControl) {
+        data.TimeControl = this.timeControl
+      }
+
+      this.boardAPI?.setPgnInfo(data)
+
+      const { data: supaData, error } = await useSupabaseClient<Database>().from('games').update({
+        pgn: this.boardAPI?.getPgn()
+      }).eq('id', this.game?.id).select()
+
+      if (error) {
+        console.error(error)
+      }
+
+      if (supaData) {
+        this.dialog = false
+      }
+    },
+
+    // Util imports
+    resultProps,
+    results() {
+      return results
     }
   }
 })

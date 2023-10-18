@@ -29,6 +29,16 @@ This site uses Nuxt, a Vue framework. We use Bun as our package manager.
 
 1. Clone the repo
 2. Run `bun install` to install dependencies
-3. Run `bun run dev` to start the development server
-4. Go to `localhost:3000` to view the site
-5. Make changes and submit a pull request!
+3. Prepare the `.env` file as follows
+    ```
+    cp .env.example .env
+    ```
+4. Create a DB for your application in Supabase and put the connection information in the `.env` file.
+    ```
+    SUPABASE_URL="https://example.supabase.co"
+    SUPABASE_KEY="<your_key>"
+    SUPABASE_SERVICE_KEY="<your_service_key>"
+    ```
+5. Run `bun run dev` to start the development server
+6. Go to `localhost:3000` to view the site
+7. Make changes and submit a pull request!
