@@ -1,23 +1,13 @@
 <template>
   <tr>
-    <td v-if="playerColor == 'black'">
+    <td>
       <span class="d-flex align-center">
-        <span :class="['play-icon', 'white', friendlyResult.includes('Loss') ? 'winner' : '']" />
-        {{ opponent }}
+        <span :class="['play-icon', unknownColor ? 'unknown' : 'white', cleanResult[0] === 1 ? 'winner' : '']" />
+        {{ whitePlayer.name }} <span v-if="whitePlayer.elo" class="text-grey">&nbsp;({{ whitePlayer.elo }})</span>
       </span>
       <span class="d-flex align-center">
-        <span :class="['play-icon', 'black', friendlyResult.includes('Win') ? 'winner' : '']" />
-        {{ player }}
-      </span>
-    </td>
-    <td v-else>
-      <span class="d-flex align-center">
-        <span :class="['play-icon', 'white', friendlyResult.includes('Win') ? 'winner' : '']" />
-        {{ player }}
-      </span>
-      <span class="d-flex align-center">
-        <span :class="['play-icon', 'black', friendlyResult.includes('Loss') ? 'winner' : '']" />
-        {{ opponent }}
+        <span :class="['play-icon', unknownColor ? 'unknown' : 'black', cleanResult[1] === 1 ? 'winner' : '']" />
+        {{ blackPlayer.name }} <span v-if="blackPlayer.elo" class="text-grey">&nbsp;({{ blackPlayer.elo }})</span>
       </span>
     </td>
 
@@ -43,23 +33,22 @@
   </tr>
 </template>
 <script lang="ts">
-import { Color } from 'chessground/types'
 import type { PropType } from 'vue'
 
 export default {
   name: 'ChessGameResultRow',
   props: {
-    playerColor: {
-      type: String as PropType<Color>,
+    whitePlayer: {
+      type: Object as PropType<{name: string, elo?: number}>,
       required: true
     },
-    player: {
-      type: String,
+    blackPlayer: {
+      type: Object as PropType<{name: string, elo?: number}>,
       required: true
     },
-    opponent: {
-      type: String,
-      required: true
+    unknownColor: {
+      type: Boolean,
+      default: false
     },
     cleanResult: {
       type: Array as PropType<(number|string)[]>,
@@ -72,8 +61,8 @@ export default {
   }
 }
 </script>
+<!--suppress CssUnusedSymbol -->
 <style scoped>
-/*noinspection CssUnusedSymbol*/
 .winner {
   border: 0.2rem solid #81b64c;
 }
@@ -84,6 +73,10 @@ export default {
 
 .black {
   background-color: #565352;
+}
+
+.unknown {
+  background-color: #ABA9A9;
 }
 
 .play-icon {

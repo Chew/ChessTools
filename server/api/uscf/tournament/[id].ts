@@ -119,6 +119,10 @@ export default defineEventHandler(async (event) => {
                     opponentPairNumber: parseInt(info[0][3 + j].split('  ')[1])
                 }
 
+                if (round.color === '') {
+                    round.color = 'U'
+                }
+
                 rounds.push(round)
             }
 

@@ -27,9 +27,9 @@
           </tr>
         </thead>
         <tbody>
-          <ChessGameResultRow v-for="round in player.rounds" :key="round.roundNumber" :player="player.name"
-                              :opponent="findMember(players, round.opponentPairNumber)?.name || 'Unpaired'"
-                              :player-color="round.color === 'B' ? 'black' : 'white'"
+          <ChessGameResultRow v-for="round in player.rounds" :key="round.roundNumber" :unknown-color="round.color === 'U'"
+                              :white-player="findMember(players, round.color === 'W' ? player.pairNumber : round.opponentPairNumber)"
+                              :black-player="findMember(players, round.color === 'W' ? round.opponentPairNumber : player.pairNumber)"
                               :clean-result="cleanResult(round)" :friendly-result="friendlyResult(round.result)"
           />
         </tbody>
@@ -63,11 +63,22 @@ export default defineComponent({
     findMember(players: USCFTournamentSectionPlayer[], id: number) {
       for (const player of players) {
         if (player.pairNumber === id) {
-          return player
+          let elo = 100
+          if (player.ratings) {
+            for (const key in (player.ratings as object)) {
+              const value = (player.ratings as Record<string, {pre?: number, post: number}>)[key]
+              const preValue = (value.pre || 0)
+              if (preValue > elo) {
+                elo = preValue
+              }
+            }
+          }
+
+          return { name: player.name, elo }
         }
       }
 
-      return null
+      return { name: 'Unpaired' }
     },
 
     cleanResult(round: USCFTournamentSectionPlayer['rounds'][0]) {
