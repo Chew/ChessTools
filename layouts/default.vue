@@ -19,7 +19,7 @@
           <ul v-if="user" class="navbar-nav">
             <nav-dropdown name="You">
               <nav-dropdown-item name="Profile" href="/profile/me" fa-icon="fas fa-user" />
-              <nav-dropdown-item name="Settings" href="/settings" fa-icon="fas fa-cog" />
+              <nav-dropdown-item name="Settings" href="/settings/profile" fa-icon="fas fa-cog" />
               <nav-dropdown-divider />
               <nav-dropdown-item name="Log Out" @click="logout" />
             </nav-dropdown>
