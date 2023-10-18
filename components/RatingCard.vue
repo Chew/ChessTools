@@ -11,7 +11,7 @@
       </div>
     </v-card-text>
     <v-card-text v-else>
-      Current:
+      Published:
       <span v-if="data.current.elo == null">
         No rating
       </span>
