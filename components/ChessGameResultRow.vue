@@ -2,12 +2,16 @@
   <tr>
     <td>
       <span class="d-flex align-center">
-        <span :class="['play-icon', unknownColor ? 'unknown' : 'white', cleanResult[0] === 1 ? 'winner' : '']" />
-        {{ whitePlayer.name }} <span v-if="whitePlayer.elo" class="text-grey">&nbsp;({{ whitePlayer.elo }})</span>
+        <span :class="['play-icon', unknownColor ? 'unknown' : 'white', cleanResult[0] == 1 ? 'winner' : '']" />
+        <span v-if="whitePlayer.id == null">{{ whitePlayer.name }}</span>
+        <NuxtLink v-else :to="`/profile/${whitePlayer.id}`">{{ whitePlayer.name }}</NuxtLink>
+        <span v-if="whitePlayer.elo" class="text-grey">&nbsp;({{ whitePlayer.elo }})</span>
       </span>
       <span class="d-flex align-center">
-        <span :class="['play-icon', unknownColor ? 'unknown' : 'black', cleanResult[1] === 1 ? 'winner' : '']" />
-        {{ blackPlayer.name }} <span v-if="blackPlayer.elo" class="text-grey">&nbsp;({{ blackPlayer.elo }})</span>
+        <span :class="['play-icon', unknownColor ? 'unknown' : 'black', cleanResult[1] == 1 ? 'winner' : '']" />
+        <span v-if="blackPlayer.id == null">{{ blackPlayer.name }}</span>
+        <NuxtLink v-else :to="`/profile/${blackPlayer.id}`">{{ blackPlayer.name }}</NuxtLink>
+        <span v-if="blackPlayer.elo" class="text-grey">&nbsp;({{ blackPlayer.elo }})</span>
       </span>
     </td>
 
@@ -33,7 +37,7 @@
 
     <td v-if="link !== ''">
       <NuxtLink :to="link" class="btn btn-primary btn-sm">
-        <i class="fa-solid fa-external-link" />
+        View <i class="fa-solid fa-external-link" />
       </NuxtLink>
     </td>
   </tr>
@@ -45,11 +49,11 @@ export default {
   name: 'ChessGameResultRow',
   props: {
     whitePlayer: {
-      type: Object as PropType<{name: string, elo?: number}>,
+      type: Object as PropType<{id: string | null, name: string, elo?: string|number}>,
       required: true
     },
     blackPlayer: {
-      type: Object as PropType<{name: string, elo?: number}>,
+      type: Object as PropType<{id: string | null, name: string, elo?: string|number}>,
       required: true
     },
     unknownColor: {
