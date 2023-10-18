@@ -101,7 +101,7 @@
       <h2>Moves</h2>
 
       <div class="mb-3">
-        <a href="#" class="btn btn-primary mr-3" @click="downloadPGN">Download PGN</a>
+        <a href="#" class="btn btn-primary mr-3" @click="downloadPGN($el)">Download PGN</a>
         <a v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" href="#" class="btn btn-primary" @click.prevent="saveToProfile">
           Save to Profile
         </a>
@@ -146,7 +146,6 @@
 import { defineComponent } from 'vue'
 import { BoardApi, Promotion, TheChessboard } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
-
 // eslint-disable-next-line import/named
 import { Move } from 'chess.js'
 import { buildDate } from '~/utils/pgn'
@@ -361,7 +360,7 @@ export default defineComponent({
       this.boardAPI?.setPgnInfo(data)
     },
 
-    downloadPGN() {
+    downloadPGN(el: HTMLElement) {
       this.updatePGN()
       const pgn = this.boardAPI?.getPgn()
       if (!pgn) {
@@ -371,9 +370,9 @@ export default defineComponent({
       element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(pgn))
       element.setAttribute('download', 'game.pgn')
       element.style.display = 'none'
-      document.body.appendChild(element)
+      el.appendChild(element)
       element.click()
-      document.body.removeChild(element)
+      el.removeChild(element)
     },
 
     /**
@@ -389,6 +388,7 @@ export default defineComponent({
 
       if (!api.getIsGameOver()) {
         this.status = `In Progress, ${toPlay} to play`
+        this.result = '*'
         return
       }
 
@@ -403,13 +403,16 @@ export default defineComponent({
         this.status = 'Draw by Insufficient Material'
       } else if (api.getIsDraw()) {
         this.status = 'Draw'
-        this.result = '1/2-1/2'
       } else {
         this.status = 'Game Over'
       }
+
+      if (api.getIsDraw()) {
+        this.result = '1/2-1/2'
+      }
     },
 
-    resultProps(item: {title: any, subtitle: any}) {
+    resultProps(item: Record<string, string>): Record<string, string> {
       return {
         title: item.title,
         subtitle: item.subtitle
