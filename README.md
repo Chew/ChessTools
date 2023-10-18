@@ -37,6 +37,7 @@ This site uses Nuxt, a Vue framework. We use Bun as our package manager.
     ```
     SUPABASE_URL="https://example.supabase.co"
     SUPABASE_KEY="<your_key>"
+    SUPABASE_SERVICE_KEY="<your_service_key>"
     ```
 5. Run `bun run dev` to start the development server
 6. Go to `localhost:3000` to view the site
