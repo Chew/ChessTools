@@ -67,6 +67,13 @@
         </v-dialog>
       </div>
 
+      <p v-if="game?.tournament_info">
+        This game was from a tournament!
+        <NuxtLink :to="`/uscf/tournament/${game?.tournament_info.eventId}`">
+          Click to view it.
+        </NuxtLink>
+      </p>
+
       <div class="row g-3 align-items-center mb-3">
         <div class="col-auto">
           <label for="topPlayer" class="col-form-label">{{ whiteOnBottom ? 'Black' : 'White' }} Player</label>

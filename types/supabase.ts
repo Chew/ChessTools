@@ -6,17 +6,33 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+type TournamentJson = {
+  type: string,
+  eventId: string,
+  section: number,
+  player: number,
+  opponent: number
+}
+
 export interface Database {
   public: {
     Tables: {
       games: {
-        Row: TableGames
+        Row: {
+          black_player: string | null
+          created_at: string
+          id: string
+          pgn: string | null
+          tournament_info: TournamentJson | null
+          user_id: string
+          white_player: string | null
+        }
         Insert: {
           black_player?: string | null
           created_at?: string
           id?: string
           pgn?: string | null
-          result?: number | null
+          tournament_info?: TournamentJson | null
           user_id: string
           white_player?: string | null
         }
@@ -25,7 +41,7 @@ export interface Database {
           created_at?: string
           id?: string
           pgn?: string | null
-          result?: number | null
+          tournament_info?: TournamentJson | null
           user_id?: string
           white_player?: string | null
         }
@@ -51,7 +67,14 @@ export interface Database {
         ]
       }
       integrations: {
-        Row: TableIntegrations
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          platform: string
+          user_id: string
+          verified: boolean
+        }
         Insert: {
           created_at?: string
           data: Json
@@ -78,7 +101,15 @@ export interface Database {
         ]
       }
       users: {
-        Row: TableUser
+        Row: {
+          bio: string | null
+          created_at: string
+          first_name: string | null
+          flags: number | null
+          id: string
+          last_name: string | null
+          username: string | null
+        }
         Insert: {
           bio?: string | null
           created_at?: string
@@ -115,31 +146,6 @@ export interface Database {
   }
 }
 
-export interface TableUser {
-  bio: string | null
-  created_at: string
-  first_name: string | null
-  flags: number | null
-  id: string
-  last_name: string | null
-  username: string | null
-}
-
-export interface TableIntegrations {
-  created_at: string
-  data: { id: number, username?: string }
-  id: string
-  platform: string
-  user_id: string | null
-  verified: boolean
-}
-
-export interface TableGames {
-  black_player: string | null
-  created_at: string
-  id: string
-  pgn: string
-  result: number | null
-  user_id: string
-  white_player: string | null
-}
+export type TableUser = Database["public"]["Tables"]["users"]["Row"]
+export type TableIntegrations = Database["public"]["Tables"]["integrations"]["Row"]
+export type TableGames = Database["public"]["Tables"]["games"]["Row"]

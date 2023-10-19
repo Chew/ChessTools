@@ -24,6 +24,7 @@
           <tr>
             <th>Players</th>
             <th>Result</th>
+            <th>Link</th>
           </tr>
         </thead>
         <tbody>
@@ -31,6 +32,8 @@
                               :white-player="findMember(players, round.color === 'W' ? player.pairNumber : round.opponentPairNumber)"
                               :black-player="findMember(players, round.color === 'W' ? round.opponentPairNumber : player.pairNumber)"
                               :clean-result="cleanResult(round)" :friendly-result="friendlyResult(round.result)"
+                              :link="gameLink(player.pairNumber, round.opponentPairNumber)"
+                              :link-note="linkNote(player.pairNumber, round.opponentPairNumber)"
           />
         </tbody>
       </v-table>
@@ -43,6 +46,7 @@ import type { PropType } from 'vue'
 import { capitalize, defineComponent } from 'vue'
 import { USCFTournamentSectionPlayer } from '~/types/uscf'
 import ChessGameResultRow from '~/components/ChessGameResultRow.vue'
+import { TableGames } from '~/types/supabase'
 
 export default defineComponent({
   name: 'UscfTournamentPlayerInfo',
@@ -55,6 +59,10 @@ export default defineComponent({
     },
     players: {
       type: Array as PropType<USCFTournamentSectionPlayer[]>,
+      required: true
+    },
+    games: {
+      type: Array as PropType<TableGames[]>,
       required: true
     }
   },
@@ -74,11 +82,11 @@ export default defineComponent({
             }
           }
 
-          return { name: player.name, elo }
+          return { id: null, name: player.name, elo }
         }
       }
 
-      return { name: 'Unpaired' }
+      return { id: null, name: 'Unpaired' }
     },
 
     cleanResult(round: USCFTournamentSectionPlayer['rounds'][0]) {
@@ -119,6 +127,34 @@ export default defineComponent({
         default:
           return 'Unknown'
       }
+    },
+
+    gameLink(playerId: number, opponentId: number): string | null {
+      for (const game of this.games) {
+        if (game.tournament_info?.player === playerId && game.tournament_info?.opponent === opponentId) {
+          return `/game/${game.id}`
+        } else if (game.tournament_info?.player === opponentId && game.tournament_info?.opponent === playerId) {
+          return `/game/${game.id}`
+        }
+      }
+
+      return null
+    },
+
+    linkNote(playerId: number, opponentId: number) {
+      for (const game of this.games) {
+        if (game.tournament_info?.player === playerId && game.tournament_info?.opponent === opponentId) {
+          return undefined
+        }
+      }
+
+      for (const game of this.games) {
+        if (game.tournament_info?.player === opponentId && game.tournament_info?.opponent === playerId) {
+          return "This will view the opponent's upload of the game, as this player has not uploaded their own version."
+        }
+      }
+
+      return undefined
     },
 
     capitalize

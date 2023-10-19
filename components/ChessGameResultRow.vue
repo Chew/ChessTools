@@ -35,10 +35,22 @@
       </div>
     </td>
 
-    <td v-if="link !== ''">
+    <td v-if="link !== '' && link !== null && link !== undefined && linkNote == ''">
       <NuxtLink :to="link" class="btn btn-primary btn-sm">
         View <i class="fa-solid fa-external-link" />
       </NuxtLink>
+    </td>
+    <td v-else-if="link !== '' && link !== null && link !== undefined">
+      <v-tooltip :text="linkNote" location="top">
+        <template #activator="{ props }">
+          <NuxtLink v-bind="props" :to="link" class="btn btn-secondary btn-sm">
+            View <i class="fa-solid fa-external-link" />
+          </NuxtLink>
+        </template>
+      </v-tooltip>
+    </td>
+    <td v-else-if="link == null">
+      <span class="text-grey">No Link</span>
     </td>
   </tr>
 </template>
@@ -69,6 +81,10 @@ export default {
       required: true
     },
     link: {
+      type: null as unknown as PropType<string | null | undefined>,
+      default: ''
+    },
+    linkNote: {
       type: String,
       default: ''
     }
