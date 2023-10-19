@@ -44,7 +44,7 @@
           <template #expanded-row="{ columns, item }">
             <tr>
               <td :colspan="columns.length">
-                <uscf-tournament-player-info :player="item" :players="section.players" />
+                <uscf-tournament-player-info :player="item" :players="section.players" :games="findGames(section.id)" />
               </td>
             </tr>
           </template>
@@ -60,6 +60,8 @@ import { useSeoMeta } from 'unhead'
 import titleize from 'titleize'
 import { USCFTournament } from '~/types/uscf'
 import { DataTableHeader } from '~/types/vuetify'
+import { useSupabaseClient } from '#imports'
+import { Database, TableGames } from '~/types/supabase'
 
 export default defineComponent({
   name: '[id]',
@@ -89,12 +91,25 @@ export default defineComponent({
   data() {
     return {
       expanded: [[]],
+      associatedGames: [] as TableGames[],
       search: ''
     }
   },
 
   beforeMount() {
     this.expanded = this.gameData.sections.map(() => [])
+
+    const route = useRoute()
+    const id = route.params.id
+
+    useSupabaseClient<Database>().from('games').select('*').eq('tournament_info->>eventId', id).then((data) => {
+      if (data.error) {
+        console.error(data.error)
+        return
+      }
+
+      this.associatedGames = data.data as TableGames[]
+    })
   },
 
   methods: {
@@ -128,6 +143,12 @@ export default defineComponent({
       }
 
       return startingHeaders
+    },
+
+    findGames(section: number) {
+      return this.associatedGames.filter((game) => {
+        return game.tournament_info?.section === section
+      })
     },
 
     titleize
