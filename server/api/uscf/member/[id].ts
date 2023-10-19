@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
     // ratings that will be published on the first of the following month
     // this just means the user has been to a rated tournament this month
     const hasFutureRatings = startOfRatings.join(' ').includes('Published Rating')
-    const futureDate = hasFutureRatings ? startOfRatings[2].split(' ')[3] : null
+    const futureDate = hasFutureRatings ? startOfRatings[1].split(' ')[3] : null
 
     // handle ratings
     const ratings: Record<string, object> = {
