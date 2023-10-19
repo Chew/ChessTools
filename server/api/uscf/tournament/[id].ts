@@ -1,10 +1,6 @@
 import { parse } from 'node-html-parser'
-import { gatherElements, findElement, nameAndIdFormatter } from '~/utils/elements'
-import {
-    USCFTournamentRatingType,
-    USCFTournamentSection,
-    USCFTournamentSectionPlayer
-} from '~/types/uscf'
+import { findElement, gatherElements, nameAndIdFormatter } from '~/utils/elements'
+import { USCFTournamentRatingType, USCFTournamentSection, USCFTournamentSectionPlayer } from '~/types/uscf'
 
 export default defineEventHandler(async (event) => {
     const id = parseInt(getRouterParam(event, 'id') || '0')
@@ -98,16 +94,26 @@ export default defineEventHandler(async (event) => {
             })
             continue
         }
-        const base = 13
-        let rowsOfData = 0
-        while (!playerInfo[base + (rowsOfData)].includes('---------')) {
-            rowsOfData++
+
+        let index = 13
+        const playerData: string[][] = []
+        let cur: string[] = []
+        while (!playerInfo[index].includes('Note:')) {
+            const line = playerInfo[index]
+            if (line.includes('---------')) {
+                playerData.push(cur)
+                cur = []
+            } else {
+                cur.push(line.trim())
+            }
+            index++
         }
-        for (let i = 0; i < statsInfo.players; i++) {
-            const start = base + (i * (rowsOfData + 1))
+
+        for (let i = 0; i < playerData.length; i++) {
+            const data = playerData[i]
             const info = []
-            for (let j = 0; j < rowsOfData; j++) {
-                info.push(playerInfo[start + j].split('|').map(ele => ele.trim()))
+            for (let j = 0; j < data.length; j++) {
+                info.push(data[j].split('|').map(ele => ele.trim()))
             }
 
             const rounds = []
@@ -131,6 +137,11 @@ export default defineEventHandler(async (event) => {
             const ratings: Record<string, object> = {}
             for (let j = 0; j < totalRatingChanges; j++) {
                 let rating = info[j + 1][1]
+                if (rating === undefined) {
+                    j += 10
+                    continue
+                }
+
                 if (j === 0) {
                     rating = rating.split('/')[1]
                 }
