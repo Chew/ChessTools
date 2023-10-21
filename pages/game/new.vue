@@ -1,6 +1,6 @@
 <template>
-  <div class="row">
-    <div class="col-md-8">
+  <v-row>
+    <v-col md="8">
       <div class="mb-3">
         <v-btn color="blue" class="mr-1" @click="handleOrientation">
           Switch Sides
@@ -96,8 +96,8 @@
           <input v-else v-model="black" type="text" class="form-control" aria-describedby="passwordHelpInline">
         </div>
       </div>
-    </div>
-    <div class="col-md-4">
+    </v-col>
+    <v-col md="4">
       <h2>Moves</h2>
 
       <div class="mb-3">
@@ -138,8 +138,8 @@
           </tr>
         </tbody>
       </v-table>
-    </div>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">

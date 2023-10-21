@@ -1,71 +1,90 @@
 <template>
-  <div>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a href="/" class="navbar-brand">Chess Tools</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
-                aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon" />
-        </button>
-        <div id="navbarText" class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <navbar-item name="Home" href="/" :current-path="useRoute().path" fa-icon="fas fa-home" />
-            <nav-dropdown name="Games">
-              <nav-dropdown-item name="New Game" href="/game/new" fa-icon="fas fa-plus" />
-              <nav-dropdown-item v-if="user" name="My Games" href="/games" fa-icon="fas fa-chess" />
-            </nav-dropdown>
-          </ul>
+  <v-app id="inspire">
+    <v-app-bar flat>
+      <v-container class="mx-auto d-flex align-center justify-center">
+        <v-avatar class="me-4 " color="grey-darken-1" size="32" />
 
-          <ul v-if="user" class="navbar-nav">
-            <nav-dropdown name="You">
-              <nav-dropdown-item name="Profile" href="/profile/me" fa-icon="fas fa-user" />
-              <nav-dropdown-item name="Settings" href="/settings/profile" fa-icon="fas fa-cog" />
-              <nav-dropdown-divider />
-              <nav-dropdown-item name="Log Out" @click="logout" />
-            </nav-dropdown>
-          </ul>
-          <ul v-else class="navbar-nav">
-            <navbar-item name="Login" href="/login" current-path="/" />
-          </ul>
-        </div>
-      </div>
-    </nav>
-    <div class="container move-container">
-      <div class="p-4 bg-body-tertiary rounded-3">
-        <v-app>
-          <div v-if="!useRoute().path.includes('settings')" class="row">
-            <div class="col-12">
+        <v-btn v-for="link in links" :key="link" :text="link" variant="text" />
+
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn color="primary" v-bind="props">
+              <i class="fas fa-chess" />&nbsp;Games
+            </v-btn>
+          </template>
+          <v-list>
+            <NuxtLink to="/game/new">
+              <v-list-item>
+                <v-list-item-title>New Game</v-list-item-title>
+              </v-list-item>
+            </NuxtLink>
+          </v-list>
+        </v-menu>
+
+        <v-spacer />
+
+        <v-responsive max-width="160" align="right">
+          <v-menu>
+            <template #activator="{ props }">
+              <v-btn v-bind="props">
+                You
+              </v-btn>
+            </template>
+            <v-list>
+              <NuxtLink to="/game/new">
+                <v-list-item>
+                  <v-list-item-title>New Game</v-list-item-title>
+                </v-list-item>
+              </NuxtLink>
+            </v-list>
+          </v-menu>
+        </v-responsive>
+      </v-container>
+    </v-app-bar>
+
+    <v-main class="bg-grey-lighten-3">
+      <v-container>
+        <v-row>
+          <v-col v-if="useRoute().path.includes('settings')" cols="2">
+            <v-sheet rounded="lg">
+              <v-list rounded="lg">
+                <v-list-item v-for="n in 5" :key="n" link :title="`List Item ${n}`" />
+
+                <v-divider class="my-2" />
+
+                <v-list-item color="grey-lighten-4" link title="Refresh" />
+              </v-list>
+            </v-sheet>
+          </v-col>
+
+          <v-col>
+            <v-sheet min-height="70vh" rounded="lg" class="p-2">
               <slot />
-            </div>
-          </div>
-          <div v-else>
-            <v-layout>
-              <v-navigation-drawer :width="200" density="compact" :location="isMobile ? 'top' : 'left'" :permanent="true">
-                <v-list-item title="Settings Navigation" />
-                <v-divider />
-
-                <NuxtLink href="/settings/profile" style="text-decoration: none">
-                  <v-list-item prepend-icon="mdi-account" :link="true" title="Profile" color="blue" />
-                </NuxtLink>
-                <NuxtLink href="/settings/integrations" style="text-decoration: none">
-                  <v-list-item prepend-icon="mdi-link-variant" :link="true" title="Integrations" color="primary" />
-                </NuxtLink>
-              </v-navigation-drawer>
-
-              <v-main :class="isMobile ? '' : 'ml-5'">
-                <slot />
-              </v-main>
-            </v-layout>
-          </div>
-        </v-app>
-      </div>
-    </div>
-  </div>
+            </v-sheet>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
 
 <script setup lang="ts">
+
 import NavbarItem from '~/components/NavbarItem.vue'
 import { useSupabaseClient } from '#imports'
+
+const links = [
+  'Dashboard',
+  'Messages',
+  'Profile',
+  'Updates'
+]
+
+const theme = useTheme()
+
+function toggleTheme() {
+  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+}
 
 const user = useSupabaseUser()
 
