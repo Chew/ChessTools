@@ -1,9 +1,9 @@
 <template>
-  <li :class="['nav-item', isCurrentPath() ? 'disabled active' : '']">
-    <NuxtLink :class="['nav-link', isCurrentPath() ? 'active disabled': '']" :href="href" :target="external ? '_blank' : ''">
-      <i v-if="faIcon" :class="['fa', faIcon]" /> {{ name }}
-    </NuxtLink>
-  </li>
+  <NuxtLink :href="href" :target="external ? '_blank' : ''">
+    <v-btn :link="true" :variant="isCurrentPath() ? 'tonal' : 'text'" color="grey-darken-3">
+      <i v-if="faIcon" :class="faIcon" /> {{ name }}
+    </v-btn>
+  </NuxtLink>
 </template>
 
 <script lang="ts">

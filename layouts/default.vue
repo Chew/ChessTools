@@ -4,40 +4,22 @@
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-avatar class="me-4 " color="grey-darken-1" size="32" />
 
-        <v-btn v-for="link in links" :key="link" :text="link" variant="text" />
+        <navbar-item name="Home" href="/" :current-path="useRoute().path" />
 
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn color="primary" v-bind="props">
-              <i class="fas fa-chess" />&nbsp;Games
-            </v-btn>
-          </template>
-          <v-list>
-            <NuxtLink to="/game/new">
-              <v-list-item>
-                <v-list-item-title>New Game</v-list-item-title>
-              </v-list-item>
-            </NuxtLink>
-          </v-list>
-        </v-menu>
+        <nav-dropdown name="Games" fa-icon="fas fa-chess">
+          <nav-dropdown-item name="New Game" fa-icon="fas fa-plus" href="/game/new" />
+        </nav-dropdown>
 
         <v-spacer />
 
         <v-responsive max-width="160" align="right">
-          <v-menu>
-            <template #activator="{ props }">
-              <v-btn v-bind="props">
-                You
-              </v-btn>
-            </template>
-            <v-list>
-              <NuxtLink to="/game/new">
-                <v-list-item>
-                  <v-list-item-title>New Game</v-list-item-title>
-                </v-list-item>
-              </NuxtLink>
-            </v-list>
-          </v-menu>
+          <nav-dropdown v-if="user" name="You">
+            <nav-dropdown-item name="Profile" fa-icon="fas fa-user" href="/profile/me" />
+            <v-divider />
+            <nav-dropdown-item name="Settings" fa-icon="fas fa-cog" href="/settings/profile" />
+            <nav-dropdown-item name="Logout" fa-icon="fas fa-sign-out-alt" @click="logout" />
+          </nav-dropdown>
+          <navbar-item v-else name="Login" href="/login" />
         </v-responsive>
       </v-container>
     </v-app-bar>
@@ -86,7 +68,7 @@ function toggleTheme() {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
 }
 
-const user = useSupabaseUser()
+const user = useSupabaseUser().value
 
 let isMobile = ref(false)
 if (process.browser) {
@@ -107,6 +89,10 @@ async function logout() {
 
 <!--suppress CssUnusedSymbol -->
 <style>
+.p-2 {
+  padding: 0.5rem!important;
+}
+
 body {
   background-color: #b98761;
 }

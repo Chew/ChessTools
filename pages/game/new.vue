@@ -101,21 +101,22 @@
       <h2>Moves</h2>
 
       <div class="mb-3">
-        <a href="#" class="btn btn-primary mr-3" @click="downloadPGN($el)">Download PGN</a>
-        <a v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" href="#" class="btn btn-primary" @click.prevent="saveToProfile">
+        <v-btn color="blue" class="mr-3" @click="downloadPGN($el)">
+          Download PGN
+        </v-btn>
+        <v-btn v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" color="blue" @click.prevent="saveToProfile">
           Save to Profile
-        </a>
-        <button v-else-if="saveToProfileStatus === 'sending'" class="btn btn-secondary" disabled>
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
-          Saving...
-        </button>
-        <button v-else-if="saveToProfileStatus === 'success'" class="btn btn-success" disabled>
+        </v-btn>
+        <v-btn v-else-if="saveToProfileStatus === 'sending'" color="grey" disabled>
+          <v-progress-circular indeterminate :size="15" :width="2" />&nbsp;Saving...
+        </v-btn>
+        <v-btn v-else-if="saveToProfileStatus === 'success'" color="green" disabled>
           <i class="fas fa-check" /> Saved!
-        </button>
-        <button v-else class="btn btn-danger" disabled>
+        </v-btn>
+        <v-btn v-else color="red" disabled>
           <!-- failure -->
           <i class="fas fa-times" /> {{ saveToProfileStatus }}
-        </button>
+        </v-btn>
       </div>
 
       <v-table theme="dark" density="compact" height="650px">

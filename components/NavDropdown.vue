@@ -1,14 +1,14 @@
 <template>
-  <li class="nav-item dropdown">
-    <a :id="buildId()" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-       aria-expanded="false">
-      <i v-if="faIcon" :class="faIcon" />
-      {{ name }}
-    </a>
-    <ul class="dropdown-menu" :aria-labelledby="buildId()">
+  <v-menu color="grey-darken-3">
+    <template #activator="{ props }">
+      <v-btn color="grey-darken-3" v-bind="props">
+        <i v-if="faIcon" :class="faIcon" />&nbsp;{{ name }}
+      </v-btn>
+    </template>
+    <v-list>
       <slot />
-    </ul>
-  </li>
+    </v-list>
+  </v-menu>
 </template>
 
 <script lang="ts">
