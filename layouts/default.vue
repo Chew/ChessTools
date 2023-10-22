@@ -30,11 +30,8 @@
           <v-col v-if="useRoute().path.includes('settings')" cols="2">
             <v-sheet rounded="lg">
               <v-list rounded="lg">
-                <v-list-item v-for="n in 5" :key="n" link :title="`List Item ${n}`" />
-
-                <v-divider class="my-2" />
-
-                <v-list-item color="grey-lighten-4" link title="Refresh" />
+                <nav-dropdown-item name="Profile" fa-icon="fas fa-user" href="/settings/profile" />
+                <nav-dropdown-item name="Integrations" fa-icon="fas fa-link" href="/settings/integrations" />
               </v-list>
             </v-sheet>
           </v-col>

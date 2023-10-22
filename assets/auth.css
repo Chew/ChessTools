@@ -1,3 +1,24 @@
 #__nuxt {
   height: 100%!important;
 }
+
+.d-flex {
+  display: flex!important;
+}
+
+.align-items-center {
+  align-items: center!important;
+}
+
+.py-4 {
+  padding-top: 1.5rem!important;
+  padding-bottom: 1.5rem!important;
+}
+
+.w-100 {
+  width: 100%!important;
+}
+
+.m-auto {
+  margin: auto!important;
+}

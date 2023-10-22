@@ -37,32 +37,32 @@
     </p>
 
     <h2>Ratings</h2>
-    <div class="row">
-      <div class="col-md-4 col-sm-12">
+    <v-row>
+      <v-col md="4" sm="12">
         <rating-card name="Regular" :data="memberInfo?.ratings?.regular" icon="timer-outline" />
-      </div>
-      <div class="col-md-4 col-sm-12">
+      </v-col>
+      <v-col md="4" sm="12">
         <rating-card name="Quick" :data="memberInfo?.ratings?.quick" icon="flash" />
-      </div>
-      <div class="col-md-4 col-sm-12">
+      </v-col>
+      <v-col md="4" sm="12">
         <rating-card name="Blitz" :data="memberInfo?.ratings?.blitz" icon="fast-forward" />
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-4 col-sm-12">
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col md="4" sm="12">
         <rating-card name="Online Regular" :data="memberInfo?.ratings?.online_regular" icon="timer-outline" card-color="success" />
-      </div>
-      <div class="col-md-4 col-sm-12">
+      </v-col>
+      <v-col md="4" sm="12">
         <rating-card name="Online Quick" :data="memberInfo?.ratings?.online_quick" icon="flash" card-color="success" />
-      </div>
-      <div class="col-md-4 col-sm-12">
+      </v-col>
+      <v-col md="4" sm="12">
         <rating-card name="Online Blitz" :data="memberInfo?.ratings?.online_blitz" icon="fast-forward" card-color="success" />
-      </div>
-    </div>
+      </v-col>
+    </v-row>
 
     <h2>Rankings</h2>
-    <div v-if="memberInfo?.rankings" class="row">
-      <div v-if="memberInfo.rankings.overall" class="col-md-4">
+    <v-row v-if="memberInfo?.rankings">
+      <v-col v-if="memberInfo.rankings.overall" md="4">
         <h3>Overall</h3>
         <p>
           {{ memberInfo.rankings.overall.rank }}
@@ -71,8 +71,8 @@
           {{ memberInfo.rankings.overall.percentile }} percentile
         </p>
         <rank-pie-chart :member-info="memberInfo.rankings.overall" />
-      </div>
-      <div v-if="memberInfo.rankings.gender" class="col-md-4">
+      </v-col>
+      <v-col v-if="memberInfo.rankings.gender" md="4">
         <h3>Gender ({{ memberInfo.gender }})</h3>
         <p>
           {{ memberInfo.rankings.gender.rank }}
@@ -81,8 +81,8 @@
           {{ memberInfo.rankings.gender.percentile }} percentile
         </p>
         <rank-pie-chart :member-info="memberInfo.rankings.gender" />
-      </div>
-      <div v-if="memberInfo.rankings.state" class="col-md-4">
+      </v-col>
+      <v-col v-if="memberInfo.rankings.state" md="4">
         <h3>State ({{ memberInfo.state }})</h3>
         <p>
           {{ memberInfo.rankings.state.rank }}
@@ -91,8 +91,8 @@
           {{ memberInfo.rankings.state.percentile }} percentile
         </p>
         <rank-pie-chart :member-info="memberInfo.rankings.state" />
-      </div>
-    </div>
+      </v-col>
+    </v-row>
     <p v-else>
       No rankings available. Rankings are only available to players who have played a rated tournament in the last 12 months.
     </p>
@@ -104,8 +104,8 @@
     <div v-else>
       <p>Total events (since late 1991): {{ tournaments.totalEvents }}</p>
       <div class="table-responsive">
-        <table class="table table-striped table-bordered table-hover">
-          <thead class="table-dark">
+        <v-table theme="dark">
+          <thead>
             <tr>
               <th>
                 Date<br>ID
@@ -154,7 +154,7 @@
               </td>
             </tr>
           </tbody>
-        </table>
+        </v-table>
       </div>
     </div>
   </main>

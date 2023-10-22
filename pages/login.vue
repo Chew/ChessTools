@@ -1,6 +1,6 @@
 <template>
   <main class="form-signin w-100 m-auto">
-    <form @submit.prevent="login">
+    <v-form @submit.prevent="login">
       <h1 class="h3 mb-3 fw-normal">
         Please sign in
       </h1>
@@ -17,12 +17,10 @@
       </p>
 
       <div class="form-floating">
-        <input id="floatingInput" v-model="email" type="email" class="form-control">
-        <label for="floatingInput">Email Address</label>
+        <v-text-field v-model="email" label="Email Address" variant="outlined" type="email" />
       </div>
       <div class="form-floating">
-        <input id="floatingPassword" v-model="password" type="password" class="form-control">
-        <label for="floatingPassword">Password</label>
+        <v-text-field v-model="password" label="Password" variant="outlined" type="password" />
       </div>
 
       <div class="form-check text-start my-3">
@@ -31,13 +29,13 @@
           Remember me
         </label>
       </div>
-      <button class="btn btn-primary w-100 py-2" type="submit">
+      <v-btn color="blue" type="submit" :block="true">
         Sign in
-      </button>
+      </v-btn>
       <p class="mt-5 mb-3 text-body-secondary">
         &copy; 2023–{{ new Date().getFullYear() }} Chess.Tools
       </p>
-    </form>
+    </v-form>
   </main>
 </template>
 

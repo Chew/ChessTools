@@ -14,6 +14,11 @@ type TournamentJson = {
   opponent: number
 }
 
+type IntegrationJson = {
+  id: string
+  username?: string
+}
+
 export interface Database {
   public: {
     Tables: {
@@ -69,7 +74,7 @@ export interface Database {
       integrations: {
         Row: {
           created_at: string
-          data: Json
+          data: IntegrationJson
           id: string
           platform: string
           user_id: string
@@ -77,7 +82,7 @@ export interface Database {
         }
         Insert: {
           created_at?: string
-          data: Json
+          data: IntegrationJson
           id?: string
           platform: string
           user_id: string
@@ -85,7 +90,7 @@ export interface Database {
         }
         Update: {
           created_at?: string
-          data?: Json
+          data?: IntegrationJson
           id?: string
           platform?: string
           user_id?: string
