@@ -1,6 +1,6 @@
 <template>
-  <main class="form-signin w-100 m-auto">
-    <form @submit.prevent="register">
+  <main class="form-signin w-100 m-auto bg-grey-lighten-3">
+    <v-form @submit.prevent="register">
       <h1 class="h3 mb-3 fw-normal">
         Register for Chess.Tools
       </h1>
@@ -15,40 +15,30 @@
       </p>
 
       <div class="form-floating">
-        <input id="floatingUsername" v-model="username" type="text" name="username" class="form-control">
-        <label for="floatingUsername">Username</label>
+        <v-text-field v-model="username" type="text" name="username" variant="solo-filled" label="Username" />
       </div>
       <div class="form-floating">
-        <input id="floatingInput" v-model="email" type="email" name="email" class="form-control">
-        <label for="floatingInput">Email address</label>
+        <v-text-field v-model="email" label="Email Address" variant="solo-filled" type="email" />
       </div>
       <div class="form-floating">
-        <input id="floatingPassword" v-model="password" type="password" name="password" class="form-control">
-        <label for="floatingPassword">Password</label>
-      </div>
-
-      <div class="form-check text-start my-3">
-        <input id="flexCheckDefault" class="form-check-input" type="checkbox" value="remember-me">
-        <label class="form-check-label" for="flexCheckDefault">
-          Remember Me
-        </label>
+        <v-text-field v-model="password" label="Password" variant="solo-filled" type="password" />
       </div>
 
       <NuxtTurnstile v-model="token" />
 
-      <button v-if="success" class="btn btn-secondary w-100 py-2" type="button" disabled>
+      <v-btn v-if="success" color="grey" type="button" :disabled="true" :block="true">
         Registered!
-      </button>
-      <button v-else-if="signingUp" class="btn btn-secondary w-100 py-2" type="button" disabled>
-        Signing Up...
-      </button>
-      <button v-else class="btn btn-primary w-100 py-2" type="submit">
+      </v-btn>
+      <v-btn v-else-if="signingUp" color="grey" type="button" :disabled="true" :block="true">
+        <v-progress-circular indeterminate :size="15" :width="2" />&nbsp;Signing Up...
+      </v-btn>
+      <v-btn v-else color="blue" type="submit" :block="true">
         Sign Up
-      </button>
+      </v-btn>
       <p class="mt-5 mb-3 text-body-secondary">
         &copy; 2023–{{ new Date().getFullYear() }} Chess.Tools
       </p>
-    </form>
+    </v-form>
   </main>
 </template>
 

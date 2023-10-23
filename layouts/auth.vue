@@ -1,5 +1,5 @@
 <template>
-  <div id="mainBody" class="d-flex align-items-center py-4 text-bg-grey-lighten-3">
+  <div id="mainBody" class="d-flex align-items-center py-4 bg-grey-lighten-3">
     <main class="form-signin w-100 m-auto">
       <slot />
     </main>

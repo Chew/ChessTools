@@ -1,34 +1,27 @@
 <template>
-  <main class="form-signin w-100 m-auto">
+  <main class="form-signin w-100 m-auto bg-grey-lighten-3">
     <v-form @submit.prevent="login">
-      <h1 class="h3 mb-3 fw-normal">
-        Please sign in
+      <h1 class="h3 mb-3 fw-normal align-items-center d-flex">
+        Sign In
       </h1>
-      <p>
+      <p class="mb-3">
         Don't have an account?
         <NuxtLink to="/register">
           Create One!
         </NuxtLink>
       </p>
 
-      <p v-if="invalidPassword" class="text-danger">
-        <img src="https://cdn.discordapp.com/emojis/823648979194740746.webp?size=240&quality=lossless" alt="blunder icon" style="width: 20px;">
+      <v-alert v-if="invalidPassword" type="error" class="mb-3">
         Invalid email or password.
-      </p>
+      </v-alert>
 
       <div class="form-floating">
-        <v-text-field v-model="email" label="Email Address" variant="outlined" type="email" />
+        <v-text-field v-model="email" label="Email Address" variant="solo-filled" type="email" />
       </div>
       <div class="form-floating">
-        <v-text-field v-model="password" label="Password" variant="outlined" type="password" />
+        <v-text-field v-model="password" label="Password" variant="solo-filled" type="password" />
       </div>
 
-      <div class="form-check text-start my-3">
-        <input id="flexCheckDefault" class="form-check-input" type="checkbox" value="remember-me">
-        <label class="form-check-label" for="flexCheckDefault">
-          Remember me
-        </label>
-      </div>
       <v-btn color="blue" type="submit" :block="true">
         Sign in
       </v-btn>
