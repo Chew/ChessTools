@@ -1,7 +1,7 @@
 <template>
-  <v-menu color="grey-darken-3">
+  <v-menu color="grey-lighten-3">
     <template #activator="{ props }">
-      <v-btn color="grey-darken-3" v-bind="props">
+      <v-btn color="grey-lighten-3" v-bind="props">
         <i v-if="faIcon" :class="faIcon" />&nbsp;{{ name }}
       </v-btn>
     </template>

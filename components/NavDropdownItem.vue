@@ -1,6 +1,6 @@
 <template>
-  <NuxtLink :href="href" :target="external ? '_blank' : ''" class="text-grey-darken-3"
-            active-class="text-grey-darken-3" exact-active-class="text-grey-darken-3" style="text-decoration: none">
+  <NuxtLink :href="href" :target="external ? '_blank' : ''" :class="`text-grey-${theme}en-3`"
+            :active-class="`text-grey-${theme}en-3`" :exact-active-class="`text-grey-${theme}en-3`" style="text-decoration: none">
     <v-list-item variant="plain">
       <v-list-item-title>
         <i v-if="faIcon" :class="faIcon" /> {{ name }}
@@ -31,6 +31,10 @@ export default defineComponent({
     external: {
       type: Boolean,
       default: false
+    },
+    theme: {
+      type: String,
+      default: 'light'
     }
   }
 })

@@ -70,15 +70,12 @@
         </v-dialog>
       </div>
       <p>Game State: {{ status }}</p>
-      <div class="row g-3 align-items-center mb-3">
-        <div class="col-auto">
-          <label for="inputPassword6" class="col-form-label">{{ whiteOnBottom ? 'Black' : 'White' }} Player</label>
-        </div>
-        <div class="col-auto">
-          <input v-if="whiteOnBottom" v-model="black" type="text" class="form-control" aria-describedby="passwordHelpInline">
-          <input v-else v-model="white" type="text" class="form-control" aria-describedby="passwordHelpInline">
-        </div>
-      </div>
+      <v-row class="row g-3 align-items-center">
+        <v-col>
+          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" :readonly="true" label="Black" />
+          <v-text-field v-else v-model="white" type="text" :readonly="true" label="White" />
+        </v-col>
+      </v-row>
       <the-chessboard
         :board-config="boardConfig"
         @board-created="(api) => (boardAPI = api)"
@@ -87,15 +84,12 @@
         @checkmate="handleCheckmate"
       />
 
-      <div class="row g-3 align-items-center mt-3">
-        <div class="col-auto">
-          <label for="inputPassword6" class="col-form-label">{{ whiteOnBottom ? 'White' : 'Black' }} Player</label>
-        </div>
-        <div class="col-auto">
-          <input v-if="whiteOnBottom" v-model="white" type="text" class="form-control" aria-describedby="passwordHelpInline">
-          <input v-else v-model="black" type="text" class="form-control" aria-describedby="passwordHelpInline">
-        </div>
-      </div>
+      <v-row class="row g-3 align-items-center mt-3">
+        <v-col>
+          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" :readonly="true" label="White" />
+          <v-text-field v-else v-model="black" type="text" :readonly="true" label="Black" />
+        </v-col>
+      </v-row>
     </v-col>
     <v-col md="4">
       <h2>Moves</h2>

@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar flat>
+    <v-app-bar flat theme="dark">
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-avatar class="me-4 " color="grey-darken-1" size="32" />
 
@@ -8,6 +8,7 @@
 
         <nav-dropdown name="Games" fa-icon="fas fa-chess">
           <nav-dropdown-item name="New Game" fa-icon="fas fa-plus" href="/game/new" />
+          <nav-dropdown-item name="My Games" fa-icon="fas fa-chess" href="/games" />
         </nav-dropdown>
 
         <v-spacer />
@@ -24,20 +25,20 @@
       </v-container>
     </v-app-bar>
 
-    <v-main class="bg-grey-lighten-3">
+    <v-main id="main">
       <v-container>
         <v-row>
           <v-col v-if="useRoute().path.includes('settings')" cols="2">
             <v-sheet rounded="lg">
               <v-list rounded="lg">
-                <nav-dropdown-item name="Profile" fa-icon="fas fa-user" href="/settings/profile" />
-                <nav-dropdown-item name="Integrations" fa-icon="fas fa-link" href="/settings/integrations" />
+                <nav-dropdown-item name="Profile" fa-icon="fas fa-user" href="/settings/profile" theme="dark" />
+                <nav-dropdown-item name="Integrations" fa-icon="fas fa-link" href="/settings/integrations" theme="dark" />
               </v-list>
             </v-sheet>
           </v-col>
 
           <v-col>
-            <v-sheet min-height="70vh" rounded="lg" class="p-2">
+            <v-sheet min-height="70vh" rounded="lg" class="p-2 bg-grey-lighten-2">
               <slot />
             </v-sheet>
           </v-col>
@@ -48,16 +49,8 @@
 </template>
 
 <script setup lang="ts">
-
 import NavbarItem from '~/components/NavbarItem.vue'
 import { useSupabaseClient } from '#imports'
-
-const links = [
-  'Dashboard',
-  'Messages',
-  'Profile',
-  'Updates'
-]
 
 const theme = useTheme()
 
@@ -86,12 +79,16 @@ async function logout() {
 
 <!--suppress CssUnusedSymbol -->
 <style>
+:root {
+  --background-color: #b98761;
+}
+
 .p-2 {
   padding: 0.5rem!important;
 }
 
-body {
-  background-color: #b98761;
+body, #main {
+  background-color: var(--background-color);
 }
 
 .v-application, .v-navigation-drawer {
