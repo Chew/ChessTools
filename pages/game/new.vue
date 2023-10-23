@@ -101,13 +101,13 @@
         <v-btn v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" color="blue" @click.prevent="saveToProfile">
           Save to Profile
         </v-btn>
-        <v-btn v-else-if="saveToProfileStatus === 'sending'" color="grey" disabled>
+        <v-btn v-else-if="saveToProfileStatus === 'sending'" color="grey" :disabled="true">
           <v-progress-circular indeterminate :size="15" :width="2" />&nbsp;Saving...
         </v-btn>
-        <v-btn v-else-if="saveToProfileStatus === 'success'" color="green" disabled>
+        <v-btn v-else-if="saveToProfileStatus === 'success'" color="green" :disabled="true">
           <i class="fas fa-check" /> Saved!
         </v-btn>
-        <v-btn v-else color="red" disabled>
+        <v-btn v-else color="red" :disabled="true">
           <!-- failure -->
           <i class="fas fa-times" /> {{ saveToProfileStatus }}
         </v-btn>

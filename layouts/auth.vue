@@ -17,6 +17,7 @@ export default defineComponent({
 <style>
 @import '@/assets/auth.css';
 
+/*noinspection CssUnusedSymbol*/
 #mainBody, body, html, #__nuxt, #__layout {
   height: 100%!important;
 }

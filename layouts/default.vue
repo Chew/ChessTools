@@ -1,6 +1,6 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar flat theme="dark">
+    <v-app-bar :flat="true" theme="dark">
       <v-container class="mx-auto d-flex align-center justify-center">
         <v-avatar class="me-4 " color="grey-darken-1" size="32" />
 
@@ -13,7 +13,7 @@
 
         <v-spacer />
 
-        <v-responsive max-width="160" align="right">
+        <v-responsive max-width="160" class="align-right">
           <nav-dropdown v-if="user" name="You">
             <nav-dropdown-item name="Profile" fa-icon="fas fa-user" href="/profile/me" />
             <v-divider />
@@ -52,11 +52,11 @@
 import NavbarItem from '~/components/NavbarItem.vue'
 import { useSupabaseClient } from '#imports'
 
-const theme = useTheme()
+// const theme = useTheme()
 
-function toggleTheme() {
-  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-}
+// function toggleTheme() {
+//   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
+// }
 
 const user = useSupabaseUser().value
 
@@ -85,6 +85,10 @@ async function logout() {
 
 .p-2 {
   padding: 0.5rem!important;
+}
+
+.align-right {
+  text-align: right!important;
 }
 
 body, #main {
