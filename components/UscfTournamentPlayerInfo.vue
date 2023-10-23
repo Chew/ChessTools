@@ -1,6 +1,6 @@
 <template>
-  <div class="row mt-3">
-    <div class="col-md-6">
+  <v-row>
+    <v-col md="6">
       <h5>{{ player.name }}</h5>
       <p>
         US Chess ID: <NuxtLink :to="`/uscf/member/${player.memberId}`">
@@ -15,8 +15,8 @@
           {{ capitalize(key) }}: {{ rating?.pre }} => {{ rating?.post }}<br>
         </span>
       </p>
-    </div>
-    <div class="col-md-6">
+    </v-col>
+    <v-col md="6">
       <h6>Rounds</h6>
 
       <v-table theme="dark" density="comfortable">
@@ -37,8 +37,8 @@
           />
         </tbody>
       </v-table>
-    </div>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">

@@ -1,6 +1,6 @@
 <template>
-  <div class="row">
-    <div class="col-md-8">
+  <v-row>
+    <v-col md="8">
       <div class="mb-3">
         <v-btn color="blue" class="mr-1" @click="handleOrientation">
           Switch Sides
@@ -70,15 +70,12 @@
         </v-dialog>
       </div>
       <p>Game State: {{ status }}</p>
-      <div class="row g-3 align-items-center mb-3">
-        <div class="col-auto">
-          <label for="inputPassword6" class="col-form-label">{{ whiteOnBottom ? 'Black' : 'White' }} Player</label>
-        </div>
-        <div class="col-auto">
-          <input v-if="whiteOnBottom" v-model="black" type="text" class="form-control" aria-describedby="passwordHelpInline">
-          <input v-else v-model="white" type="text" class="form-control" aria-describedby="passwordHelpInline">
-        </div>
-      </div>
+      <v-row class="row g-3 align-items-center">
+        <v-col>
+          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" :readonly="true" label="Black" />
+          <v-text-field v-else v-model="white" type="text" :readonly="true" label="White" />
+        </v-col>
+      </v-row>
       <the-chessboard
         :board-config="boardConfig"
         @board-created="(api) => (boardAPI = api)"
@@ -87,35 +84,33 @@
         @checkmate="handleCheckmate"
       />
 
-      <div class="row g-3 align-items-center mt-3">
-        <div class="col-auto">
-          <label for="inputPassword6" class="col-form-label">{{ whiteOnBottom ? 'White' : 'Black' }} Player</label>
-        </div>
-        <div class="col-auto">
-          <input v-if="whiteOnBottom" v-model="white" type="text" class="form-control" aria-describedby="passwordHelpInline">
-          <input v-else v-model="black" type="text" class="form-control" aria-describedby="passwordHelpInline">
-        </div>
-      </div>
-    </div>
-    <div class="col-md-4">
+      <v-row class="row g-3 align-items-center mt-3">
+        <v-col>
+          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" :readonly="true" label="White" />
+          <v-text-field v-else v-model="black" type="text" :readonly="true" label="Black" />
+        </v-col>
+      </v-row>
+    </v-col>
+    <v-col md="4">
       <h2>Moves</h2>
 
       <div class="mb-3">
-        <a href="#" class="btn btn-primary mr-3" @click="downloadPGN($el)">Download PGN</a>
-        <a v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" href="#" class="btn btn-primary" @click.prevent="saveToProfile">
+        <v-btn color="blue" class="mr-3" @click="downloadPGN($el)">
+          Download PGN
+        </v-btn>
+        <v-btn v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" color="blue" @click.prevent="saveToProfile">
           Save to Profile
-        </a>
-        <button v-else-if="saveToProfileStatus === 'sending'" class="btn btn-secondary" disabled>
-          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
-          Saving...
-        </button>
-        <button v-else-if="saveToProfileStatus === 'success'" class="btn btn-success" disabled>
+        </v-btn>
+        <v-btn v-else-if="saveToProfileStatus === 'sending'" color="grey" :disabled="true">
+          <v-progress-circular indeterminate :size="15" :width="2" />&nbsp;Saving...
+        </v-btn>
+        <v-btn v-else-if="saveToProfileStatus === 'success'" color="green" :disabled="true">
           <i class="fas fa-check" /> Saved!
-        </button>
-        <button v-else class="btn btn-danger" disabled>
+        </v-btn>
+        <v-btn v-else color="red" :disabled="true">
           <!-- failure -->
           <i class="fas fa-times" /> {{ saveToProfileStatus }}
-        </button>
+        </v-btn>
       </div>
 
       <v-table theme="dark" density="compact" height="650px">
@@ -138,8 +133,8 @@
           </tr>
         </tbody>
       </v-table>
-    </div>
-  </div>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">

@@ -11,19 +11,19 @@
     </p>
 
     <h2>Sections</h2>
-    <div class="row">
-      <div v-for="section in gameData.sections" :key="section.id" class="col-md-12 mb-3">
+    <v-row>
+      <v-col v-for="section in gameData.sections" :key="section.id" md="3" class="mb-3">
         <h3>{{ titleize(section.name) }}</h3>
 
-        <div v-if="section.stats" class="row">
-          <div class="col-md-6">
+        <v-row v-if="section.stats">
+          <v-col md="6">
             <h4>Stats</h4>
             <p>
               Rounds: {{ section.stats.rounds }}<br>
               Players: {{ section.stats.players }}<br>
             </p>
-          </div>
-        </div>
+          </v-col>
+        </v-row>
 
         <v-data-table v-if="section.stats && section.players.length > 0" v-model:expanded="expanded[section.id - 1]" show-expand
                       :items-per-page="section.players.length > 10 ? 10 : -1"
@@ -49,8 +49,8 @@
             </tr>
           </template>
         </v-data-table>
-      </div>
-    </div>
+      </v-col>
+    </v-row>
   </main>
 </template>
 

@@ -36,15 +36,19 @@
     </td>
 
     <td v-if="link !== '' && link !== null && link !== undefined && linkNote == ''">
-      <NuxtLink :to="link" class="btn btn-primary btn-sm">
-        View <i class="fa-solid fa-external-link" />
+      <NuxtLink :to="link">
+        <v-btn color="blue">
+          View&nbsp;<i class="fa-solid fa-external-link" />
+        </v-btn>
       </NuxtLink>
     </td>
     <td v-else-if="link !== '' && link !== null && link !== undefined">
       <v-tooltip :text="linkNote" location="top">
         <template #activator="{ props }">
-          <NuxtLink v-bind="props" :to="link" class="btn btn-secondary btn-sm">
-            View <i class="fa-solid fa-external-link" />
+          <NuxtLink v-bind="props" :to="link">
+            <v-btn color="gray">
+              View&nbsp;<i class="fa-solid fa-external-link" />
+            </v-btn>
           </NuxtLink>
         </template>
       </v-tooltip>
