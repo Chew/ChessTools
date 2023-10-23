@@ -36,7 +36,7 @@
     </td>
 
     <td v-if="link !== '' && link !== null && link !== undefined && linkNote == ''">
-      <NuxtLink :to="link" class="btn btn-primary btn-sm">
+      <NuxtLink :to="link">
         <v-btn color="blue">
           View&nbsp;<i class="fa-solid fa-external-link" />
         </v-btn>
