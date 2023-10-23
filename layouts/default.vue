@@ -28,16 +28,16 @@
     <v-main id="main">
       <v-container>
         <v-row>
-          <v-col v-if="useRoute().path.includes('settings')" cols="2">
-            <v-sheet rounded="lg">
-              <v-list rounded="lg">
+          <v-col v-if="isSettings" :cols="isMobile ? 12 : 3">
+            <v-sheet rounded="lg" class="bg-grey-lighten-2">
+              <v-list rounded="lg" class="bg-grey-lighten-2">
                 <nav-dropdown-item name="Profile" fa-icon="fas fa-user" href="/settings/profile" theme="dark" />
                 <nav-dropdown-item name="Integrations" fa-icon="fas fa-link" href="/settings/integrations" theme="dark" />
               </v-list>
             </v-sheet>
           </v-col>
 
-          <v-col>
+          <v-col :cols="isMobile && isSettings ? 12 : 9">
             <v-sheet min-height="70vh" rounded="lg" class="p-2 bg-grey-lighten-2">
               <slot />
             </v-sheet>
@@ -59,6 +59,8 @@ import { useSupabaseClient } from '#imports'
 // }
 
 const user = useSupabaseUser().value
+
+const isSettings = useRoute().path.includes('settings')
 
 let isMobile = ref(false)
 if (process.browser) {
