@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
     if (!body.token) {
         return {
             success: false,
-            error: 'Turnstile failed. Please try again.'
+            error: 'Turnstile failed, no token provided. Please try again.'
         }
     }
 
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     if (!turnstile.success) {
         return {
             success: false,
-            error: 'Turnstile failed. Please try again.'
+            error: 'Turnstile failed authentication. Please try again. Error codes: ' + turnstile['error-codes'].join(', ')
         }
     }
 
@@ -35,6 +35,13 @@ export default defineEventHandler(async (event) => {
         return {
             success: false,
             error: 'Username is already taken'
+        }
+    }
+
+    if (body.username.length > 32) {
+        return {
+            success: false,
+            error: 'Username is too long'
         }
     }
 
