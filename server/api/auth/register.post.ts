@@ -7,10 +7,10 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
 
     if (!body.token) {
-        throw createError({
-            statusCode: 422,
-            statusMessage: 'Token not provided.'
-        })
+        return {
+            success: false,
+            error: 'Turnstile failed. Please try again.'
+        }
     }
 
     const turnstile = await verifyTurnstileToken(body.token)

@@ -5,14 +5,12 @@
         Register for Chess.Tools
       </h1>
 
-      <p v-if="error" class="text-danger">
-        <img src="https://cdn.discordapp.com/emojis/823648979194740746.webp?size=240&quality=lossless" alt="blunder icon" style="width: 20px;">
+      <v-alert v-if="error" type="error" class="mb-3">
         {{ error }}
-      </p>
-      <p v-if="success" class="text-primary">
-        <img src="https://cdn.discordapp.com/emojis/823649018616872971.webp?size=240&quality=lossless" alt="blunder icon" style="width: 20px;">
+      </v-alert>
+      <v-alert v-if="success" type="success" class="mb-3">
         {{ success }}
-      </p>
+      </v-alert>
 
       <div class="form-floating">
         <v-text-field v-model="username" type="text" name="username" variant="solo-filled" label="Username" />
@@ -44,7 +42,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useFetch } from '#app'
 
 export default defineComponent({
   name: 'Register',
@@ -68,29 +65,23 @@ export default defineComponent({
   },
 
   methods: {
-    async register() {
+    register() {
       this.signingUp = true
 
-      const { data, error } = await useFetch<{ success: boolean, error: string }>('/api/auth/register', {
+      $fetch<{ success: boolean, error: string }>('/api/auth/register', {
         method: 'POST',
         body: { username: this.username, email: this.email, password: this.password, token: this.token }
+      }).then((res) => {
+        this.signingUp = false
+
+        if (!res.success) {
+          this.error = res.error
+          return
+        }
+
+        // redirect to /login
+        this.success = 'Your account has been created! Check your email for a code, then login.'
       })
-
-      this.signingUp = false
-      const dataValue = data.value
-
-      if (dataValue == null || error) {
-        this.error = error.value?.message || 'Unknown error'
-        return
-      }
-
-      if (!dataValue.success) {
-        this.error = dataValue.error
-        return
-      }
-
-      // redirect to /login
-      this.success = 'Your account has been created! Check your email for a code, then login.'
     }
   }
 })
