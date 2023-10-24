@@ -37,7 +37,7 @@
             </v-sheet>
           </v-col>
 
-          <v-col :cols="isMobile && isSettings ? 12 : 9">
+          <v-col :cols="isSettings ? (isMobile ? 12 : 9) : 12">
             <v-sheet min-height="70vh" rounded="lg" class="p-2 bg-grey-lighten-2">
               <slot />
             </v-sheet>
@@ -59,10 +59,11 @@ import { useSupabaseClient } from '#imports'
 // }
 
 const user = useSupabaseUser().value
-
-const isSettings = useRoute().path.includes('settings')
+const route = useRoute()
 
 let isMobile = ref(false)
+const isSettings = ref(route.path.includes('settings'))
+
 if (process.browser) {
   isMobile = ref(window.innerWidth < 768)
 
@@ -71,6 +72,11 @@ if (process.browser) {
     isMobile.value = window.innerWidth < 768
   })
 }
+
+// watch for route changes
+watch(() => route.path, () => {
+  isSettings.value = route.path.includes('settings')
+})
 
 async function logout() {
   await useSupabaseClient().auth.signOut()
