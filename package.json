@@ -15,6 +15,7 @@
     "@nuxtjs/supabase": "^1.1.2",
     "@nuxtjs/turnstile": "latest",
     "@typescript-eslint/parser": "^6.7.3",
+    "@types/validator": "^13.11.5",
     "nuxt": "^3.7.3",
     "vuetify-nuxt-module": "^0.5.12"
   },
@@ -24,6 +25,7 @@
     "eslint": "^8.50.0",
     "node-html-parser": "^6.1.10",
     "typescript": "^5.2.2",
+    "validator": "^13.11.0",
     "vue-chartjs": "^5.2.0",
     "vue3-chessboard": "^1.2.3"
   }

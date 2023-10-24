@@ -12,14 +12,16 @@
         {{ success }}
       </v-alert>
 
-      <div class="form-floating">
-        <v-text-field v-model="username" type="text" name="username" variant="solo-filled" label="Username" />
+      <div class="mb-3">
+        <v-text-field v-model="username" type="text" variant="solo-filled" label="Username" prepend-inner-icon="mdi-account-outline"
+                      :rules="[rules.alphanumeric, rules.length]" />
       </div>
-      <div class="form-floating">
-        <v-text-field v-model="email" label="Email Address" variant="solo-filled" type="email" />
+      <div class="mb-3">
+        <v-text-field v-model="email" label="Email Address" variant="solo-filled" type="email" prepend-inner-icon="mdi-email-outline"
+                      :rules="[rules.email]" />
       </div>
-      <div class="form-floating">
-        <v-text-field v-model="password" label="Password" variant="solo-filled" type="password" />
+      <div class="mb-3">
+        <v-text-field v-model="password" label="Password" variant="solo-filled" prepend-inner-icon="mdi-lock-outline" type="password" />
       </div>
 
       <NuxtTurnstile v-model="token" />
@@ -42,14 +44,36 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import validator from 'validator'
+import isEmail from 'validator/lib/isEmail'
+import isAlphanumeric = validator.isAlphanumeric;
+import isLength = validator.isLength;
 
 export default defineComponent({
   name: 'Register',
 
   setup() {
+    // page meta
     definePageMeta({
       layout: 'auth'
     })
+
+    // seo meta
+    useSeoMeta({
+      title: 'Register',
+      description: 'Register for Chess.Tools'
+    })
+
+    // validation rules
+    const rules: Record<string, (value: string) => boolean | string> = {
+      email: value => isEmail(value) || 'Invalid email',
+      alphanumeric: value => isAlphanumeric(value) || 'Must be alphanumeric',
+      length: value => isLength(value, { min: 4, max: 32 }) || 'Must be between 4 and 32 characters'
+    }
+
+    return {
+      rules
+    }
   },
 
   data() {
@@ -96,26 +120,4 @@ html, body {
   max-width: 330px;
   padding: 1rem;
 }
-
-.form-signin .form-floating:focus-within {
-  z-index: 2;
-}
-
-.form-signin input[name="username"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.form-signin input[name="email"] {
-  margin-bottom: -1px;
-  border-radius: 0;
-}
-
-.form-signin input[name="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
 </style>
