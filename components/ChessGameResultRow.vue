@@ -4,13 +4,13 @@
       <span class="d-flex align-center">
         <span :class="['play-icon', unknownColor ? 'unknown' : 'white', cleanResult[0] == 1 ? 'winner' : '']" />
         <span v-if="whitePlayer.id == null">{{ whitePlayer.name }}</span>
-        <NuxtLink v-else :to="`/profile/${whitePlayer.id}`">{{ whitePlayer.name }}</NuxtLink>
+        <PageLink v-else :href="`/profile/${whitePlayer.name}`">{{ whitePlayer.name }}</PageLink>
         <span v-if="whitePlayer.elo" class="text-grey">&nbsp;({{ whitePlayer.elo }})</span>
       </span>
       <span class="d-flex align-center">
         <span :class="['play-icon', unknownColor ? 'unknown' : 'black', cleanResult[1] == 1 ? 'winner' : '']" />
         <span v-if="blackPlayer.id == null">{{ blackPlayer.name }}</span>
-        <NuxtLink v-else :to="`/profile/${blackPlayer.id}`">{{ blackPlayer.name }}</NuxtLink>
+        <PageLink v-else :href="`/profile/${blackPlayer.name}`">{{ blackPlayer.name }}</PageLink>
         <span v-if="blackPlayer.elo" class="text-grey">&nbsp;({{ blackPlayer.elo }})</span>
       </span>
     </td>
@@ -36,20 +36,20 @@
     </td>
 
     <td v-if="link !== '' && link !== null && link !== undefined && linkNote == ''">
-      <NuxtLink :to="link">
+      <PageLink :href="link">
         <v-btn color="blue">
           View&nbsp;<i class="fa-solid fa-external-link" />
         </v-btn>
-      </NuxtLink>
+      </PageLink>
     </td>
     <td v-else-if="link !== '' && link !== null && link !== undefined">
       <v-tooltip :text="linkNote" location="top">
         <template #activator="{ props }">
-          <NuxtLink v-bind="props" :to="link">
+          <PageLink v-bind="props" :href="link">
             <v-btn color="grey">
               View&nbsp;<i class="fa-solid fa-external-link" />
             </v-btn>
-          </NuxtLink>
+          </PageLink>
         </template>
       </v-tooltip>
     </td>

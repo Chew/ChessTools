@@ -1,9 +1,9 @@
 <template>
-  <NuxtLink :href="href" :target="external ? '_blank' : ''">
+  <PageLink :href="href" :target="external ? '_blank' : ''">
     <v-btn :link="true" :variant="isCurrentPath() ? 'tonal' : 'text'" color="grey-lighten-3">
       <i v-if="faIcon" :class="faIcon" /> {{ name }}
     </v-btn>
-  </NuxtLink>
+  </PageLink>
 </template>
 
 <script lang="ts">

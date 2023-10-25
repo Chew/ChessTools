@@ -6,9 +6,9 @@
       </h1>
       <p class="mb-3">
         Don't have an account?
-        <NuxtLink to="/register">
+        <PageLink href="/register">
           Create One!
-        </NuxtLink>
+        </PageLink>
       </p>
 
       <v-alert v-if="invalidPassword" type="error" class="mb-3">

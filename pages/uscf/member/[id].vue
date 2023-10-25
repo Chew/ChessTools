@@ -8,7 +8,7 @@
     </h1>
 
     <p>Member ID: {{ memberId }}</p>
-    <p><a :href="`https://www.uschess.org/msa/MbrDtlMain.php?${memberId}`">View on USChess MSA</a></p>
+    <p><page-link :href="`https://www.uschess.org/msa/MbrDtlMain.php?${memberId}`" text="View on USChess MSA" /></p>
 
     <h2 v-if="titles().length > 0">
       Titles
@@ -120,9 +120,7 @@
             <tr v-for="tournament in tournaments.tournaments" :key="tournament.eventId">
               <td>
                 {{ tournament.date }}<br>
-                <NuxtLink :to="`/uscf/tournament/${tournament.eventId}`">
-                  {{ tournament.eventId }}
-                </NuxtLink>
+                <page-link :href="`/uscf/tournament/${tournament.eventId}`" :text="tournament.eventId.toString()" />
               </td>
               <td>{{ tournament.name }}<br>{{ tournament.section.id }}: {{ tournament.section.name }}</td>
 

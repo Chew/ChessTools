@@ -5,9 +5,7 @@
         <v-col cols="12">
           <h2>{{ player.name }}</h2>
           <p>
-            US Chess ID: <NuxtLink :to="`/uscf/member/${player.memberId}`">
-              {{ player.memberId }}
-            </NuxtLink>
+            US Chess ID: <PageLink :href="`/uscf/member/${player.memberId}`" :text="player.memberId.toString()" />
           </p>
           <p>Total Points: {{ player.totalPoints }}</p>
         </v-col>

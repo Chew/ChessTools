@@ -69,9 +69,9 @@
 
       <p v-if="game?.tournament_info">
         This game was from a tournament!
-        <NuxtLink :to="`/uscf/tournament/${game?.tournament_info.eventId}`">
+        <PageLink :href="`/uscf/tournament/${game?.tournament_info.eventId}`">
           Click to view it.
-        </NuxtLink>
+        </PageLink>
       </p>
 
       <v-row class="row g-3 align-items-center">
