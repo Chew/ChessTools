@@ -12,7 +12,7 @@
 
     <h2>Sections</h2>
     <v-row>
-      <v-col v-for="section in gameData.sections" :key="section.id" md="3" class="mb-3">
+      <v-col v-for="section in gameData.sections" :key="section.id" md="12" class="mb-3">
         <h3>{{ titleize(section.name) }}</h3>
 
         <v-row v-if="section.stats">

@@ -1,23 +1,28 @@
 <template>
   <v-row>
     <v-col md="6">
-      <h5>{{ player.name }}</h5>
-      <p>
-        US Chess ID: <NuxtLink :to="`/uscf/member/${player.memberId}`">
-          {{ player.memberId }}
-        </NuxtLink>
-      </p>
-      <p>Total Points: {{ player.totalPoints }}</p>
-
-      <h6>Rating Changes</h6>
-      <p>
-        <span v-for="(rating, key) in player.ratings" :key="key">
-          {{ capitalize(key) }}: {{ rating?.pre }} => {{ rating?.post }}<br>
-        </span>
-      </p>
+      <v-row>
+        <v-col cols="12">
+          <h2>{{ player.name }}</h2>
+          <p>
+            US Chess ID: <NuxtLink :to="`/uscf/member/${player.memberId}`">
+              {{ player.memberId }}
+            </NuxtLink>
+          </p>
+          <p>Total Points: {{ player.totalPoints }}</p>
+        </v-col>
+        <v-col cols="12">
+          <h3>Rating Changes</h3>
+          <p>
+            <span v-for="(rating, key) in player.ratings" :key="key">
+              {{ capitalize(key) }}: {{ rating?.pre }} => {{ rating?.post }}<br>
+            </span>
+          </p>
+        </v-col>
+      </v-row>
     </v-col>
     <v-col md="6">
-      <h6>Rounds</h6>
+      <h3>Rounds</h3>
 
       <v-table theme="dark" density="comfortable">
         <thead>

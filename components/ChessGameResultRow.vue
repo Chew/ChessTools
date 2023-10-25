@@ -46,7 +46,7 @@
       <v-tooltip :text="linkNote" location="top">
         <template #activator="{ props }">
           <NuxtLink v-bind="props" :to="link">
-            <v-btn color="gray">
+            <v-btn color="grey">
               View&nbsp;<i class="fa-solid fa-external-link" />
             </v-btn>
           </NuxtLink>
