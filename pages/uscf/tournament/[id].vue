@@ -34,9 +34,11 @@
               <v-toolbar-title>Results</v-toolbar-title>
               <v-text-field
                 v-model="search"
-                append-icon="mdi-magnify"
+                prepend-inner-icon="mdi-magnify"
                 label="Search"
+                variant="solo-filled"
                 single-line
+                :clearable="true"
                 hide-details
               />
             </v-toolbar>
