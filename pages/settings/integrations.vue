@@ -32,7 +32,7 @@
           <td v-else>
             Unlinked!
           </td>
-          <td><verified-chip :verified="integrations.chesscom?.verified" /></td>
+          <td><verified-chip :verified="integrations.chesscom?.verified || false" /></td>
           <td>Link Coming Soon :)</td>
         </tr>
 
@@ -45,7 +45,7 @@
           <td v-else>
             Unlinked!
           </td>
-          <td><verified-chip :verified="integrations.lichess?.verified" /></td>
+          <td><verified-chip :verified="integrations.lichess?.verified || false" /></td>
           <td v-if="integrations.lichess">
             <unlink-integration-button integration="lichess" @success="handleUnlinked('lichess')" @failure="(e: string) => showFailure(e)" />
           </td>
@@ -62,7 +62,7 @@
         <tr>
           <td>US Chess</td>
           <td>{{ integrations.uscf?.data.id || "Unlinked" }}</td>
-          <td><verified-chip :verified="integrations.uscf?.verified" /></td>
+          <td><verified-chip :verified="integrations.uscf?.verified || false" /></td>
           <td v-if="integrations.uscf">
             <unlink-integration-button integration="uscf" @success="handleUnlinked('uscf')" @failure="(e: string) => showFailure(e)" />
           </td>
@@ -173,13 +173,39 @@ import { USCFPlayerSearchResult, USCFPlayerSearchStates } from '~/types/uscf'
 export default defineComponent({
   name: 'Integrations',
 
-  setup() {
+  async setup() {
     useSeoMeta({
       title: 'Integration Settings'
     })
 
+    const integrations: Ref<Record<Integrations, TableIntegrations | null>> = ref({} as Record<Integrations, TableIntegrations | null>)
+
+    const user = useSupabaseUser().value
+    if (user == null) {
+      showError('You must be logged in to view this page.')
+      return {
+        uscfStates: [],
+        integrations
+      }
+    }
+
+    await $fetch<{success: boolean, error: string, integrations: Record<Integrations, TableIntegrations>}>(`/api/users/${user.id}/integrations`)
+      .then((data) => {
+        if (!data) {
+          showError('Unknown error')
+        }
+
+        if (!data.success) {
+          // @ts-ignore error is just guaranteed to be a string here
+          showError(data.error)
+        }
+
+        integrations.value = data.integrations
+      })
+
     return {
-      uscfStates: USCFPlayerSearchStates
+      uscfStates: USCFPlayerSearchStates,
+      integrations
     }
   },
 
@@ -187,7 +213,6 @@ export default defineComponent({
     return {
       success: false,
       message: '',
-      integrations: {} as Record<Integrations, TableIntegrations | undefined>,
 
       // forms
       uscfLinkDialog: false,
@@ -207,28 +232,6 @@ export default defineComponent({
   },
 
   beforeMount() {
-    const user = useSupabaseUser().value
-    if (!user) {
-      showError('You must be logged in to view this page.')
-      return
-    }
-
-    $fetch<{success: boolean, error: string, integrations: Record<Integrations, TableIntegrations>}>(`/api/users/${user.id}/integrations`)
-      .then((data) => {
-        if (!data) {
-          this.showFailure('Unknown error')
-          return
-        }
-
-        if (!data.success) {
-          // @ts-ignore error is just guaranteed to be a string here
-          this.showFailure(data.error)
-          return
-        }
-
-        this.integrations = { ...data.integrations }
-      })
-
     const query = useRoute().query
 
     if (query.state === 'lichess-integration' && query.code) {
@@ -313,7 +316,7 @@ export default defineComponent({
     handleUnlinked(platform: Integrations) {
       this.showSuccess('Unlinked Successfully!')
 
-      this.integrations[platform] = undefined
+      this.integrations[platform] = null
     },
 
     buildLichessUrl(): string {
