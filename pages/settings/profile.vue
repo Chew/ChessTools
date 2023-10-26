@@ -2,8 +2,9 @@
   <main>
     <h1>Profile Settings</h1>
 
-    <v-alert v-if="status == 'success'" type="success" title="Form Notice" text="Saved successfully!" class="mb-3" />
-    <v-alert v-if="status == 'error'" type="error" title="Form Notice" text="An error occurred. Please try again." class="mb-3" />
+    <v-alert v-if="status == 'success'" type="success" text="Your profile has been saved successfully!" class="mb-3" />
+    <v-alert v-if="status == 'error'" type="error" text="An error occurred, please try again." class="mb-3" />
+    <!-- Eventually replace these alerts with snackbars, reference pages/settings/integrations.vue#155 (https://github.com/Chew/ChessTools/blob/cc1c233d3a05c75ec8f2ab2f295ba6d090b6bf6b/pages/settings/integrations.vue#L155) -->
 
     <v-form @submit.prevent="submitForm">
       <v-row>
