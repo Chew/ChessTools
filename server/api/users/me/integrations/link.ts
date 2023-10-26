@@ -27,6 +27,33 @@ export default defineEventHandler(async (event) => {
         }
     }
 
+    let newData = data
+    let verified = false
+    if (platform === 'lichess') {
+        try {
+            newData = await verifyLichess(data.code, useRuntimeConfig().lichessCodeVerifier, data.redirectUri)
+            verified = true
+        } catch (e: any) {
+            const msg: string = e.message
+
+            if (msg.includes('"https://lichess.org/api/token": 400 Bad Request')) {
+                return {
+                    success: false,
+                    error: 'Lichess code expired. Try linking again!'
+                }
+            }
+
+            return {
+                success: false,
+                error: msg
+            }
+        }
+    } else if (platform === 'uscf') {
+        newData = {
+            id: data
+        }
+    }
+
     // If we already have an integration, update it
     if (integrationData !== undefined && integrationData.length > 0) {
         const { data: updateData, error: updateError } = await client.from('integrations').update({
@@ -51,10 +78,8 @@ export default defineEventHandler(async (event) => {
         const { data: createData, error: createError } = await client.from('integrations').insert([{
             user_id: userId,
             platform,
-            data: {
-                id: data
-            },
-            verified: false
+            data: newData,
+            verified
         }]).select()
 
         if (createError) {
@@ -70,3 +95,26 @@ export default defineEventHandler(async (event) => {
         }
     }
 })
+
+async function verifyLichess(code: string, codeVerifier: string, redirectUri: string) {
+    const { access_token: accessToken } = await $fetch<{token_type: string, access_token: string}>('https://lichess.org/api/token', {
+        method: 'POST',
+        body: {
+            grant_type: 'authorization_code',
+            code,
+            code_verifier: codeVerifier,
+            redirect_uri: redirectUri,
+            client_id: 'chess.tools'
+        }
+    })
+
+    const { id, username } = await $fetch<{id: string, username: string}>('https://lichess.org/api/account', {
+        headers: {
+            Authorization: 'Bearer ' + accessToken
+        }
+    })
+
+    return {
+        id, username
+    }
+}

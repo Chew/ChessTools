@@ -38,9 +38,24 @@
 
         <tr>
           <td>Lichess</td>
-          <td>Unlinked!</td>
-          <td><verified-chip :verified="false" /></td>
-          <td>Link Coming Soon :)</td>
+          <td v-if="integrations.lichess">
+            Username: {{ integrations.lichess.data.username }}<br>
+            ID: {{ integrations.lichess.data.id }}
+          </td>
+          <td v-else>
+            Unlinked!
+          </td>
+          <td><verified-chip :verified="integrations.lichess?.verified" /></td>
+          <td v-if="integrations.lichess">
+            <unlink-integration-button integration="lichess" @success="handleUnlinked('lichess')" @failure="(e: string) => showFailure(e)" />
+          </td>
+          <td v-else>
+            <page-link :href="buildLichessUrl()">
+              <v-btn color="blue" :loading="linking.lichess">
+                Link
+              </v-btn>
+            </page-link>
+          </td>
         </tr>
 
         <!-- US Chess / USCF -->
@@ -119,7 +134,7 @@
                   <v-btn color="blue-darken-1" variant="text" @click="uscfLinkDialog = false">
                     Close
                   </v-btn>
-                  <v-btn color="blue-darken-1" variant="text" :disabled="uscfId === ''" :loading="uscfLinking" @click="linkUSCF">
+                  <v-btn color="blue-darken-1" variant="text" :disabled="uscfId === ''" :loading="linking.uscf" @click="linkPlatform('uscf', uscfId.toString())">
                     Save
                   </v-btn>
                 </v-card-actions>
@@ -181,9 +196,12 @@ export default defineComponent({
       uscfState: 'ANY',
       uscfResults: [] as USCFPlayerSearchResult[],
       uscfSearching: false,
-      uscfLinking: false,
 
       // state
+      linking: {
+        lichess: false,
+        uscf: false
+      } as Record<string, boolean>,
       snackbar: false
     }
   },
@@ -210,6 +228,18 @@ export default defineComponent({
 
         this.integrations = { ...data.integrations }
       })
+
+    const query = useRoute().query
+
+    if (query.state === 'lichess-integration' && query.code) {
+      const config = useRuntimeConfig()
+      const lichessData = {
+        code: query.code.toString(),
+        redirectUri: config.public.apiUrl + '/settings/integrations'
+      }
+
+      this.linkPlatform('lichess', lichessData)
+    }
   },
 
   methods: {
@@ -225,17 +255,17 @@ export default defineComponent({
       this.snackbar = true
     },
 
-    linkUSCF() {
-      this.uscfLinking = true
+    linkPlatform(platform: Integrations, data: string | object) {
+      this.linking[platform] = true
       $fetch<{success: boolean, error: string, integration: TableIntegrations}>('/api/users/me/integrations/link', {
         headers: useRequestHeaders(['cookie']),
         method: 'POST',
         body: {
-          platform: 'uscf',
-          data: this.uscfId
+          platform,
+          data
         }
       }).then((data) => {
-        this.uscfLinking = false
+        this.linking[platform] = false
 
         if (!data) {
           this.showFailure('Unknown error')
@@ -250,7 +280,7 @@ export default defineComponent({
 
         this.showSuccess('Linked successfully!')
         this.uscfLinkDialog = false
-        this.integrations.uscf = data.integration
+        this.integrations[platform] = data.integration
       })
     },
 
@@ -284,6 +314,15 @@ export default defineComponent({
       this.showSuccess('Unlinked Successfully!')
 
       this.integrations[platform] = undefined
+    },
+
+    buildLichessUrl(): string {
+      const config = useRuntimeConfig()
+      const challenge = config.public.lichessCodeChallenge
+      // redirect URI is the exact page url we are on RIGHT NOW
+      const redirectUri = config.public.apiUrl + '/settings/integrations'
+
+      return `https://lichess.org/oauth?response_type=code&client_id=chess.tools&redirect_uri=${redirectUri}&code_challenge_method=S256&code_challenge=${challenge}&state=lichess-integration`
     }
   }
 })

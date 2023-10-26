@@ -8,6 +8,15 @@ export default defineNuxtConfig({
     }
   },
 
+  runtimeConfig: {
+    lichessCodeVerifier: process.env.LICHESS_CODE_VERIFIER,
+
+    public: {
+      apiUrl: process.env.API_BASE_URL,
+      lichessCodeChallenge: process.env.LICHESS_CODE_CHALLENGE
+    }
+  },
+
   app: {
     head: {
       link: [],
