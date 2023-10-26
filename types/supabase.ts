@@ -1,3 +1,5 @@
+import {IntegrationJson} from "~/types/integrations";
+
 export type Json =
   | string
   | number
@@ -12,11 +14,6 @@ type TournamentJson = {
   section: number,
   player: number,
   opponent: number
-}
-
-type IntegrationJson = {
-  id: string
-  username?: string
 }
 
 export interface Database {

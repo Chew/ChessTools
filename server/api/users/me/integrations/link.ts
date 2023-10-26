@@ -30,11 +30,10 @@ export default defineEventHandler(async (event) => {
     // If we already have an integration, update it
     if (integrationData !== undefined && integrationData.length > 0) {
         const { data: updateData, error: updateError } = await client.from('integrations').update({
-            id: integrationData[0].id,
             user_id: userId,
             platform,
             data
-        })
+        }).eq('id', integrationData[0].id).single()
 
         if (updateError) {
             return {
@@ -67,7 +66,7 @@ export default defineEventHandler(async (event) => {
 
         return {
             success: true,
-            data: createData
+            integration: createData[0]
         }
     }
 })
