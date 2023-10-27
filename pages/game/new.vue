@@ -72,8 +72,8 @@
       <p>Game State: {{ status }}</p>
       <v-row class="row g-3 align-items-center">
         <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" :readonly="true" label="Black" />
-          <v-text-field v-else v-model="white" type="text" :readonly="true" label="White" />
+          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" label="Black" />
+          <v-text-field v-else v-model="white" type="text" label="White" />
         </v-col>
       </v-row>
       <the-chessboard
@@ -86,8 +86,8 @@
 
       <v-row class="row g-3 align-items-center mt-3">
         <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" :readonly="true" label="White" />
-          <v-text-field v-else v-model="black" type="text" :readonly="true" label="Black" />
+          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" label="White" />
+          <v-text-field v-else v-model="black" type="text" label="Black" />
         </v-col>
       </v-row>
     </v-col>
