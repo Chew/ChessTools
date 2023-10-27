@@ -21,7 +21,7 @@
         </v-col>
 
         <v-col cols="12" md="12">
-          <v-btn type="submit" :block="true" class="mt-2" color="blue">
+          <v-btn type="submit" :block="true" class="mt-2" color="blue" :loading="status == 'submitting'">
             Submit
           </v-btn>
         </v-col>
@@ -38,6 +38,19 @@ import { Database, TableUser } from '~/types/supabase'
 export default defineComponent({
   name: 'profile',
 
+  setup() {
+    const user = useSupabaseUser().value
+    const client = useSupabaseClient<Database>()
+
+    if (!user) {
+      throw showError('You are not signed in!')
+    }
+
+    return {
+      user, client
+    }
+  },
+
   data() {
     return {
       firstName: '' as string,
@@ -49,10 +62,7 @@ export default defineComponent({
   },
 
   beforeMount() {
-    const user = useSupabaseUser().value
-    const client = useSupabaseClient<Database>()
-
-    client.from('users').select('*').eq('id', user?.id).single().then((data) => {
+    this.client.from('users').select('*').eq('id', this.user.id).single().then((data) => {
       const dbUser = data.data as TableUser
 
       if (!dbUser) {
@@ -67,15 +77,12 @@ export default defineComponent({
 
   methods: {
     submitForm() {
-      const user = useSupabaseUser().value
-      const client = useSupabaseClient<Database>()
-
       this.status = 'submitting'
-      client.from('users').update({
+      this.client.from('users').update({
         first_name: this.firstName,
         last_name: this.lastName,
         bio: this.bio
-      }).eq('id', user?.id).single().then((data) => {
+      }).eq('id', this.user.id).single().then((data) => {
         if (data.error) {
           this.status = 'error'
           throw showError({ statusCode: 500, statusMessage: data.error?.message })

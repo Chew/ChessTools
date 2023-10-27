@@ -22,11 +22,11 @@
         <v-text-field v-model="password" label="Password" variant="solo-filled" type="password" />
       </div>
 
-      <v-btn color="blue" type="submit" :block="true">
+      <v-btn color="blue" type="submit" :block="true" :loading="signingIn">
         Sign in
       </v-btn>
-      <p class="mt-5 mb-3 text-body-secondary">
-        &copy; 2023–{{ new Date().getFullYear() }} Chess.Tools
+      <p class="mt-5 mb-3 text-grey">
+        &copy; 2023-{{ new Date().getFullYear() }} Chess.Tools
       </p>
     </v-form>
   </main>
@@ -48,19 +48,14 @@ export default defineComponent({
       title: 'Login to Chess.Tools',
       ogTitle: 'Login to Chess.Tools'
     })
-
-    // const user = useSupabaseUser()
-
-    // if (user) {
-    //  navigateTo("/")
-    // }
   },
 
   data() {
     return {
       email: '',
       password: '',
-      invalidPassword: false
+      invalidPassword: false,
+      signingIn: false
     }
   },
 
@@ -83,11 +78,14 @@ export default defineComponent({
         password: this.password.toString()
       }
 
+      this.signingIn = true
       const { error: loginError } = await supabase.auth.signInWithPassword(input)
+      this.signingIn = false
 
       if (loginError) {
         if (loginError.message === 'Invalid login credentials') {
           this.invalidPassword = true
+          return
         }
       }
 
