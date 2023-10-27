@@ -25,6 +25,8 @@ export interface Database {
           created_at: string
           id: string
           pgn: string | null
+          platform: Database["public"]["Enums"]["Game Source Platform"] | null
+          platform_id: string | null
           tournament_info: TournamentJson | null
           user_id: string
           white_player: string | null
@@ -34,6 +36,8 @@ export interface Database {
           created_at?: string
           id?: string
           pgn?: string | null
+          platform?: Database["public"]["Enums"]["Game Source Platform"] | null
+          platform_id?: string | null
           tournament_info?: TournamentJson | null
           user_id: string
           white_player?: string | null
@@ -43,6 +47,8 @@ export interface Database {
           created_at?: string
           id?: string
           pgn?: string | null
+          platform?: Database["public"]["Enums"]["Game Source Platform"] | null
+          platform_id?: string | null
           tournament_info?: TournamentJson | null
           user_id?: string
           white_player?: string | null
@@ -73,7 +79,7 @@ export interface Database {
           created_at: string
           data: IntegrationJson
           id: string
-          platform: string
+          platform: Database["public"]["Enums"]["Integrations"]
           user_id: string
           verified: boolean
         }
@@ -81,7 +87,7 @@ export interface Database {
           created_at?: string
           data: IntegrationJson
           id?: string
-          platform: string
+          platform: Database["public"]["Enums"]["Integrations"]
           user_id: string
           verified?: boolean
         }
@@ -89,7 +95,7 @@ export interface Database {
           created_at?: string
           data?: IntegrationJson
           id?: string
-          platform?: string
+          platform?: Database["public"]["Enums"]["Integrations"]
           user_id?: string
           verified?: boolean
         }
@@ -140,7 +146,8 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      "Game Source Platform": "chesstools" | "chesscom" | "lichess"
+      Integrations: "chesscom" | "lichess" | "uscf" | "fide"
     }
     CompositeTypes: {
       [_ in never]: never
