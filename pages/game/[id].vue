@@ -152,9 +152,17 @@ export default defineComponent({
 
   setup() {
     const user = useSupabaseUser().value
+    const route = useRoute()
+    const id = route.params.id
+
+    useSeoMeta({
+      title: 'Game Viewer',
+      description: 'View this game of chess on Chess.Tools! See all the moves, the details, and more!'
+    })
 
     return {
-      userId: user?.id
+      userId: user?.id,
+      gameId: id
     }
   },
 
@@ -184,10 +192,7 @@ export default defineComponent({
   },
 
   beforeMount() {
-    const route = useRoute()
-    const id = route.params.id
-
-    useSupabaseClient<Database>().from('games').select('*').eq('id', id).then((res) => {
+    useSupabaseClient<Database>().from('games').select('*').eq('id', this.gameId).then((res) => {
       const data = res.data
       if (!data) {
         // throw 404
@@ -205,7 +210,7 @@ export default defineComponent({
         throw showError({ statusCode: 404, statusMessage: 'Game Not Found' })
       }
 
-      this.boardAPI?.loadPgn(this.game?.pgn)
+      this.boardAPI?.loadPgn(this.game.pgn)
       this.createHistory()
       this.boardAPI?.getOpeningName().then((data) => {
         this.opening = data
@@ -246,7 +251,9 @@ export default defineComponent({
       this.whiteOnBottom = !this.whiteOnBottom
     },
 
-    async handleMove(move: Move) {
+    async handleMove() {
+      const move = this.history.flat()[this.index - 1]
+
       if (move.san.includes('#') || move.san.includes('+')) {
         const audio = new Audio('https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-check.mp3')
         await audio.play()
@@ -314,22 +321,14 @@ export default defineComponent({
         this.boardAPI?.viewHistory(this.index)
       }
 
-      const move = this.boardAPI?.getHistory(true)[previous ? this.index - 1 : this.index - 1]
-      if (!move) {
-        return
-      }
-      this.handleMove(move)
+      this.handleMove()
     },
 
     historyAt(index: number) {
       this.index = index
       this.boardAPI?.viewHistory(this.index)
 
-      const move = this.boardAPI?.getHistory(true)[this.index - 1]
-      if (!move) {
-        return
-      }
-      this.handleMove(move)
+      this.handleMove()
     },
 
     keyDown(event: KeyboardEvent) {
@@ -367,7 +366,7 @@ export default defineComponent({
 
       const { data: supaData, error } = await useSupabaseClient<Database>().from('games').update({
         pgn: this.boardAPI?.getPgn()
-      }).eq('id', this.game?.id).select()
+      }).eq('id', this.gameId).select()
 
       if (error) {
         console.error(error)

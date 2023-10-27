@@ -24,7 +24,7 @@ export interface Database {
           black_player: string | null
           created_at: string
           id: string
-          pgn: string | null
+          pgn: string
           platform: Database["public"]["Enums"]["Game Source Platform"] | null
           platform_id: string | null
           tournament_info: TournamentJson | null
@@ -35,7 +35,7 @@ export interface Database {
           black_player?: string | null
           created_at?: string
           id?: string
-          pgn?: string | null
+          pgn?: string
           platform?: Database["public"]["Enums"]["Game Source Platform"] | null
           platform_id?: string | null
           tournament_info?: TournamentJson | null
@@ -46,7 +46,7 @@ export interface Database {
           black_player?: string | null
           created_at?: string
           id?: string
-          pgn?: string | null
+          pgn?: string
           platform?: Database["public"]["Enums"]["Game Source Platform"] | null
           platform_id?: string | null
           tournament_info?: TournamentJson | null
