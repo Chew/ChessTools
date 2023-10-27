@@ -1,8 +1,5 @@
 <template>
-  <main v-if="error">
-    {{ message }}
-  </main>
-  <main v-else-if="user">
+  <main v-if="user">
     <h1>Profile for {{ user.username }}</h1>
     <p>{{ user.bio }}</p>
   </main>
@@ -16,33 +13,36 @@ import { TableUser } from '~/types/supabase'
 export default defineComponent({
   name: '[username]',
 
-  setup() {
+  async setup() {
     const username = useRoute().params.username
 
-    const { data: userData, error: userError } = useFetch<{ success: boolean }>('/api/users/' + username)
-    const userDataValue = userData.value
+    let user: TableUser | null = null
+    await useFetch<{ success: boolean, error?: string, data?: TableUser }>('/api/users/' + username).then((res) => {
+      const data = res.data.value
+      const error = res.error.value
 
-    if (userDataValue == null) {
-      return {
-        error: true,
-        message: 'Error loading user data: ' + userError?.value || 'Unknown error',
-        user: null
+      if (error) {
+        throw showError(error.message)
       }
-    }
 
-    if (userDataValue.success === false) {
-      return {
-        error: true,
-        message: 'User not found',
-        user: null
+      if (data == null || data.data === undefined) {
+        throw showError('Error loading user data!')
       }
+
+      if (data.success === false) {
+        throw showError({ statusCode: 404, message: 'User not found :(' })
+      }
+
+      user = data.data
+    })
+
+    if (user == null) {
+      throw showError({ statusCode: 404, message: 'User not found :(' })
     }
 
     // set data for the page
     return {
-      error: false,
-      message: '',
-      user: (userData.value as { success: boolean, data: TableUser }).data
+      user: user as TableUser
     }
   }
 })

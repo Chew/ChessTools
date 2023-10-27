@@ -11,9 +11,9 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    const { data: userData } = await client.from('users').select('*').eq('username', username)
+    const { data: userData } = await client.from('users').select('*').eq('username', username).single()
 
-    if (userData == null || userData.length === 0) {
+    if (userData == null) {
         return {
             success: false,
             error: 'User not found.'
