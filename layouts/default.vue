@@ -18,6 +18,8 @@
             <nav-dropdown-item name="Profile" fa-icon="fas fa-user" href="/profile/me" />
             <v-divider />
             <nav-dropdown-item name="Settings" fa-icon="fas fa-cog" href="/settings/profile" />
+            <v-divider />
+            <nav-dropdown-item name="GitHub" fa-icon="fab fa-github" href="https://github.com/Chew/ChessTools" />
             <nav-dropdown-item name="Logout" fa-icon="fas fa-sign-out-alt" @click="logout" />
           </nav-dropdown>
           <navbar-item v-else name="Login" href="/login" />
