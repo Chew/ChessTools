@@ -24,6 +24,24 @@
           </v-card-text>
         </v-card>
       </v-col>
+      <v-col cols="12" md="6">
+        <v-card title="Open Source" subtitle="Contribute to the code, or help by reporting issues!" color="orange-lighten-3">
+          <v-card-text>
+            Chess.Tools is fully open source. Allowing you to be able to help improve the development of the site!
+            If you find a bug, or have a feature request, please
+            <page-link href="https://github.com/Chew/ChessTools" color="blue-darken-2" text="head on to Chew/ChessTools on GitHub" />.
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col cols="12" md="6">
+        <v-card title="Completely Free" subtitle="No ads, no paid plans." color="green-lighten-3">
+          <v-card-text>
+            Chess.Tools is completely free. We rely on donations to keep the site running.
+            If you would like to donate, head on over to
+            <page-link href="https://github.com/sponsors/Chew" color="blue-darken-2" text="Chew's sponsors page" /> and feel free to donate there!
+          </v-card-text>
+        </v-card>
+      </v-col>
     </v-row>
 
     <h2 v-if="showStats">
