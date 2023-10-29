@@ -95,9 +95,35 @@
       <h2>Moves</h2>
 
       <div class="mb-3">
-        <v-btn color="blue" class="mr-3" @click="downloadPGN($el)">
+        <v-btn v-if="history.flat().length > 0" color="blue" class="mr-3" @click="downloadPGN($el)">
           Download PGN
         </v-btn>
+        <v-dialog v-else v-model="uploadDialog" :persistent="true" width="1024">
+          <template #activator="{ props }">
+            <v-btn color="lime" class="mr-3" v-bind="props">
+              Upload PGN
+            </v-btn>
+          </template>
+          <v-card>
+            <v-card-title>
+              <span class="text-h5">Upload PGN</span>
+            </v-card-title>
+            <v-card-text>
+              <v-container>
+                <!-- big ol text box -->
+                <v-textarea v-model="pgn" label="PGN" />
+                <!-- tiny file upload box -->
+                <v-file-input v-model="pgnFile" label="PGN File" />
+              </v-container>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer />
+              <v-btn color="blue-darken-1" variant="text" @click="uploadPGN">
+                Save
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
         <v-btn v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" color="blue" @click.prevent="saveToProfile">
           Save to Profile
         </v-btn>
@@ -170,6 +196,8 @@ export default defineComponent({
       saveToProfileStatus: 'pending',
       status: 'Pending',
       whiteOnBottom: true,
+      pgn: '',
+      pgnFile: undefined as File[] | undefined,
 
       // PGN Info
       black: 'Player',
@@ -180,7 +208,30 @@ export default defineComponent({
       timeControl: '',
       result: '*',
 
-      dialog: false
+      dialog: false,
+      uploadDialog: false
+    }
+  },
+
+  // watch for file upload
+  watch: {
+    pgnFile: {
+      handler(val) {
+        if (!this.pgnFile) {
+          return
+        }
+
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          if (!e.target) {
+            return
+          }
+
+          this.pgn = e.target.result as string
+        }
+        reader.readAsText(this.pgnFile[0])
+      },
+      immediate: true
     }
   },
 
@@ -339,6 +390,43 @@ export default defineComponent({
       }
 
       this.boardAPI?.setPgnInfo(data)
+    },
+
+    uploadPGN() {
+      this.boardAPI?.loadPgn(this.pgn)
+      this.createHistory()
+
+      this.uploadDialog = false
+
+      const pgn = this.boardAPI?.getPgnInfo()
+      if (!pgn) {
+        return
+      }
+
+      this.addPGN('white', pgn.White)
+      this.addPGN('black', pgn.Black)
+      this.addPGN('whiteElo', pgn.WhiteElo)
+      this.addPGN('blackElo', pgn.BlackElo)
+      this.addPGN('event', pgn.Event)
+      this.addPGN('timeControl', pgn.TimeControl)
+      this.addPGN('result', pgn.Result)
+    },
+
+    addPGN(data: string, val: any) {
+      // @ts-ignore
+      this.$data[data] = val
+    },
+
+    createHistory() {
+      this.history = [[]]
+      const history = this.boardAPI?.getHistory(true)
+      if (!history) {
+        return
+      }
+
+      for (const move of history) {
+        this.addToHistory(move)
+      }
     },
 
     downloadPGN(el: HTMLElement) {
