@@ -90,6 +90,28 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        <v-dialog v-if="isGameOwner" width="500">
+          <template #activator="{ props }">
+            <v-btn v-bind="props" color="red">
+              <i class="fas fa-trash-can" />&nbsp;Delete
+            </v-btn>
+          </template>
+
+          <template #default="{ isActive }">
+            <v-card title="Confirmation">
+              <v-card-text>
+                Are you sure you want to delete this game? This cannot be undone!
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer />
+
+                <v-btn text="Confirm" color="red" :loading="deleting" @click="deleteGame" />
+                <v-btn text="Cancel" @click="isActive.value = false" />
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-dialog>
       </div>
 
       <p v-if="game?.tournament_info">
@@ -216,6 +238,7 @@ export default defineComponent({
       dialog: false,
       isGameOwner: false,
       saving: false,
+      deleting: false,
 
       // Tournament info
       uscfId: 0 as string | number,
@@ -579,6 +602,13 @@ export default defineComponent({
       this.rounds = rounds
       this.tournamentSection = section.id
       this.tournamentPlayer = player.pairNumber
+    },
+
+    async deleteGame() {
+      this.deleting = true
+      await useSupabaseClient<Database>().from('games').delete().eq('id', this.gameId)
+
+      navigateTo('/games')
     },
 
     // Util imports
