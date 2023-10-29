@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // fetch usernames of the users
-    const { data: users, error: usersError } = await client.from('users').select('id,username').in('id', ids)
+    const { data: users, error: usersError } = await client.from('users').select('id,username').order('created_at').in('id', ids)
 
     if (usersError) {
         return {
@@ -42,6 +42,8 @@ export default defineEventHandler(async (event) => {
     // clean the games
     const cleanedGames = games.map((game: TableGames) => {
         return cleanGame(game, id, users)
+    }).sort((a: any, b: any) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime()
     })
 
     return {

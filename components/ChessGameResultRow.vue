@@ -35,6 +35,10 @@
       </div>
     </td>
 
+    <td v-if="date !== ''">
+      {{ new Date(date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) }}
+    </td>
+
     <td v-if="link !== '' && link !== null && link !== undefined && linkNote == ''">
       <PageLink :href="link">
         <v-btn color="blue">
@@ -89,6 +93,10 @@ export default {
       default: ''
     },
     linkNote: {
+      type: String,
+      default: ''
+    },
+    date: {
       type: String,
       default: ''
     }

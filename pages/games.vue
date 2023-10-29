@@ -7,6 +7,7 @@
         <tr>
           <th>Players</th>
           <th>Result</th>
+          <th>Date</th>
           <th>View Game</th>
         </tr>
       </thead>
@@ -14,6 +15,7 @@
         <chess-game-result-row v-for="game in games" :key="game.id" :link="`/game/${game.id}`"
                                :white-player="game.whitePlayer" :black-player="game.blackPlayer"
                                :clean-result="game.cleanResult" :friendly-result="game.friendlyResult"
+                               :date="game.date"
         />
       </tbody>
     </v-table>

@@ -7,9 +7,10 @@ export type CleanedGame = {
     blackPlayer: {id: string | null, name: string, elo?: string|number},
     cleanResult: (number|string)[],
     friendlyResult: string,
+    date?: string,
 }
 
-export function cleanGame(game: TableGames, userId?: string, users?: { id: string, username: string }[]): CleanedGame {
+export function cleanGame(game: TableGames, userId?: string, users?: { id: string, username: string | null }[]): CleanedGame {
     const chess = new Chess()
     chess.loadPgn(game.pgn)
     const pgn = chess.header()
@@ -18,6 +19,12 @@ export function cleanGame(game: TableGames, userId?: string, users?: { id: strin
     const black: { id: string | null, name: string } = { id: game.black_player, name: findUser(game.black_player, users) || pgn.Black }
 
     const result = pgn.Result.includes('-') ? pgn.Result.split('-') : [-1, -1]
+    if (result[0] === '1/2') {
+        result[0] = '½'
+    }
+    if (result[1] === '1/2') {
+        result[1] = '½'
+    }
 
     const userIsWhite = userId === game.white_player && userId !== null
     const userIsBlack = userId === game.black_player && userId !== null
@@ -46,16 +53,24 @@ export function cleanGame(game: TableGames, userId?: string, users?: { id: strin
         friendlyResult = 'Draw'
     }
 
+    let date
+    if (pgn.Date) {
+        date = pgn.Date
+    } else {
+        date = game.created_at
+    }
+
     return {
         id: game.id,
         whitePlayer: { ...white, elo: pgn.WhiteElo },
         blackPlayer: { ...black, elo: pgn.BlackElo },
         cleanResult: result,
-        friendlyResult
+        friendlyResult,
+        date
     }
 }
 
-function findUser(id: string | null, users?: { id: string, username: string }[]) {
+function findUser(id: string | null, users?: { id: string, username: string | null }[]) {
     if (id == null || users === undefined) {
         return null
     }
