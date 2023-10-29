@@ -62,6 +62,15 @@
 export default defineComponent({
   name: 'index',
 
+  setup() {
+    useSeoMeta({
+      title: 'Home - Chess.Tools',
+      applicationName: 'Chess.Tools',
+      description: 'Chess.Tools is a free, open-source chess website with a focus on tools for chess players and organizers.',
+      ogSiteName: 'Chess.Tools'
+    })
+  },
+
   data() {
     return {
       games: 0,
