@@ -8,7 +8,7 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-type TournamentJson = {
+export type TournamentJson = {
   type: string,
   eventId: string,
   section: number,

@@ -11,7 +11,7 @@
         <v-btn color="green" class="mr-1" @click="switchMove(false)">
           Next Move
         </v-btn>
-        <v-dialog v-if="userId === game?.user_id" v-model="dialog" :persistent="true" width="1024">
+        <v-dialog v-if="isGameOwner" v-model="dialog" :persistent="true" width="1024">
           <template #activator="{ props }">
             <v-btn color="primary" v-bind="props">
               Edit Details
@@ -52,6 +52,31 @@
                     <v-text-field v-model="timeControl" label="Time Control" />
                   </v-col>
                 </v-row>
+                <v-row v-if="isGameOwner">
+                  <h2>Tournament Info</h2>
+                  <v-col cols="12" class="mb-0">
+                    <v-checkbox v-model="isTournament" label="Did you play this game in a US Chess/FIDE Rated tournament?" />
+                  </v-col>
+                  <v-col v-if="isTournament && canMarkTournament" md="6">
+                    <v-select v-model="tournamentId" label="Tournament" :loading="retrievingTournaments" :items="tournaments"
+                              item-title="name" item-value="eventId">
+                      <template #item="{ props, item }">
+                        <v-list-item v-bind="props" :subtitle="item.raw.date" />
+                      </template>
+                    </v-select>
+                  </v-col>
+                  <v-col v-else-if="isTournament" md="12">
+                    <v-alert type="error" text="You must have a verified US Chess integration to use this feature!" />
+                  </v-col>
+                  <v-col v-if="isTournament && tournamentId != ''">
+                    <v-select v-model="tournamentOpponent" :items="rounds" :loading="retrievingTournament"
+                              item-title="opponentName" item-value="opponentPairNumber" label="Opponent">
+                      <template #item="{ props, item }">
+                        <v-list-item v-bind="props" :subtitle="'Round ' + item.raw.roundNumber" />
+                      </template>
+                    </v-select>
+                  </v-col>
+                </v-row>
               </v-container>
             </v-card-text>
             <v-card-actions>
@@ -59,7 +84,7 @@
               <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
                 Close
               </v-btn>
-              <v-btn color="blue-darken-1" variant="text" @click="savePGN">
+              <v-btn color="blue-darken-1" variant="text" :loading="saving" @click="savePGN">
                 Save
               </v-btn>
             </v-card-actions>
@@ -140,8 +165,18 @@ import { BoardApi, BoardConfig, TheChessboard } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
 import type { Move } from 'chess.js'
 import { useSupabaseClient } from '#imports'
-import { Database, TableGames } from '~/types/supabase'
+import { Database, TableGames, TableIntegrations, TournamentJson } from '~/types/supabase'
 import { resultProps, results } from '~/utils/pgn'
+import { USCFMemberTournament, USCFTournament } from '~/types/uscf'
+import { Integrations } from '~/types/integrations'
+
+type roundImproved = {
+  roundNumber: number;
+  result: string;
+  color: string;
+  opponentPairNumber: number;
+  opponentName?: string;
+}[]
 
 export default defineComponent({
   name: '[id]',
@@ -179,6 +214,23 @@ export default defineComponent({
       opening: '' as string | null,
       whiteOnBottom: true,
       dialog: false,
+      isGameOwner: false,
+      saving: false,
+
+      // Tournament info
+      uscfId: 0 as string | number,
+      isTournament: false,
+      tournaments: [] as USCFMemberTournament[],
+      tournament: null as USCFTournament | null,
+      retrievingTournaments: false,
+      retrievingTournament: false,
+      retrievedTournaments: false,
+      canMarkTournament: true,
+      tournamentId: 0 as number | string,
+      tournamentSection: 0 as number,
+      tournamentPlayer: 0 as number,
+      tournamentOpponent: 0 as number,
+      rounds: [] as roundImproved,
 
       // PGN Info
       black: 'Player',
@@ -188,6 +240,25 @@ export default defineComponent({
       event: '',
       timeControl: '',
       result: '*'
+    }
+  },
+
+  watch: {
+    // watch for isTournament changes
+    isTournament: {
+      handler: function (val) {
+        if (val && !this.retrievedTournaments && !this.retrievingTournaments) {
+          this.retrieveTournaments()
+        }
+      }
+    },
+    // watch for tournamentId changes
+    tournamentId: {
+      handler: function (val) {
+        if (val && !this.retrievingTournament) {
+          this.retrieveTournament()
+        }
+      }
     }
   },
 
@@ -209,6 +280,8 @@ export default defineComponent({
       if (this.game == null) {
         throw showError({ statusCode: 404, statusMessage: 'Game Not Found' })
       }
+
+      this.isGameOwner = this.userId === this.game.user_id
 
       this.boardAPI?.loadPgn(this.game.pgn)
       this.createHistory()
@@ -241,6 +314,14 @@ export default defineComponent({
       }
       if (pgn.Result) {
         this.result = pgn.Result
+      }
+
+      if (this.game.tournament_info && this.isGameOwner) {
+        this.isTournament = true
+        this.tournamentId = this.game.tournament_info.eventId
+        this.tournamentSection = this.game.tournament_info.section
+        this.tournamentPlayer = this.game.tournament_info.player
+        this.tournamentOpponent = this.game.tournament_info.opponent
       }
     })
   },
@@ -364,9 +445,26 @@ export default defineComponent({
 
       this.boardAPI?.setPgnInfo(data)
 
-      const { data: supaData, error } = await useSupabaseClient<Database>().from('games').update({
+      const body: Record<string, string | object | undefined> = {
         pgn: this.boardAPI?.getPgn()
-      }).eq('id', this.gameId).select()
+      }
+
+      if (this.isTournament) {
+        body.tournament_info = {
+          type: 'uscf',
+          eventId: this.tournamentId.toString(),
+          section: this.tournamentSection,
+          player: this.tournamentPlayer,
+          opponent: this.tournamentOpponent
+        } as TournamentJson
+      }
+
+      this.saving = true
+      const { data: supaData, error } = await useSupabaseClient<Database>()
+        .from('games')
+        .update(body)
+        .eq('id', this.gameId).select()
+      this.saving = false
 
       if (error) {
         console.error(error)
@@ -374,7 +472,113 @@ export default defineComponent({
 
       if (supaData) {
         this.dialog = false
+        this.game = supaData[0]
       }
+    },
+
+    async retrieveTournaments() {
+      this.retrievingTournaments = true
+
+      // get us chess ID
+      let verifiedUscf = false
+      await $fetch<{success: boolean, error: string, integrations: Record<Integrations, TableIntegrations>}>(`/api/users/${this.userId}/integrations`)
+        .then((data) => {
+          if (!data) {
+            throw showError('Unknown error')
+          }
+
+          if (!data.success) {
+            // @ts-ignore error is just guaranteed to be a string here
+            throw showError(data.error)
+          }
+
+          this.uscfId = data.integrations.uscf?.data.id || 0
+          verifiedUscf = data.integrations.uscf?.verified
+        })
+
+      if (this.uscfId === 0 || !verifiedUscf) {
+        this.canMarkTournament = false
+        this.retrievingTournaments = false
+        this.retrievedTournaments = true
+        return
+      }
+
+      // get tournaments
+      await $fetch<{success: boolean, error: string, tournaments: USCFMemberTournament[]}>(`/api/uscf/member/${this.uscfId}/tournaments`)
+        .then((data) => {
+          if (!data) {
+            throw showError('Unknown error')
+          }
+
+          if (!data.success) {
+            // @ts-ignore error is just guaranteed to be a string here
+            throw showError(data.error)
+          }
+
+          this.tournaments = data.tournaments
+        })
+
+      this.retrievingTournaments = false
+      this.retrievedTournaments = true
+    },
+
+    async retrieveTournament() {
+      this.retrievingTournament = true
+      await $fetch<USCFTournament>(`/api/uscf/tournament/${this.tournamentId}`)
+        .then((data) => {
+          if (!data) {
+            throw showError('Unknown error')
+          }
+
+          if (!data.success) {
+            // @ts-ignore error is just guaranteed to be a string here
+            throw showError(data.error)
+          }
+
+          this.tournament = data
+        })
+
+      this.retrievingTournament = false
+      this.findSectionRounds()
+    },
+
+    findSectionRounds(): [] | undefined {
+      const tournament = this.tournaments.find(e => e.eventId.toString() === this.tournamentId.toString())
+      if (!tournament) {
+        return []
+      }
+
+      const sectionId = tournament.section.id
+      if (!sectionId) {
+        return []
+      }
+
+      const section = this.tournament?.sections.find(e => e.id === sectionId)
+
+      if (!section) {
+        return []
+      }
+
+      // build the rounds
+      const player = section.players.find(e => e.memberId === this.uscfId)
+      if (!player) {
+        return []
+      }
+
+      const rounds: roundImproved = player.rounds
+
+      // get player names >:3
+      const playerNameMap: Record<number, string> = {}
+      for (const player of section.players) {
+        playerNameMap[player.pairNumber] = player.name
+      }
+
+      for (const round of rounds) {
+        round.opponentName = playerNameMap[round.opponentPairNumber]
+      }
+      this.rounds = rounds
+      this.tournamentSection = section.id
+      this.tournamentPlayer = player.pairNumber
     },
 
     // Util imports
