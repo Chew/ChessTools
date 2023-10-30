@@ -38,24 +38,24 @@
 
     <h2>Ratings</h2>
     <v-row>
-      <v-col md="4" sm="12">
+      <v-col md="4" cols="12" sm="12">
         <rating-card name="Regular" :data="memberInfo?.ratings?.regular" icon="timer-outline" />
       </v-col>
-      <v-col md="4" sm="12">
+      <v-col md="4" cols="12" sm="12">
         <rating-card name="Quick" :data="memberInfo?.ratings?.quick" icon="flash" />
       </v-col>
-      <v-col md="4" sm="12">
+      <v-col md="4" cols="12" sm="12">
         <rating-card name="Blitz" :data="memberInfo?.ratings?.blitz" icon="fast-forward" />
       </v-col>
     </v-row>
     <v-row>
-      <v-col md="4" sm="12">
+      <v-col md="4" cols="12" sm="12">
         <rating-card name="Online Regular" :data="memberInfo?.ratings?.online_regular" icon="timer-outline" card-color="success" />
       </v-col>
-      <v-col md="4" sm="12">
+      <v-col md="4" cols="12" sm="12">
         <rating-card name="Online Quick" :data="memberInfo?.ratings?.online_quick" icon="flash" card-color="success" />
       </v-col>
-      <v-col md="4" sm="12">
+      <v-col md="4" cols="12" sm="12">
         <rating-card name="Online Blitz" :data="memberInfo?.ratings?.online_blitz" icon="fast-forward" card-color="success" />
       </v-col>
     </v-row>
