@@ -165,7 +165,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { BoardApi, Promotion, TheChessboard } from 'vue3-chessboard'
+import { BoardApi, type Promotion, TheChessboard } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
 import type { Move } from 'chess.js'
 import { buildDate, resultProps, results } from '~/utils/pgn'

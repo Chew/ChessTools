@@ -160,7 +160,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { USCFMember, USCFMemberTournament } from '~/types/uscf'
+import type { USCFMember, USCFMemberTournament } from '~/types/uscf'
 import { useLazyFetch } from '#app'
 
 export default defineComponent({

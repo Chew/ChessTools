@@ -60,10 +60,9 @@
 import { capitalize, defineComponent } from 'vue'
 import { useSeoMeta } from 'unhead'
 import titleize from 'titleize'
-import { USCFTournament } from '~/types/uscf'
-import { DataTableHeader } from '~/types/vuetify'
-import { useSupabaseClient } from '#imports'
-import { Database, TableGames } from '~/types/supabase'
+import type { USCFTournament } from '~/types/uscf'
+import type { DataTableHeader } from '~/types/vuetify'
+import type { Database, TableGames } from '~/types/supabase'
 
 export default defineComponent({
   name: '[id]',

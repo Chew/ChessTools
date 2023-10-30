@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { CleanedGame } from '~/utils/games'
+import type { CleanedGame } from '~/utils/games'
 
 export default defineComponent({
   name: 'games',

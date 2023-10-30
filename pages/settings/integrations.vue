@@ -166,9 +166,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { TableIntegrations } from '~/types/supabase'
-import { Integrations } from '~/types/integrations'
-import { USCFPlayerSearchResult, USCFPlayerSearchStates } from '~/types/uscf'
+import type { TableIntegrations } from '~/types/supabase'
+import type { Integrations } from '~/types/integrations'
+import { USCFPlayerSearchStates, type USCFPlayerSearchResult } from '~/types/uscf'
 
 export default defineComponent({
   name: 'Integrations',

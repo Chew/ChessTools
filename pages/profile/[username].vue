@@ -8,7 +8,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useFetch } from '#app'
-import { TableUser } from '~/types/supabase'
+import type { TableUser } from '~/types/supabase'
 
 export default defineComponent({
   name: '[username]',

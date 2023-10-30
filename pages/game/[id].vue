@@ -183,14 +183,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { BoardApi, BoardConfig, TheChessboard } from 'vue3-chessboard'
+import { BoardApi, TheChessboard } from 'vue3-chessboard'
+import type { BoardConfig } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
 import type { Move } from 'chess.js'
-import { useSupabaseClient } from '#imports'
-import { Database, TableGames, TableIntegrations, TournamentJson } from '~/types/supabase'
-import { resultProps, results } from '~/utils/pgn'
-import { USCFMemberTournament, USCFTournament } from '~/types/uscf'
-import { Integrations } from '~/types/integrations'
+import type { Database, TableGames, TableIntegrations, TournamentJson } from '~/types/supabase'
+import type { resultProps, results } from '~/utils/pgn'
+import type { USCFMemberTournament, USCFTournament } from '~/types/uscf'
+import type { Integrations } from '~/types/integrations'
 
 type roundImproved = {
   roundNumber: number;

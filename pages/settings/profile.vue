@@ -33,7 +33,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { useSupabaseClient } from '#imports'
-import { Database, TableUser } from '~/types/supabase'
+import type { Database, TableUser } from '~/types/supabase'
 
 export default defineComponent({
   name: 'profile',
