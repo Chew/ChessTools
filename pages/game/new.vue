@@ -117,33 +117,35 @@
         <v-btn v-if="history.flat().length > 0" color="blue" class="mr-3" @click="downloadPGN($el)">
           Download PGN
         </v-btn>
-        <v-dialog v-else v-model="uploadDialog" :persistent="true" width="1024">
+        <v-dialog v-else v-model="uploadDialog" width="1024">
           <template #activator="{ props }">
             <v-btn color="lime" class="mr-3" v-bind="props">
               Upload PGN
             </v-btn>
           </template>
-          <v-card>
+          <v-card height="576">
             <v-card-title>
               <span class="text-h5">Upload PGN</span>
             </v-card-title>
             <v-card-text>
               <v-container>
                 <!-- big ol text box -->
-                <v-textarea v-model="pgn" label="PGN" />
+                <v-textarea v-model="pgn" rows="12" label="PGN" />
                 <!-- tiny file upload box -->
-                <v-file-input v-model="pgnFile" label="PGN File" />
+                <v-file-input v-model="pgnFile" label="PGN File" prepend-icon="mdi-upload" />
               </v-container>
             </v-card-text>
             <v-card-actions>
               <v-spacer />
+              <v-btn text="Cancel" @click="uploadDialog = false" />
               <v-btn color="blue-darken-1" variant="text" @click="uploadPGN">
                 Save
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
-        <v-btn v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" color="blue" @click.prevent="saveToProfile">
+        <v-btn v-if="useSupabaseUser() && saveToProfileStatus === 'pending'" color="blue" :disabled="history.flat().length == 0"
+               @click.prevent="saveToProfile">
           Save to Profile
         </v-btn>
         <v-btn v-else-if="saveToProfileStatus === 'sending'" color="grey" :disabled="true">
@@ -350,11 +352,13 @@ export default defineComponent({
       }
     },
 
-    handleReset() {
+    handleReset(isActive: Ref<boolean>) {
       this.boardAPI?.resetBoard()
       this.status = 'Pending'
       this.saveToProfileStatus = 'pending'
       this.history = [[]]
+      this.whiteOnBottom = true
+      isActive.value = false
     },
 
     /**
