@@ -5,9 +5,28 @@
         <v-btn color="blue" class="mr-1" @click="handleOrientation">
           Switch Sides
         </v-btn>
-        <v-btn color="red" class="mr-1" @click="handleReset">
-          Reset
-        </v-btn>
+        <v-dialog width="500">
+          <template #activator="{ props }">
+            <v-btn v-bind="props" color="red" class="mr-1">
+              Reset
+            </v-btn>
+          </template>
+
+          <template #default="{ isActive }">
+            <v-card title="Confirmation">
+              <v-card-text>
+                Are you sure you want to reset the board?
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer />
+
+                <v-btn text="Confirm" color="red" @click="handleReset(isActive)" />
+                <v-btn text="Cancel" @click="isActive.value = false" />
+              </v-card-actions>
+            </v-card>
+          </template>
+        </v-dialog>
         <v-btn color="orange" class="mr-1" @click="handleUndo">
           Undo
         </v-btn>
