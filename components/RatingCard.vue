@@ -20,9 +20,11 @@
         <span v-if="data.current.games">({{ data.current.games }} games)</span>
         <span v-else-if="data.current.floor">(floor: {{ data.current.floor }})</span>
       </span>
-      <span v-if="data.future">
+      <span v-if="data.future && data.future.elo !== data.current.elo">
         <br>
-        Future ({{ data.future.date }}): {{ data.future.elo }} ({{ data.future.games }} games)
+        Future:
+        ({{ data.future.date }}): {{ data.future.elo }}
+        <span v-if="data.future.games">({{ data.future.games }} games)</span>
       </span>
     </v-card-text>
   </v-card>
