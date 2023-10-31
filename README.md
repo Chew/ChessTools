@@ -1,18 +1,18 @@
 # Chess.Tools Site
 
-View all your chess stats across federations and chess websites on one site!
+The ultimate Chess website for statiaticians. View all your chess stats across federations and chess websites on one site!
 
 ## Features
 
 (All in progress, but planned!)
 
-- [x] View your USCF stats
-- [x] View your Lichess stats
+- [x] Notate your OTB games with the game viewer
 - [x] View your Chess.com stats
-- [x] View your Chess24 stats
+- [x] View your Lichess stats
+- [x] View your US Chess stats
 - [x] View your FIDE stats
 
-More!
+And even more features coming soon!
 
 ## Development
 
@@ -27,7 +27,7 @@ This site uses Nuxt, a Vue framework. We use Bun as our package manager.
 
 ### Setting Up Development Environment
 
-1. Clone the repo
+1. Fork and clone the repo
 2. Run `bun install` to install dependencies
 3. Prepare the `.env` file as follows
     ```
@@ -39,6 +39,7 @@ This site uses Nuxt, a Vue framework. We use Bun as our package manager.
     SUPABASE_KEY="<your_key>"
     SUPABASE_SERVICE_KEY="<your_service_key>"
     ```
-5. Run `bun run dev` to start the development server
-6. Go to `localhost:3000` to view the site
-7. Make changes and submit a pull request!
+5. Fill out extra `.env` options as needed
+6. Run `bun run dev` to start the development server
+7. Go to `localhost:3000` to view the site
+8. Make changes and submit a pull request!
