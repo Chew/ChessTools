@@ -26,7 +26,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import type { Ref, PropType } from 'vue'
-import { Integrations } from '~/types/integrations'
+import type { Integrations } from '~/types/integrations'
 
 export default defineComponent({
   name: 'UnlinkIntegrationButton',

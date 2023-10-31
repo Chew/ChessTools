@@ -18,7 +18,7 @@ import { defineComponent } from 'vue'
 import { Pie } from 'vue-chartjs'
 
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
-import { USCFMemberRanking } from '~/types/uscf'
+import type { USCFMemberRanking } from '~/types/uscf'
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
 

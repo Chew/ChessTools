@@ -47,9 +47,9 @@
 <script lang="ts">
 import type { PropType } from 'vue'
 import { capitalize, defineComponent } from 'vue'
-import { USCFTournamentSectionPlayer } from '~/types/uscf'
+import type { USCFTournamentSectionPlayer } from '~/types/uscf'
 import ChessGameResultRow from '~/components/ChessGameResultRow.vue'
-import { TableGames } from '~/types/supabase'
+import { type TableGames } from '~/types/supabase'
 
 export default defineComponent({
   name: 'UscfTournamentPlayerInfo',

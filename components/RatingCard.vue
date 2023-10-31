@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { USCFMemberRating } from '~/types/uscf'
+import type { USCFMemberRating } from '~/types/uscf'
 
 export default defineComponent({
   name: 'RatingCard',
