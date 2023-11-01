@@ -36,57 +36,7 @@
         <v-btn color="green" class="mr-1" @click="randomMove">
           Random Move
         </v-btn>
-        <v-dialog v-model="dialog" :persistent="true" width="1024">
-          <template #activator="{ props }">
-            <v-btn color="primary" v-bind="props">
-              Edit Details
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">Edit Game Details</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="8" sm="8" md="8">
-                    <v-text-field v-model="white" label="White Player" />
-                  </v-col>
-                  <v-col cols="4" sm="4" md="4">
-                    <v-text-field v-model="whiteElo" label="Elo" />
-                  </v-col>
-                  <v-col cols="8" sm="8" md="8">
-                    <v-text-field v-model="black" label="Black Player" />
-                  </v-col>
-                  <v-col cols="4" sm="4" md="4">
-                    <v-text-field v-model="blackElo" label="Elo" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12">
-                    <v-select v-model="result" :items="results()" :item-props="resultProps" label="Result" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="event" label="Event" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="timeControl" label="Time Control" />
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <edit-game-dialog @save="savePGN" />
       </div>
       <p>Game State: {{ status }}</p>
       <v-row class="row g-3 align-items-center">
@@ -389,6 +339,37 @@ export default defineComponent({
 
         this.saveToProfileStatus = 'success'
       })
+    },
+
+    savePGN(data: Record<string, any>, pgn: Record<string, string>) {
+      const pgnInfo = this.boardAPI?.getPgnInfo()
+      if (!pgnInfo) {
+        return
+      }
+
+      data.saving = true
+
+      const pgnData: Record<string, string> = {}
+      // add all non-undefined keys from pgnInfo
+      for (const key in pgnInfo) {
+        const info = pgnInfo[key]
+        if (info === undefined) {
+          continue
+        }
+        pgnData[key] = info
+      }
+
+      for (const key in pgn) {
+        const info = pgn[key]
+        if (info === undefined) {
+          continue
+        }
+        pgnData[key] = info
+      }
+
+      this.boardAPI?.setPgnInfo(pgnData)
+      data.saving = false
+      data.dialog = false
     },
 
     updatePGN() {
