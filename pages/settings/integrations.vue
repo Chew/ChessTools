@@ -62,7 +62,40 @@
         <tr>
           <td>US Chess</td>
           <td>{{ integrations.uscf?.data.id || "Unlinked" }}</td>
-          <td><verified-chip :verified="integrations.uscf?.verified || false" /></td>
+          <td v-if="integrations.uscf?.verified === false">
+            <v-dialog width="500">
+              <template #activator="{ props }">
+                <verified-chip v-bind="props" :verified="false" />
+              </template>
+
+              <template #default="{ isActive }">
+                <v-card title="Verify US Chess">
+                  <v-card-text>
+                    Verifying your US Chess Account.
+
+                    <v-list lines="one">
+                      <v-list-item title="#1: Create a Forum Account">
+                        Head on to <page-link href="https://uschess.discourse.group" text="the US Chess forums" /> and make an account.
+                      </v-list-item>
+                      <v-list-item title="#2: Start a DM with Chew">
+                        Once you register, start a new DM with <page-link href="https://uschess.discourse.group/u/chew" text="@Chew" />.
+                        Inside the DM, put your Chess.Tools username and indicate you're verifying your US Chess account.
+                      </v-list-item>
+                    </v-list>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-spacer />
+
+                    <v-btn text="Okay" @click="isActive.value = false" />
+                  </v-card-actions>
+                </v-card>
+              </template>
+            </v-dialog>
+          </td>
+          <td v-else>
+            <verified-chip :verified="integrations.uscf?.verified || false" />
+          </td>
           <td v-if="integrations.uscf">
             <unlink-integration-button integration="uscf" @success="handleUnlinked('uscf')" @failure="(e: string) => showFailure(e)" />
           </td>
