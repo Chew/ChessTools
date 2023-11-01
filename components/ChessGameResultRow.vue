@@ -24,11 +24,12 @@
         <div class="ml-2">
           <v-tooltip :text="friendlyResult">
             <template #activator="{ props }">
-              <i v-if="friendlyResult.includes('Win')" v-bind="props"
-                 class="fa-solid fa-square-plus text-green-lighten-1" />
-              <i v-else-if="friendlyResult.includes('Loss')" v-bind="props"
-                 class="fa-solid fa-square-minus text-red-lighten-1" />
-              <i v-else v-bind="props" class="fa-solid fa-square text-gray-lighten-1" />
+              <v-icon v-if="friendlyResult.includes('Win')" v-bind="props" size="20"
+                      icon="mdi-plus-box" class="text-green-lighten-1" />
+              <v-icon v-else-if="friendlyResult.includes('Loss')" v-bind="props" size="20"
+                      icon="mdi-minus-box" class="text-red-lighten-1" />
+              <v-icon v-else v-bind="props" size="20"
+                      icon="mdi-equal-box" class="text-grey-lighten-1" />
             </template>
           </v-tooltip>
         </div>
