@@ -53,5 +53,5 @@ export default defineNuxtConfig({
 
   },
 
-  modules: ['@nuxtjs/supabase', '@nuxtjs/turnstile', '@nuxtjs/eslint-module', 'vuetify-nuxt-module']
+  modules: ['@nuxtjs/supabase', '@nuxtjs/turnstile', '@nuxtjs/eslint-module', 'vuetify-nuxt-module', 'nuxt-simple-sitemap']
 })
