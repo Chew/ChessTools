@@ -43,10 +43,16 @@
         </PageLink>
       </p>
 
-      <v-row class="row g-3 align-items-center">
-        <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" :readonly="true" label="Black" />
-          <v-text-field v-else v-model="white" type="text" :readonly="true" label="White" />
+      <v-row class="row g-3 align-items-center mb-1">
+        <v-col cols="6">
+          <v-card variant="tonal">
+            <v-card-text>
+              {{ whiteOnBottom ? black : white }}
+              <span v-if="whiteOnBottom ? blackElo : whiteElo" class="text-grey-darken-1">
+                ({{ whiteOnBottom ? blackElo : whiteElo }})
+              </span>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
 
@@ -56,10 +62,18 @@
         @move="handleMove"
       />
 
-      <v-row class="row g-3 align-items-center mt-3">
+      <v-row class="row g-3 align-items-center">
         <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" :readonly="true" label="White" />
-          <v-text-field v-else v-model="black" type="text" :readonly="true" label="Black" />
+          <v-col cols="6">
+            <v-card variant="tonal">
+              <v-card-text>
+                {{ whiteOnBottom ? white : black }}
+                <span v-if="whiteOnBottom ? whiteElo : blackElo" class="text-grey-darken-1">
+                  ({{ whiteOnBottom ? blackElo : blackElo }})
+                </span>
+              </v-card-text>
+            </v-card>
+          </v-col>
         </v-col>
       </v-row>
     </v-col>
@@ -169,7 +183,9 @@ export default defineComponent({
       deleting: false,
 
       white: 'meow',
-      black: 'meow'
+      whiteElo: '0',
+      black: 'meow',
+      blackElo: '0'
     }
   },
 
@@ -227,6 +243,7 @@ export default defineComponent({
       setImmediate(() => {
         this.boardAPI?.loadPgn(this.game.pgn)
         this.createHistory()
+        this.updatePlayerInfo()
       })
       setImmediate(() => {
         this.boardAPI?.getOpeningName().then((data) => {
@@ -279,6 +296,18 @@ export default defineComponent({
       }
     },
 
+    updatePlayerInfo() {
+      const pgn = this.boardAPI?.getPgnInfo()
+      if (!pgn) {
+        return
+      }
+
+      if (pgn.White) { this.white = pgn.White }
+      if (pgn.WhiteElo) { this.whiteElo = pgn.WhiteElo }
+      if (pgn.Black) { this.black = pgn.Black }
+      if (pgn.BlackElo) { this.blackElo = pgn.BlackElo }
+    },
+
     async savePGN(data: Record<string, any>, pgn: Record<string, string>, tournamentInfo: TournamentJson | null) {
       data.saving = true
 
@@ -297,6 +326,8 @@ export default defineComponent({
         .update(body)
         .eq('id', this.gameId).select()
       data.saving = false
+
+      this.updatePlayerInfo()
 
       if (error) {
         console.error(error)

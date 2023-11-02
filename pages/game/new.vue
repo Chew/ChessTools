@@ -15,7 +15,7 @@
           <template #default="{ isActive }">
             <v-card title="Confirmation">
               <v-card-text>
-                Are you sure you want to reset the board?
+                Are you sure you want to reset the board? This does not wipe the PGN.
               </v-card-text>
 
               <v-card-actions>
@@ -39,10 +39,16 @@
         <edit-game-dialog @save="savePGN" />
       </div>
       <p>Game State: {{ status }}</p>
-      <v-row class="row g-3 align-items-center">
-        <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" label="Black" />
-          <v-text-field v-else v-model="white" type="text" label="White" />
+      <v-row class="row g-3 align-items-center mb-1">
+        <v-col cols="6">
+          <v-card variant="tonal">
+            <v-card-text>
+              {{ whiteOnBottom ? black : white }}
+              <span v-if="whiteOnBottom ? blackElo : whiteElo" class="text-grey-darken-1">
+                ({{ whiteOnBottom ? blackElo : whiteElo }})
+              </span>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
       <the-chessboard
@@ -53,10 +59,18 @@
         @checkmate="handleCheckmate"
       />
 
-      <v-row class="row g-3 align-items-center mt-3">
+      <v-row class="row g-3 align-items-center">
         <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" label="White" />
-          <v-text-field v-else v-model="black" type="text" label="Black" />
+          <v-col cols="6">
+            <v-card variant="tonal">
+              <v-card-text>
+                {{ whiteOnBottom ? white : black }}
+                <span v-if="whiteOnBottom ? whiteElo : blackElo" class="text-grey-darken-1">
+                  ({{ whiteOnBottom ? blackElo : blackElo }})
+                </span>
+              </v-card-text>
+            </v-card>
+          </v-col>
         </v-col>
       </v-row>
     </v-col>
@@ -303,7 +317,18 @@ export default defineComponent({
     },
 
     handleReset(isActive: Ref<boolean>) {
+      const pgn = this.boardAPI?.getPgnInfo()
       this.boardAPI?.resetBoard()
+      if (pgn) {
+        // remove all undefined keys from pgn
+        for (const key in pgn) {
+          const info = pgn[key]
+          if (info === undefined) {
+            delete pgn[key]
+          }
+        }
+        this.boardAPI?.setPgnInfo(pgn as Record<string, string>)
+      }
       this.status = 'Pending'
       this.saveToProfileStatus = 'pending'
       this.history = [[]]
@@ -368,6 +393,12 @@ export default defineComponent({
       }
 
       this.boardAPI?.setPgnInfo(pgnData)
+
+      this.white = pgnData.White
+      this.black = pgnData.Black
+      this.whiteElo = pgnData.WhiteElo ? parseInt(pgnData.WhiteElo) : null
+      this.blackElo = pgnData.BlackElo ? parseInt(pgnData.BlackElo) : null
+
       data.saving = false
       data.dialog = false
     },
