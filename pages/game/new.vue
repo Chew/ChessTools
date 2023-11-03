@@ -15,7 +15,7 @@
           <template #default="{ isActive }">
             <v-card title="Confirmation">
               <v-card-text>
-                Are you sure you want to reset the board?
+                Are you sure you want to reset the board? This does not wipe the PGN.
               </v-card-text>
 
               <v-card-actions>
@@ -36,63 +36,19 @@
         <v-btn color="green" class="mr-1" @click="randomMove">
           Random Move
         </v-btn>
-        <v-dialog v-model="dialog" :persistent="true" width="1024">
-          <template #activator="{ props }">
-            <v-btn color="primary" v-bind="props">
-              Edit Details
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">Edit Game Details</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="8" sm="8" md="8">
-                    <v-text-field v-model="white" label="White Player" />
-                  </v-col>
-                  <v-col cols="4" sm="4" md="4">
-                    <v-text-field v-model="whiteElo" label="Elo" />
-                  </v-col>
-                  <v-col cols="8" sm="8" md="8">
-                    <v-text-field v-model="black" label="Black Player" />
-                  </v-col>
-                  <v-col cols="4" sm="4" md="4">
-                    <v-text-field v-model="blackElo" label="Elo" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12">
-                    <v-select v-model="result" :items="results()" :item-props="resultProps" label="Result" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="event" label="Event" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="timeControl" label="Time Control" />
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <edit-game-dialog @save="savePGN" />
       </div>
       <p>Game State: {{ status }}</p>
-      <v-row class="row g-3 align-items-center">
-        <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" label="Black" />
-          <v-text-field v-else v-model="white" type="text" label="White" />
+      <v-row class="row g-3 align-items-center mb-1">
+        <v-col cols="6">
+          <v-card variant="tonal">
+            <v-card-text>
+              {{ whiteOnBottom ? black : white }}
+              <span v-if="whiteOnBottom ? blackElo : whiteElo" class="text-grey-darken-1">
+                ({{ whiteOnBottom ? blackElo : whiteElo }})
+              </span>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
       <the-chessboard
@@ -103,10 +59,18 @@
         @checkmate="handleCheckmate"
       />
 
-      <v-row class="row g-3 align-items-center mt-3">
+      <v-row class="row g-3 align-items-center">
         <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" label="White" />
-          <v-text-field v-else v-model="black" type="text" label="Black" />
+          <v-col cols="6">
+            <v-card variant="tonal">
+              <v-card-text>
+                {{ whiteOnBottom ? white : black }}
+                <span v-if="whiteOnBottom ? whiteElo : blackElo" class="text-grey-darken-1">
+                  ({{ whiteOnBottom ? blackElo : blackElo }})
+                </span>
+              </v-card-text>
+            </v-card>
+          </v-col>
         </v-col>
       </v-row>
     </v-col>
@@ -353,7 +317,18 @@ export default defineComponent({
     },
 
     handleReset(isActive: Ref<boolean>) {
+      const pgn = this.boardAPI?.getPgnInfo()
       this.boardAPI?.resetBoard()
+      if (pgn) {
+        // remove all undefined keys from pgn
+        for (const key in pgn) {
+          const info = pgn[key]
+          if (info === undefined) {
+            delete pgn[key]
+          }
+        }
+        this.boardAPI?.setPgnInfo(pgn as Record<string, string>)
+      }
       this.status = 'Pending'
       this.saveToProfileStatus = 'pending'
       this.history = [[]]
@@ -389,6 +364,43 @@ export default defineComponent({
 
         this.saveToProfileStatus = 'success'
       })
+    },
+
+    savePGN(data: Record<string, any>, pgn: Record<string, string>) {
+      const pgnInfo = this.boardAPI?.getPgnInfo()
+      if (!pgnInfo) {
+        return
+      }
+
+      data.saving = true
+
+      const pgnData: Record<string, string> = {}
+      // add all non-undefined keys from pgnInfo
+      for (const key in pgnInfo) {
+        const info = pgnInfo[key]
+        if (info === undefined) {
+          continue
+        }
+        pgnData[key] = info
+      }
+
+      for (const key in pgn) {
+        const info = pgn[key]
+        if (info === undefined) {
+          continue
+        }
+        pgnData[key] = info
+      }
+
+      this.boardAPI?.setPgnInfo(pgnData)
+
+      this.white = pgnData.White
+      this.black = pgnData.Black
+      this.whiteElo = pgnData.WhiteElo ? parseInt(pgnData.WhiteElo) : null
+      this.blackElo = pgnData.BlackElo ? parseInt(pgnData.BlackElo) : null
+
+      data.saving = false
+      data.dialog = false
     },
 
     updatePGN() {

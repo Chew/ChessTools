@@ -11,85 +11,7 @@
         <v-btn color="green" class="mr-1" @click="switchMove(false)">
           Next Move
         </v-btn>
-        <v-dialog v-if="isGameOwner" v-model="dialog" :persistent="true" width="1024">
-          <template #activator="{ props }">
-            <v-btn color="primary" v-bind="props">
-              Edit Details
-            </v-btn>
-          </template>
-          <v-card>
-            <v-card-title>
-              <span class="text-h5">Edit Game Details</span>
-            </v-card-title>
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <v-col cols="8" sm="8" md="8">
-                    <v-text-field v-model="white" label="White Player" />
-                  </v-col>
-                  <v-col cols="4" sm="4" md="4">
-                    <v-text-field v-model="whiteElo" label="Elo" />
-                  </v-col>
-                  <v-col cols="8" sm="8" md="8">
-                    <v-text-field v-model="black" label="Black Player" />
-                  </v-col>
-                  <v-col cols="4" sm="4" md="4">
-                    <v-text-field v-model="blackElo" label="Elo" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12">
-                    <v-select v-model="result" :items="results()" :item-props="resultProps" label="Result" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="event" label="Event" />
-                  </v-col>
-                </v-row>
-                <v-row>
-                  <v-col cols="12" sm="12" md="12">
-                    <v-text-field v-model="timeControl" label="Time Control" />
-                  </v-col>
-                </v-row>
-                <v-row v-if="isGameOwner">
-                  <h2>Tournament Info</h2>
-                  <v-col cols="12" class="mb-0">
-                    <v-checkbox v-model="isTournament" label="Did you play this game in a US Chess/FIDE Rated tournament?" />
-                  </v-col>
-                  <v-col v-if="isTournament && canMarkTournament" md="6">
-                    <v-select v-model="tournamentId" label="Tournament" :loading="retrievingTournaments" :items="tournaments"
-                              item-title="name" item-value="eventId">
-                      <template #item="{ props, item }">
-                        <v-list-item v-bind="props" :subtitle="item.raw.date" />
-                      </template>
-                    </v-select>
-                  </v-col>
-                  <v-col v-else-if="isTournament" md="12">
-                    <v-alert type="error" text="You must have a verified US Chess integration to use this feature!" />
-                  </v-col>
-                  <v-col v-if="isTournament && tournamentId != ''">
-                    <v-select v-model="tournamentOpponent" :items="rounds" :loading="retrievingTournament"
-                              item-title="opponentName" item-value="opponentPairNumber" label="Opponent">
-                      <template #item="{ props, item }">
-                        <v-list-item v-bind="props" :subtitle="'Round ' + item.raw.roundNumber" />
-                      </template>
-                    </v-select>
-                  </v-col>
-                </v-row>
-              </v-container>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer />
-              <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                Close
-              </v-btn>
-              <v-btn color="blue-darken-1" variant="text" :loading="saving" @click="savePGN">
-                Save
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
+        <edit-game-dialog :show-tournament-settings="true" :user-id="userId" :game="game" @save="savePGN" />
         <v-dialog v-if="isGameOwner" width="500">
           <template #activator="{ props }">
             <v-btn v-bind="props" color="red">
@@ -121,10 +43,16 @@
         </PageLink>
       </p>
 
-      <v-row class="row g-3 align-items-center">
-        <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="black" type="text" :readonly="true" label="Black" />
-          <v-text-field v-else v-model="white" type="text" :readonly="true" label="White" />
+      <v-row class="row g-3 align-items-center mb-1">
+        <v-col cols="6">
+          <v-card variant="tonal">
+            <v-card-text>
+              {{ whiteOnBottom ? black : white }}
+              <span v-if="whiteOnBottom ? blackElo : whiteElo" class="text-grey-darken-1">
+                ({{ whiteOnBottom ? blackElo : whiteElo }})
+              </span>
+            </v-card-text>
+          </v-card>
         </v-col>
       </v-row>
 
@@ -134,10 +62,18 @@
         @move="handleMove"
       />
 
-      <v-row class="row g-3 align-items-center mt-3">
+      <v-row class="row g-3 align-items-center">
         <v-col>
-          <v-text-field v-if="whiteOnBottom" v-model="white" type="text" :readonly="true" label="White" />
-          <v-text-field v-else v-model="black" type="text" :readonly="true" label="Black" />
+          <v-col cols="6">
+            <v-card variant="tonal">
+              <v-card-text>
+                {{ whiteOnBottom ? white : black }}
+                <span v-if="whiteOnBottom ? whiteElo : blackElo" class="text-grey-darken-1">
+                  ({{ whiteOnBottom ? blackElo : blackElo }})
+                </span>
+              </v-card-text>
+            </v-card>
+          </v-col>
         </v-col>
       </v-row>
     </v-col>
@@ -187,18 +123,7 @@ import { BoardApi, TheChessboard } from 'vue3-chessboard'
 import type { BoardConfig } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
 import type { Move } from 'chess.js'
-import type { Database, TableGames, TableIntegrations, TournamentJson } from '~/types/supabase'
-import type { resultProps, results } from '~/utils/pgn'
-import type { USCFMemberTournament, USCFTournament } from '~/types/uscf'
-import type { Integrations } from '~/types/integrations'
-
-type roundImproved = {
-  roundNumber: number;
-  result: string;
-  color: string;
-  opponentPairNumber: number;
-  opponentName?: string;
-}[]
+import type { Database, TableGames, TournamentJson } from '~/types/supabase'
 
 export default defineComponent({
   name: '[id]',
@@ -207,7 +132,7 @@ export default defineComponent({
     TheChessboard
   },
 
-  setup() {
+  async setup() {
     const user = useSupabaseUser().value
     const route = useRoute()
     const id = route.params.id
@@ -217,9 +142,28 @@ export default defineComponent({
       description: 'View this game of chess on Chess.Tools! See all the moves, the details, and more!'
     })
 
+    let game: TableGames | null = null
+    let isGameOwner = false
+    const res = await useSupabaseClient<Database>().from('games').select('*').eq('id', id).single()
+    const data = res.data
+    if (!data) {
+      // throw 404
+      throw showError({ statusCode: 500, statusMessage: 'Error fetching game! DATA IS GONE??' })
+    }
+
+    game = data
+
+    if (game == null) {
+      throw showError({ statusCode: 404, statusMessage: 'Game Not Found' })
+    }
+
+    isGameOwner = user?.id === game.user_id
+
     return {
       userId: user?.id,
-      gameId: id
+      gameId: id,
+      isGameOwner,
+      game
     }
   },
 
@@ -231,122 +175,18 @@ export default defineComponent({
         viewOnly: false
       } as BoardConfig,
       history: [[]] as Move[][],
-      game: null as TableGames | null,
       index: 0,
       opening: '' as string | null,
       whiteOnBottom: true,
       dialog: false,
-      isGameOwner: false,
       saving: false,
       deleting: false,
 
-      // Tournament info
-      uscfId: 0 as string | number,
-      isTournament: false,
-      tournaments: [] as USCFMemberTournament[],
-      tournament: null as USCFTournament | null,
-      retrievingTournaments: false,
-      retrievingTournament: false,
-      retrievedTournaments: false,
-      canMarkTournament: true,
-      tournamentId: 0 as number | string,
-      tournamentSection: 0 as number,
-      tournamentPlayer: 0 as number,
-      tournamentOpponent: 0 as number,
-      rounds: [] as roundImproved,
-
-      // PGN Info
-      black: 'Player',
-      blackElo: null as string | null,
-      white: 'Player',
-      whiteElo: null as string | null,
-      event: '',
-      timeControl: '',
-      result: '*'
+      white: 'meow',
+      whiteElo: '0',
+      black: 'meow',
+      blackElo: '0'
     }
-  },
-
-  watch: {
-    // watch for isTournament changes
-    isTournament: {
-      handler: function (val) {
-        if (val && !this.retrievedTournaments && !this.retrievingTournaments) {
-          this.retrieveTournaments()
-        }
-      }
-    },
-    // watch for tournamentId changes
-    tournamentId: {
-      handler: function (val) {
-        if (val && !this.retrievingTournament) {
-          this.retrieveTournament()
-        }
-      }
-    }
-  },
-
-  beforeMount() {
-    useSupabaseClient<Database>().from('games').select('*').eq('id', this.gameId).then((res) => {
-      const data = res.data
-      if (!data) {
-        // throw 404
-        throw showError({ statusCode: 500, statusMessage: 'Error fetching game! DATA IS GONE??' })
-      }
-
-      if (data.length === 0) {
-        // throw 404
-        throw showError({ statusCode: 404, statusMessage: 'Game Not Found' })
-      }
-
-      this.game = data[0]
-
-      if (this.game == null) {
-        throw showError({ statusCode: 404, statusMessage: 'Game Not Found' })
-      }
-
-      this.isGameOwner = this.userId === this.game.user_id
-
-      this.boardAPI?.loadPgn(this.game.pgn)
-      this.createHistory()
-      this.boardAPI?.getOpeningName().then((data) => {
-        this.opening = data
-      })
-
-      const pgn = this.boardAPI?.getPgnInfo()
-      if (!pgn) {
-        return
-      }
-
-      if (pgn.White) {
-        this.white = pgn.White
-      }
-      if (pgn.Black) {
-        this.black = pgn.Black
-      }
-      if (pgn.WhiteElo) {
-        this.whiteElo = pgn.WhiteElo
-      }
-      if (pgn.BlackElo) {
-        this.blackElo = pgn.BlackElo
-      }
-      if (pgn.Event) {
-        this.event = pgn.Event
-      }
-      if (pgn.TimeControl) {
-        this.timeControl = pgn.TimeControl
-      }
-      if (pgn.Result) {
-        this.result = pgn.Result
-      }
-
-      if (this.game.tournament_info && this.isGameOwner) {
-        this.isTournament = true
-        this.tournamentId = this.game.tournament_info.eventId
-        this.tournamentSection = this.game.tournament_info.section
-        this.tournamentPlayer = this.game.tournament_info.player
-        this.tournamentOpponent = this.game.tournament_info.opponent
-      }
-    })
   },
 
   methods: {
@@ -400,6 +240,16 @@ export default defineComponent({
 
     handleBoardCreated(api: BoardApi) {
       this.boardAPI = api
+      setImmediate(() => {
+        this.boardAPI?.loadPgn(this.game.pgn)
+        this.createHistory()
+        this.updatePlayerInfo()
+      })
+      setImmediate(() => {
+        this.boardAPI?.getOpeningName().then((data) => {
+          this.opening = data
+        })
+      })
     },
 
     downloadPGN() {
@@ -446,162 +296,47 @@ export default defineComponent({
       }
     },
 
-    async savePGN() {
-      const data: Record<string, string> = {
-        White: this.white,
-        Black: this.black,
-        Result: this.result
+    updatePlayerInfo() {
+      const pgn = this.boardAPI?.getPgnInfo()
+      if (!pgn) {
+        return
       }
 
-      if (this.whiteElo) {
-        data.WhiteElo = this.whiteElo.toString()
-      }
-      if (this.blackElo) {
-        data.BlackElo = this.blackElo.toString()
-      }
-      if (this.event) {
-        data.Event = this.event
-      }
-      if (this.timeControl) {
-        data.TimeControl = this.timeControl
-      }
+      if (pgn.White) { this.white = pgn.White }
+      if (pgn.WhiteElo) { this.whiteElo = pgn.WhiteElo }
+      if (pgn.Black) { this.black = pgn.Black }
+      if (pgn.BlackElo) { this.blackElo = pgn.BlackElo }
+    },
 
-      this.boardAPI?.setPgnInfo(data)
+    async savePGN(data: Record<string, any>, pgn: Record<string, string>, tournamentInfo: TournamentJson | null) {
+      data.saving = true
+
+      this.boardAPI?.setPgnInfo(pgn)
 
       const body: Record<string, string | object | undefined> = {
         pgn: this.boardAPI?.getPgn()
       }
 
-      if (this.isTournament) {
-        body.tournament_info = {
-          type: 'uscf',
-          eventId: this.tournamentId.toString(),
-          section: this.tournamentSection,
-          player: this.tournamentPlayer,
-          opponent: this.tournamentOpponent
-        } as TournamentJson
+      if (tournamentInfo) {
+        body.tournament_info = tournamentInfo
       }
 
-      this.saving = true
       const { data: supaData, error } = await useSupabaseClient<Database>()
         .from('games')
         .update(body)
         .eq('id', this.gameId).select()
-      this.saving = false
+      data.saving = false
+
+      this.updatePlayerInfo()
 
       if (error) {
         console.error(error)
       }
 
       if (supaData) {
-        this.dialog = false
+        data.dialog = false
         this.game = supaData[0]
       }
-    },
-
-    async retrieveTournaments() {
-      this.retrievingTournaments = true
-
-      // get us chess ID
-      let verifiedUscf = false
-      await $fetch<{success: boolean, error: string, integrations: Record<Integrations, TableIntegrations>}>(`/api/users/${this.userId}/integrations`)
-        .then((data) => {
-          if (!data) {
-            throw showError('Unknown error')
-          }
-
-          if (!data.success) {
-            // @ts-ignore error is just guaranteed to be a string here
-            throw showError(data.error)
-          }
-
-          this.uscfId = data.integrations.uscf?.data.id || 0
-          verifiedUscf = data.integrations.uscf?.verified
-        })
-
-      if (this.uscfId === 0 || !verifiedUscf) {
-        this.canMarkTournament = false
-        this.retrievingTournaments = false
-        this.retrievedTournaments = true
-        return
-      }
-
-      // get tournaments
-      await $fetch<{success: boolean, error: string, tournaments: USCFMemberTournament[]}>(`/api/uscf/member/${this.uscfId}/tournaments`)
-        .then((data) => {
-          if (!data) {
-            throw showError('Unknown error')
-          }
-
-          if (!data.success) {
-            // @ts-ignore error is just guaranteed to be a string here
-            throw showError(data.error)
-          }
-
-          this.tournaments = data.tournaments
-        })
-
-      this.retrievingTournaments = false
-      this.retrievedTournaments = true
-    },
-
-    async retrieveTournament() {
-      this.retrievingTournament = true
-      await $fetch<USCFTournament>(`/api/uscf/tournament/${this.tournamentId}`)
-        .then((data) => {
-          if (!data) {
-            throw showError('Unknown error')
-          }
-
-          if (!data.success) {
-            // @ts-ignore error is just guaranteed to be a string here
-            throw showError(data.error)
-          }
-
-          this.tournament = data
-        })
-
-      this.retrievingTournament = false
-      this.findSectionRounds()
-    },
-
-    findSectionRounds(): [] | undefined {
-      const tournament = this.tournaments.find(e => e.eventId.toString() === this.tournamentId.toString())
-      if (!tournament) {
-        return []
-      }
-
-      const sectionId = tournament.section.id
-      if (!sectionId) {
-        return []
-      }
-
-      const section = this.tournament?.sections.find(e => e.id === sectionId)
-
-      if (!section) {
-        return []
-      }
-
-      // build the rounds
-      const player = section.players.find(e => e.memberId === this.uscfId)
-      if (!player) {
-        return []
-      }
-
-      const rounds: roundImproved = player.rounds
-
-      // get player names >:3
-      const playerNameMap: Record<number, string> = {}
-      for (const player of section.players) {
-        playerNameMap[player.pairNumber] = player.name
-      }
-
-      for (const round of rounds) {
-        round.opponentName = playerNameMap[round.opponentPairNumber]
-      }
-      this.rounds = rounds
-      this.tournamentSection = section.id
-      this.tournamentPlayer = player.pairNumber
     },
 
     async deleteGame() {
@@ -609,12 +344,6 @@ export default defineComponent({
       await useSupabaseClient<Database>().from('games').delete().eq('id', this.gameId)
 
       navigateTo('/games')
-    },
-
-    // Util imports
-    resultProps,
-    results() {
-      return results
     }
   }
 })
