@@ -66,7 +66,7 @@
               <v-card-text>
                 {{ whiteOnBottom ? white : black }}
                 <span v-if="whiteOnBottom ? whiteElo : blackElo" class="text-grey-darken-1">
-                  ({{ whiteOnBottom ? blackElo : blackElo }})
+                  ({{ whiteOnBottom ? whiteElo : blackElo }})
                 </span>
               </v-card-text>
             </v-card>
