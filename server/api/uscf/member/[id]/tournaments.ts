@@ -47,8 +47,8 @@ export default defineEventHandler(async (event) => {
         }
     }
 
-    const totalEvents = parseInt(data.innerHTML.split('\n')
-        .find(element => element.includes('Events for this player since late 1991')) || '1991: -1'
+    const totalEvents = parseInt((data.innerHTML.split('\n')
+        .find(element => element.includes('Events for this player since late 1991')) || '1991: -1')
         .split('1991: ')[1])
 
     // believe it or not, this is the table. would it kill them to use IDs?
