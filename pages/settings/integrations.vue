@@ -198,10 +198,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, type Ref } from 'vue'
 import type { TableIntegrations } from '~/types/supabase'
 import type { Integrations } from '~/types/integrations'
 import { USCFPlayerSearchStates, type USCFPlayerSearchResult } from '~/types/uscf'
+import type { USCFPlayerSearchResponse, UserIntegrationsResponse, UserLinkIntegrationResponse } from '~/types/requests'
 
 export default defineComponent({
   name: 'Integrations',
@@ -222,7 +223,7 @@ export default defineComponent({
       }
     }
 
-    await $fetch<{success: boolean, error: string, integrations: Record<Integrations, TableIntegrations>}>(`/api/users/${user.id}/integrations`)
+    await $fetch<UserIntegrationsResponse>(`/api/users/${user.id}/integrations`)
       .then((data) => {
         if (!data) {
           showError('Unknown error')
@@ -293,7 +294,7 @@ export default defineComponent({
 
     linkPlatform(platform: Integrations, data: string | object) {
       this.linking[platform] = true
-      $fetch<{success: boolean, error: string, integration: TableIntegrations}>('/api/users/me/integrations/link', {
+      $fetch<UserLinkIntegrationResponse>('/api/users/me/integrations/link', {
         headers: useRequestHeaders(['cookie']),
         method: 'POST',
         body: {
@@ -322,7 +323,7 @@ export default defineComponent({
 
     uscfSearch() {
       this.uscfSearching = true
-      $fetch<{success: boolean, error: string | null, totalPlayers?: number, results?: USCFPlayerSearchResult[]}>('/api/uscf/player-search', {
+      $fetch<USCFPlayerSearchResponse>('/api/uscf/player-search', {
         headers: useRequestHeaders(['cookie']),
         method: 'POST',
         body: {

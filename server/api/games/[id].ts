@@ -1,4 +1,5 @@
 import { serverSupabaseClient } from '#supabase/server'
+import { failureResponse } from '~/types/requests'
 import { Database, TableGames } from '~/types/supabase'
 import { cleanGame } from '~/utils/games'
 
@@ -9,10 +10,7 @@ export default defineEventHandler(async (event) => {
     const { data: games, error } = await client.from('games').select().eq('user_id', id)
 
     if (error) {
-        return {
-            success: false,
-            message: error.message
-        }
+        return failureResponse(error.message)
     }
 
     // ids we need to fetch meow meow
@@ -33,10 +31,7 @@ export default defineEventHandler(async (event) => {
     const { data: users, error: usersError } = await client.from('users').select('id,username').order('created_at').in('id', ids)
 
     if (usersError) {
-        return {
-            success: false,
-            message: usersError.message
-        }
+        return failureResponse(usersError.message)
     }
 
     // clean the games

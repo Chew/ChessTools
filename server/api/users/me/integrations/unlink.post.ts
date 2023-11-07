@@ -1,15 +1,13 @@
 import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
 import { Database } from '~/types/supabase'
+import { failureResponse } from '~/types/requests'
 
 export default defineEventHandler(async (event) => {
     const client = await serverSupabaseClient<Database>(event)
     const body = await readBody(event)
     const user = await serverSupabaseUser(event)
     if (!user) {
-        return {
-            success: false,
-            error: 'User not found.'
-        }
+        return failureResponse('User not found.')
     }
 
     const userId = user.id
@@ -21,18 +19,12 @@ export default defineEventHandler(async (event) => {
     const { data: integrationData, error: integrationError } = await client.from('integrations').select('*').eq('user_id', userId).eq('platform', platform).single()
 
     if (integrationError) {
-        return {
-            success: false,
-            error: integrationError.message
-        }
+        return failureResponse(integrationError.message)
     }
 
     // If we already have an integration, update it
     if (integrationData == null) {
-        return {
-            success: false,
-            error: 'Could not find integration.'
-        }
+        return failureResponse('Integration not found.')
     } else {
         // Otherwise, create a new integration
         const { error: createError } = await client.from('integrations').delete()
@@ -40,10 +32,7 @@ export default defineEventHandler(async (event) => {
             .eq('platform', platform)
 
         if (createError) {
-            return {
-                success: false,
-                error: createError.message
-            }
+            return failureResponse(createError.message)
         }
 
         return {

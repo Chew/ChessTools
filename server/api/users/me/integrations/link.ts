@@ -1,15 +1,13 @@
 import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
 import { Database } from '~/types/supabase'
+import { failureResponse } from '~/types/requests'
 
 export default defineEventHandler(async (event) => {
     const client = await serverSupabaseClient<Database>(event)
     const body = await readBody(event)
     const user = await serverSupabaseUser(event)
     if (!user) {
-        return {
-            success: false,
-            error: 'User not found.'
-        }
+        return failureResponse('User not found.')
     }
 
     const userId = user.id
@@ -21,10 +19,7 @@ export default defineEventHandler(async (event) => {
     const { data: integrationData, error: integrationError } = await client.from('integrations').select('*').eq('user_id', userId).eq('platform', platform)
 
     if (integrationError) {
-        return {
-            success: false,
-            error: integrationError.message
-        }
+        return failureResponse(integrationError.message)
     }
 
     let newData = data
@@ -37,16 +32,10 @@ export default defineEventHandler(async (event) => {
             const msg: string = e.message
 
             if (msg.includes('"https://lichess.org/api/token": 400 Bad Request')) {
-                return {
-                    success: false,
-                    error: 'Lichess code expired. Try linking again!'
-                }
+                return failureResponse('Lichess code expired. Try linking again.')
             }
 
-            return {
-                success: false,
-                error: msg
-            }
+            return failureResponse(msg)
         }
     } else if (platform === 'uscf') {
         newData = {
@@ -63,15 +52,12 @@ export default defineEventHandler(async (event) => {
         }).eq('id', integrationData[0].id).single()
 
         if (updateError) {
-            return {
-                success: false,
-                error: updateError.message
-            }
+            return failureResponse(updateError.message)
         }
 
         return {
             success: true,
-            data: updateData
+            integration: updateData
         }
     } else {
         // Otherwise, create a new integration
@@ -83,10 +69,7 @@ export default defineEventHandler(async (event) => {
         }]).select()
 
         if (createError) {
-            return {
-                success: false,
-                error: createError.message
-            }
+            return failureResponse(createError.message)
         }
 
         return {

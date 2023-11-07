@@ -1,4 +1,5 @@
 import { parse } from 'node-html-parser'
+import { failureResponse } from '~/types/requests'
 import { USCFMemberRanking } from '~/types/uscf'
 import { gatherElements, findElement } from '~/utils/elements'
 
@@ -25,10 +26,7 @@ export default defineEventHandler(async (event) => {
 
     // throw error if no start of ratings
     if (!startOfRatings || !lastRatedEvent) {
-        return {
-            success: false,
-            error: 'No start of ratings found.'
-        }
+        return failureResponse('No start of ratings found.')
     }
 
     // ratings that will be published on the first of the following month

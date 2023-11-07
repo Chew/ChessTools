@@ -1,4 +1,5 @@
 import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
+import { failureResponse } from '~/types/requests'
 import { Database } from '~/types/supabase'
 
 export default defineEventHandler(async (event) => {
@@ -6,10 +7,7 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const user = await serverSupabaseUser(event)
     if (!user) {
-        return {
-            success: false,
-            message: 'User not found.'
-        }
+        return failureResponse('User not found.')
     }
 
     const userId = user.id
@@ -24,10 +22,7 @@ export default defineEventHandler(async (event) => {
     }]).select()
 
     if (createError) {
-        return {
-            success: false,
-            message: createError.message
-        }
+        return failureResponse(createError.message)
     }
 
     return {

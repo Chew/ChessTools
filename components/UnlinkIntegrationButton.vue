@@ -27,6 +27,7 @@
 import { defineComponent } from 'vue'
 import type { Ref, PropType } from 'vue'
 import type { Integrations } from '~/types/integrations'
+import type { UserUnlinkIntegrationResponse } from '~/types/requests'
 
 export default defineComponent({
   name: 'UnlinkIntegrationButton',
@@ -50,7 +51,7 @@ export default defineComponent({
     unlink(platform: string, isActive: Ref<boolean>) {
       this.sending = true
 
-      $fetch<{success: boolean, error: string}>('/api/users/me/integrations/unlink', {
+      $fetch<UserUnlinkIntegrationResponse>('/api/users/me/integrations/unlink', {
         headers: useRequestHeaders(['cookie']),
         method: 'POST',
         body: {

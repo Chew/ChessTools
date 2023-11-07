@@ -48,6 +48,7 @@ import validator from 'validator'
 import isEmail from 'validator/lib/isEmail'
 import isAlphanumeric = validator.isAlphanumeric;
 import isLength = validator.isLength;
+import type { RegisterResponse } from '~/types/requests'
 
 export default defineComponent({
   name: 'Register',
@@ -92,7 +93,7 @@ export default defineComponent({
     register() {
       this.signingUp = true
 
-      $fetch<{ success: boolean, error: string }>('/api/auth/register', {
+      $fetch<RegisterResponse>('/api/auth/register', {
         method: 'POST',
         body: { username: this.username, email: this.email, password: this.password, token: this.token }
       }).then((res) => {

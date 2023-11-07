@@ -1,4 +1,6 @@
 import { parse } from 'node-html-parser'
+import { failureResponse } from '~/types/requests'
+import { USCFMemberTournament } from '~/types/uscf'
 
 export default defineEventHandler(async (event) => {
     const id = parseInt(getRouterParam(event, 'id') || '0')
@@ -38,13 +40,7 @@ export default defineEventHandler(async (event) => {
     }
 
     if (page > totalPages) {
-        return {
-            success: false,
-            message: 'Page does not exist',
-            tournaments: [],
-            page,
-            totalPages
-        }
+        return failureResponse('Page does not exist')
     }
 
     const totalEvents = parseInt((data.innerHTML.split('\n')
@@ -67,7 +63,7 @@ export default defineEventHandler(async (event) => {
 
     const startingIndex = rows.findIndex(element => element.join(' ').includes('Event Name')) + 1
 
-    const tournaments = []
+    const tournaments: USCFMemberTournament[] = []
     // row at index 0 is the table headers, we can toss those out the window, we just want the data which is 1-indexed
     for (let i = startingIndex; i < rows.length; i++) {
         // index order is as follows: 0 => date\nEvent ID, 1 => Name\nSection, 2-4 => either "" or ratings

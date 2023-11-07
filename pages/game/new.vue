@@ -154,6 +154,7 @@ import { BoardApi, type Promotion, TheChessboard } from 'vue3-chessboard'
 import 'vue3-chessboard/style.css'
 import type { Move } from 'chess.js'
 import { buildDate, resultProps, results } from '~/utils/pgn'
+import type { SaveGameResponse } from '~/types/requests'
 
 export default defineComponent({
   name: '[id]',
@@ -345,7 +346,7 @@ export default defineComponent({
       this.updatePGN()
       const pgn = this.boardAPI?.getPgn()
 
-      $fetch<{success: boolean, message: string}>('/api/games/save', {
+      $fetch<SaveGameResponse>('/api/games/save', {
         headers: useRequestHeaders(['cookie']),
         method: 'POST',
         body: {
@@ -357,8 +358,8 @@ export default defineComponent({
           return
         }
 
-        if (!data.success) {
-          this.saveToProfileStatus = data.message
+        if (!data.success && data.error) {
+          this.saveToProfileStatus = data.error
           return
         }
 

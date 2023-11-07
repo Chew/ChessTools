@@ -9,6 +9,7 @@
 import { defineComponent } from 'vue'
 import { useFetch } from '#app'
 import type { TableUser } from '~/types/supabase'
+import type { UserResponse } from '~/types/requests'
 
 export default defineComponent({
   name: '[username]',
@@ -17,7 +18,7 @@ export default defineComponent({
     const username = useRoute().params.username
 
     let user: TableUser | null = null
-    await useFetch<{ success: boolean, error?: string, data?: TableUser }>('/api/users/' + username).then((res) => {
+    await useFetch<UserResponse>('/api/users/' + username).then((res) => {
       const data = res.data.value
       const error = res.error.value
 

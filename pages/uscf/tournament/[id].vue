@@ -63,6 +63,7 @@ import titleize from 'titleize'
 import type { USCFTournament } from '~/types/uscf'
 import type { DataTableHeader } from '~/types/vuetify'
 import type { Database, TableGames } from '~/types/supabase'
+import type { USCFTournamentResponse } from '~/types/requests'
 
 export default defineComponent({
   name: '[id]',
@@ -71,7 +72,7 @@ export default defineComponent({
     const route = useRoute()
     const id = route.params.id
 
-    const gameData: USCFTournament = await $fetch<USCFTournament>(`/api/uscf/tournament/${id}`).then((data) => {
+    const gameData: USCFTournament = await $fetch<USCFTournamentResponse>(`/api/uscf/tournament/${id}`).then((data) => {
       return data
     })
 

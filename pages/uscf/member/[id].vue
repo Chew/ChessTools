@@ -162,6 +162,7 @@
 import { defineComponent } from 'vue'
 import type { USCFMember, USCFMemberTournament } from '~/types/uscf'
 import { useLazyFetch } from '#app'
+import type { USCFMemberResponse, USCFMemberTournamentsResponse } from '~/types/requests'
 
 export default defineComponent({
   name: '[id]',
@@ -194,7 +195,7 @@ export default defineComponent({
     const uscfUserId = route.params.id.toString()
 
     this.memberPending = true
-    useLazyFetch<USCFMember>(`/api/uscf/member/${uscfUserId}`, {
+    useLazyFetch<USCFMemberResponse>(`/api/uscf/member/${uscfUserId}`, {
       key: `uscf-member-${uscfUserId}`,
       server: false
     }).then(({ data }) => {
@@ -204,7 +205,7 @@ export default defineComponent({
     })
 
     this.tournamentsPending = true
-    useLazyFetch(`/api/uscf/member/${uscfUserId}/tournaments`, {
+    useLazyFetch<USCFMemberTournamentsResponse>(`/api/uscf/member/${uscfUserId}/tournaments`, {
       key: `uscf-member-${uscfUserId}-tournaments`,
       server: false
     }).then(({ data }) => {
