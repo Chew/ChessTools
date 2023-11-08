@@ -61,6 +61,8 @@
     <td v-else-if="link == null">
       <span class="text-grey">No Link</span>
     </td>
+
+    <slot />
   </tr>
 </template>
 <script lang="ts">

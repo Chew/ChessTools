@@ -64,3 +64,9 @@ export type UserLinkIntegrationResponse = GenericResponse & { integration: Table
 
 // POST /users/me/integrations/unlink
 export type UserUnlinkIntegrationResponse = GenericResponse
+
+// GET /users/me/games/lichess
+export type UserLichessGames = GenericResponse & { data: CleanedGame[] & {imported?: {status: boolean, id?: string}}[] }
+
+// POST /users/me/games/import
+export type UserImportGameResponse = GenericResponse & { id: string }

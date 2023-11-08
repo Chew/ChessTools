@@ -25,9 +25,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import type { CleanedGame } from '~/utils/games'
+import type { GetGameResponse } from '~/types/requests'
 
 export default defineComponent({
-  name: 'games',
+  name: 'index',
 
   async setup() {
     const user = useSupabaseUser().value
@@ -35,10 +36,15 @@ export default defineComponent({
       throw showError({ statusCode: 500, statusMessage: 'Sign in??' })
     }
 
+    useSeoMeta({
+      title: 'My Games',
+      description: 'View your games'
+    })
+
     let games: CleanedGame[] = []
-    await $fetch<{success: boolean, message?: string, games?: CleanedGame[]}>('/api/games/:id'.replace(':id', user.id)).then((res) => {
+    await $fetch<GetGameResponse>('/api/games/:id'.replace(':id', user.id)).then((res) => {
       if (!res.success) {
-        throw showError({ statusCode: 500, statusMessage: res.message ?? 'Unknown error' })
+        throw showError({ statusCode: 500, statusMessage: res.error ?? 'Unknown error' })
       }
 
       games = res.games ?? []

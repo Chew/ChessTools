@@ -36,6 +36,10 @@
         </v-dialog>
       </div>
 
+      <p v-if="game.platform == 'lichess'">
+        This game was imported from Lichess! <page-link text="Click to view it" :href="`https://lichess.org/${game.platform_id}`" />.
+      </p>
+
       <p v-if="game?.tournament_info">
         This game was from a tournament!
         <PageLink :href="`/uscf/tournament/${game?.tournament_info.eventId}`">

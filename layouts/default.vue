@@ -8,7 +8,9 @@
 
         <nav-dropdown name="Games" fa-icon="fas fa-chess">
           <nav-dropdown-item name="New Game" fa-icon="fas fa-plus" href="/game/new" />
+          <v-divider />
           <nav-dropdown-item name="My Games" fa-icon="fas fa-chess" href="/games" />
+          <nav-dropdown-item name="Game Importer" fa-icon="fas fa-download" href="/games/import" />
         </nav-dropdown>
 
         <v-spacer />
