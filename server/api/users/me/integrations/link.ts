@@ -37,6 +37,20 @@ export default defineEventHandler(async (event) => {
 
             return failureResponse(msg)
         }
+    } else if (platform === 'discord') {
+        try {
+            const config = useRuntimeConfig()
+            newData = await verifyDiscord(data.code, config.public.discordClientId, config.discordClientSecret, data.redirectUri)
+            verified = true
+        } catch (e: any) {
+            const msg: string = e.message
+
+            if (msg.includes('400 Bad Request')) {
+                return failureResponse('Discord code expired. Try linking again.')
+            }
+
+            return failureResponse(msg)
+        }
     } else if (platform === 'uscf') {
         newData = {
             id: data
@@ -78,6 +92,38 @@ export default defineEventHandler(async (event) => {
         }
     }
 })
+
+async function verifyDiscord(code: string, clientId: string, clientSecret: string, redirectUri: string) {
+    const body = {
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: redirectUri,
+        client_id: clientId,
+        client_secret: clientSecret,
+        scope: 'identify'
+    }
+
+    // convert body to form data
+    const formData = new FormData()
+    Object.entries(body).forEach(([key, value]) => {
+        formData.append(key, value)
+    })
+
+    const { access_token: accessToken } = await $fetch<{access_token: string}>('https://discord.com/api/v10/oauth2/token', {
+        method: 'POST',
+        body: formData
+    })
+
+    const { id, username } = await $fetch<{id: string, username: string}>('https://discord.com/api/v10/users/@me', {
+        headers: {
+            Authorization: 'Bearer ' + accessToken
+        }
+    })
+
+    return {
+        id, username
+    }
+}
 
 async function verifyLichess(code: string, codeVerifier: string, redirectUri: string) {
     const { access_token: accessToken } = await $fetch<{token_type: string, access_token: string}>('https://lichess.org/api/token', {

@@ -14,7 +14,7 @@ export default {
   props: {
     verified: {
       type: Boolean,
-      required: true
+      default: false
     }
   }
 }

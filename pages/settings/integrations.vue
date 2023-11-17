@@ -2,13 +2,15 @@
   <main>
     <h1>Integration Settings</h1>
 
+    <p>Here is a list of all your integrations. You can integrate chess platforms and services to login with.</p>
+
+    <h2>Chess Platform Integrations</h2>
+
     <p>Here you can manage your integrations with Chess sites and federations.</p>
 
     <v-alert type="info">
       Note: Chess sites can be authenticated and verified through OAuth.
-      Federations can be verified through verifying your ID, but you are able to link it without verification.
-      If your FIDE ID is linked to a federation, e.g. your USCF has a FIDE ID,
-      you can link your FIDE ID to your USCF ID, and only verify your USCF ID.
+      Federations require additional verification, but you are able to link it without verification.
     </v-alert>
 
     <br>
@@ -71,6 +73,10 @@
               <template #default="{ isActive }">
                 <v-card title="Verify US Chess">
                   <v-card-text>
+                    <v-alert type="info">
+                      Note: If you have a FIDE ID linked to your US Chess profile, it will also be verified.
+                    </v-alert>
+
                     Verifying your US Chess Account.
 
                     <v-list lines="one">
@@ -185,6 +191,54 @@
       </tbody>
     </v-table>
 
+    <br>
+
+    <h2>Misc Platforms</h2>
+
+    <p>Link these platforms optionally for bonus stuff! Hover over the ? to see more.</p>
+
+    <v-table theme="dark">
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>Username/ID</th>
+          <th>Verified?</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>
+            Discord
+            <v-tooltip text="Used for the Chess.Tools Discord bot." location="top">
+              <template #activator="{ props }">
+                <i v-bind="props" class="fas fa-question-circle" />
+              </template>
+            </v-tooltip>
+          </td>
+          <td v-if="integrations.discord">
+            Username: {{ integrations.discord.data.username }}<br>
+            ID: {{ integrations.discord.data.id }}
+          </td>
+          <td v-else>
+            Unlinked!
+          </td>
+          <td><verified-chip :verified="integrations.discord?.verified || false" /></td>
+          <td v-if="integrations.discord">
+            <unlink-integration-button integration="discord" @success="handleUnlinked('discord')" @failure="(e: string) => showFailure(e)" />
+          </td>
+          <td v-else>
+            <page-link :href="buildDiscordUrl()">
+              <v-btn color="blue" :loading="linking.discord">
+                Link
+              </v-btn>
+            </page-link>
+          </td>
+        </tr>
+      </tbody>
+    </v-table>
+
     <v-snackbar v-model="snackbar" :timeout="2000" :color="success ? 'green' : 'red'">
       {{ message }}
 
@@ -259,7 +313,8 @@ export default defineComponent({
       // state
       linking: {
         lichess: false,
-        uscf: false
+        uscf: false,
+        discord: false
       } as Record<string, boolean>,
       snackbar: false
     }
@@ -276,6 +331,14 @@ export default defineComponent({
       }
 
       this.linkPlatform('lichess', lichessData)
+    } else if (query.state === 'discord-integration' && query.code) {
+      const config = useRuntimeConfig()
+      const discordData = {
+        code: query.code.toString(),
+        redirectUri: config.public.apiUrl + '/settings/integrations'
+      }
+
+      this.linkPlatform('discord', discordData)
     }
   },
 
@@ -360,6 +423,14 @@ export default defineComponent({
       const redirectUri = config.public.apiUrl + '/settings/integrations'
 
       return `https://lichess.org/oauth?response_type=code&client_id=chess.tools&redirect_uri=${redirectUri}&code_challenge_method=S256&code_challenge=${challenge}&state=lichess-integration`
+    },
+
+    buildDiscordUrl(): string {
+      const config = useRuntimeConfig()
+      const clientId = config.public.discordClientId
+      const redirectUri = config.public.apiUrl + '/settings/integrations'
+
+      return `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=identify&state=discord-integration`
     }
   }
 })

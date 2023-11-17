@@ -147,7 +147,7 @@ export interface Database {
     }
     Enums: {
       "Game Source Platform": "chesstools" | "chesscom" | "lichess"
-      Integrations: "chesscom" | "lichess" | "uscf" | "fide"
+      Integrations: "chesscom" | "lichess" | "uscf" | "fide" | "discord"
     }
     CompositeTypes: {
       [_ in never]: never

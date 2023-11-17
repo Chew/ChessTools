@@ -10,10 +10,13 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     lichessCodeVerifier: process.env.LICHESS_CODE_VERIFIER,
+    discordPublicKey: process.env.DISCORD_PUBLIC_KEY,
+    discordClientSecret: process.env.DISCORD_CLIENT_SECRET,
 
     public: {
       apiUrl: process.env.API_BASE_URL,
-      lichessCodeChallenge: process.env.LICHESS_CODE_CHALLENGE
+      lichessCodeChallenge: process.env.LICHESS_CODE_CHALLENGE,
+      discordClientId: process.env.DISCORD_CLIENT_ID
     }
   },
 
