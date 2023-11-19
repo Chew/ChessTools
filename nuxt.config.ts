@@ -42,12 +42,6 @@ export default defineNuxtConfig({
     siteKey: '0x4AAAAAAAKsKEdr-d1daiqG'
   },
 
-  vuetify: {
-    vuetifyOptions: {
-      labComponents: 'VDataTable'
-    }
-  },
-
   routeRules: {
     '/settings': { redirect: '/settings/profile' }
   },

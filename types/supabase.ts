@@ -57,18 +57,21 @@ export interface Database {
           {
             foreignKeyName: "games_black_player_fkey"
             columns: ["black_player"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "games_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
             foreignKeyName: "games_white_player_fkey"
             columns: ["white_player"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -103,6 +106,7 @@ export interface Database {
           {
             foreignKeyName: "integrations_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]
           }
@@ -113,7 +117,7 @@ export interface Database {
           bio: string | null
           created_at: string
           first_name: string | null
-          flags: number | null
+          flags: number
           id: string
           last_name: string | null
           username: string | null
@@ -122,8 +126,8 @@ export interface Database {
           bio?: string | null
           created_at?: string
           first_name?: string | null
-          flags?: number | null
-          id?: string
+          flags?: number
+          id: string
           last_name?: string | null
           username?: string | null
         }
@@ -131,12 +135,20 @@ export interface Database {
           bio?: string | null
           created_at?: string
           first_name?: string | null
-          flags?: number | null
+          flags?: number
           id?: string
           last_name?: string | null
           username?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "users_id_fkey"
+            columns: ["id"]
+            isOneToOne: true
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
