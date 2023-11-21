@@ -2,12 +2,17 @@
   <main v-if="user">
     <h1>Profile for {{ user.username }}</h1>
     <p>{{ user.bio }}</p>
+
+    <h2>Integrations</h2>
+    <p>Coming Soon!</p>
+
+    <h2>Recent Games</h2>
+    <p>Coming Soon!</p>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { useFetch } from '#app'
 import type { TableUser } from '~/types/supabase'
 import type { UserResponse } from '~/types/requests'
 
@@ -17,20 +22,26 @@ export default defineComponent({
   async setup() {
     const username = useRoute().params.username
 
+    const supaUser = useSupabaseUser().value
+    if (username === 'me') {
+      if (!supaUser) {
+        throw showError('You are not signed in!')
+      }
+    }
+
     let user: TableUser | null = null
-    await useFetch<UserResponse>('/api/users/' + username).then((res) => {
-      const data = res.data.value
-      const error = res.error.value
-
-      if (error) {
-        throw showError(error.message)
+    await $fetch<UserResponse>('/api/users/' + username, {
+      headers: useRequestHeaders(['cookie'])
+    }).then((data) => {
+      if (data.error) {
+        throw showError(data.error)
       }
 
-      if (data == null || data.data === undefined) {
-        throw showError('Error loading user data!')
+      if (data.data === undefined) {
+        throw showError('Error loading user data! Profile information is undefined :(')
       }
 
-      if (data.success === false) {
+      if (!data.success) {
         throw showError({ statusCode: 404, message: 'User not found :(' })
       }
 

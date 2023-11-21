@@ -3,7 +3,7 @@
 import type { USCFMember, USCFMemberTournament, USCFPlayerSearchResult, USCFTournament } from './uscf'
 import type { CleanedGame } from '~/utils/games'
 import type { Integrations } from '~/types/integrations'
-import type { TableIntegrations } from '~/types/supabase'
+import type { TableIntegrations, TableUser } from '~/types/supabase'
 
 type Failure = {
     success: false
@@ -52,7 +52,7 @@ export type USCFPlayerSearchResponse = GenericResponse & { results: USCFPlayerSe
 // /users/[id] //
 
 // GET /users/[id]
-export type UserResponse = GenericResponse & { user: { id: number, name: string } }
+export type UserResponse = GenericResponse & { data?: TableUser }
 
 // GET /users/[id]/integrations
 export type UserIntegrationsResponse = GenericResponse & { integrations: Record<Integrations, TableIntegrations | null> }
