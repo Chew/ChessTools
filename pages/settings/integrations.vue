@@ -8,12 +8,13 @@
 
     <p>Here you can manage your integrations with Chess sites and federations.</p>
 
+    <h3>Chess Websites</h3>
+
     <v-alert type="info">
-      Note: Chess sites can be authenticated and verified through OAuth.
-      Federations require additional verification, but you are able to link it without verification.
+      Chess sites can be authenticated and verified through OAuth.
     </v-alert>
 
-    <br>
+    <p>Link your chess site profiles here! As of now, you may only link one account.</p>
 
     <v-table theme="dark">
       <thead>
@@ -59,7 +60,25 @@
             </page-link>
           </td>
         </tr>
+      </tbody>
+    </v-table>
 
+    <h3>Federations</h3>
+
+    <v-alert type="info" class="mb-3">
+      Federations require additional verification, but you are able to link it without verification.
+    </v-alert>
+
+    <v-table theme="dark">
+      <thead>
+        <tr>
+          <th>Platform</th>
+          <th>Username/ID</th>
+          <th>Verified?</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
         <!-- US Chess / USCF -->
         <tr>
           <td>US Chess</td>
@@ -71,23 +90,30 @@
               </template>
 
               <template #default="{ isActive }">
-                <v-card title="Verify US Chess">
+                <v-card title="Verifying your US Chess Account.">
                   <v-card-text>
                     <v-alert type="info">
                       Note: If you have a FIDE ID linked to your US Chess profile, it will also be verified.
                     </v-alert>
 
-                    Verifying your US Chess Account.
+                    <v-stepper :items="['Step 1', 'Step 2']">
+                      <template #[`item.1`]>
+                        <v-card title="#1: Create a Forum Account" :flat="true">
+                          <v-card-text>
+                            Head on to <page-link href="https://uschess.discourse.group" text="the US Chess forums" /> and make an account.
+                          </v-card-text>
+                        </v-card>
+                      </template>
 
-                    <v-list lines="one">
-                      <v-list-item title="#1: Create a Forum Account">
-                        Head on to <page-link href="https://uschess.discourse.group" text="the US Chess forums" /> and make an account.
-                      </v-list-item>
-                      <v-list-item title="#2: Start a DM with Chew">
-                        Once you register, start a new DM with <page-link href="https://uschess.discourse.group/u/chew" text="@Chew" />.
-                        Inside the DM, put your Chess.Tools username and indicate you're verifying your US Chess account.
-                      </v-list-item>
-                    </v-list>
+                      <template #[`item.2`]>
+                        <v-card title="#2: Start a DM with Chew" :flat="true">
+                          <v-card-text>
+                            Once you register, start a new DM with <page-link href="https://uschess.discourse.group/u/chew" text="@Chew" />.
+                            Inside the DM, put your Chess.Tools username and indicate you're verifying your US Chess account.
+                          </v-card-text>
+                        </v-card>
+                      </template>
+                    </v-stepper>
                   </v-card-text>
 
                   <v-card-actions>
@@ -193,7 +219,7 @@
 
     <br>
 
-    <h2>Misc Platforms</h2>
+    <h3>Misc Platforms</h3>
 
     <p>Link these platforms optionally for bonus stuff! Hover over the ? to see more.</p>
 
@@ -253,6 +279,7 @@
 
 <script lang="ts">
 import { defineComponent, type Ref } from 'vue'
+import { VStepper } from 'vuetify/components/VStepper'
 import type { TableIntegrations } from '~/types/supabase'
 import type { Integrations } from '~/types/integrations'
 import { USCFPlayerSearchStates, type USCFPlayerSearchResult } from '~/types/uscf'
@@ -260,6 +287,10 @@ import type { USCFPlayerSearchResponse, UserIntegrationsResponse, UserLinkIntegr
 
 export default defineComponent({
   name: 'Integrations',
+
+  components: {
+    VStepper
+  },
 
   async setup() {
     useSeoMeta({
@@ -320,7 +351,7 @@ export default defineComponent({
     }
   },
 
-  beforeMount() {
+  mounted() {
     const query = useRoute().query
 
     if (query.state === 'lichess-integration' && query.code) {
