@@ -60,6 +60,7 @@
 import { capitalize, defineComponent } from 'vue'
 import { useSeoMeta } from 'unhead'
 import titleize from 'titleize'
+import { VDataTable } from 'vuetify/components/VDataTable'
 import type { USCFTournament } from '~/types/uscf'
 import type { DataTableHeader } from '~/types/vuetify'
 import type { Database, TableGames } from '~/types/supabase'
@@ -67,6 +68,10 @@ import type { USCFTournamentResponse } from '~/types/requests'
 
 export default defineComponent({
   name: '[id]',
+
+  components: {
+    VDataTable
+  },
 
   async setup() {
     const route = useRoute()
