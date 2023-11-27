@@ -1,10 +1,10 @@
 import { Chess } from 'chess.js'
-import { TableGames } from '~/types/supabase'
+import type { TableGames } from '~/types/supabase'
 
 export type CleanedGame = {
     id: string,
-    whitePlayer: {id: string | null, name: string, elo?: string|number},
-    blackPlayer: {id: string | null, name: string, elo?: string|number},
+    whitePlayer: {id: string | null, name: string, elo?: string|number, title?: string},
+    blackPlayer: {id: string | null, name: string, elo?: string|number, title?: string},
     cleanResult: (number|string)[],
     friendlyResult: string,
     date?: string,
@@ -62,8 +62,8 @@ export function cleanGame(game: TableGames, userId?: string, users?: { id: strin
 
     return {
         id: game.id,
-        whitePlayer: { ...white, elo: pgn.WhiteElo },
-        blackPlayer: { ...black, elo: pgn.BlackElo },
+        whitePlayer: { ...white, elo: pgn.WhiteElo, title: pgn.WhiteTitle },
+        blackPlayer: { ...black, elo: pgn.BlackElo, title: pgn.BlackTitle },
         cleanResult: result,
         friendlyResult,
         date

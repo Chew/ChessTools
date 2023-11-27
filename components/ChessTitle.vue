@@ -38,6 +38,11 @@ export default defineComponent({
 
   methods: {
     abbreviation() {
+      // hard coded
+      if (this.title === 'BOT') {
+        return 'BOT'
+      }
+
       const title = this.title.replaceAll('Grandmaster', 'Grand Master').split(' ')
 
       // first letter of every word in the title

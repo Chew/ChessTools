@@ -51,6 +51,9 @@
         <v-col cols="6">
           <v-card variant="tonal">
             <v-card-text>
+              <span v-if="(whiteOnBottom ? blackTitle : whiteTitle) !== ''">
+                <chess-title :title="whiteOnBottom ? blackTitle : whiteTitle" size="x-small" />
+              </span>
               {{ whiteOnBottom ? black : white }}
               <span v-if="whiteOnBottom ? blackElo : whiteElo" class="text-grey-darken-1">
                 ({{ whiteOnBottom ? blackElo : whiteElo }})
@@ -71,6 +74,9 @@
           <v-col cols="6">
             <v-card variant="tonal">
               <v-card-text>
+                <span v-if="(whiteOnBottom ? whiteTitle : blackTitle) !== ''">
+                  <chess-title :title="whiteOnBottom ? whiteTitle : blackTitle" size="x-small" />
+                </span>
                 {{ whiteOnBottom ? white : black }}
                 <span v-if="whiteOnBottom ? whiteElo : blackElo" class="text-grey-darken-1">
                   ({{ whiteOnBottom ? whiteElo : blackElo }})
@@ -188,8 +194,10 @@ export default defineComponent({
 
       white: 'meow',
       whiteElo: '0',
+      whiteTitle: '',
       black: 'meow',
-      blackElo: '0'
+      blackElo: '0',
+      blackTitle: ''
     }
   },
 
@@ -308,8 +316,10 @@ export default defineComponent({
 
       if (pgn.White) { this.white = pgn.White }
       if (pgn.WhiteElo) { this.whiteElo = pgn.WhiteElo }
+      if (pgn.WhiteTitle) { this.whiteTitle = pgn.WhiteTitle }
       if (pgn.Black) { this.black = pgn.Black }
       if (pgn.BlackElo) { this.blackElo = pgn.BlackElo }
+      if (pgn.BlackTitle) { this.blackTitle = pgn.BlackTitle }
     },
 
     async savePGN(data: Record<string, any>, pgn: Record<string, string>, tournamentInfo: TournamentJson | null) {

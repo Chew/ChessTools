@@ -3,12 +3,14 @@
     <td>
       <span class="d-flex align-center">
         <span :class="['play-icon', unknownColor ? 'unknown' : 'white', cleanResult[0] == 1 ? 'winner' : '']" />
+        <span v-if="whitePlayer.title"><chess-title :title="whitePlayer.title" size="x-small" />&nbsp;</span>
         <span v-if="whitePlayer.id == null">{{ whitePlayer.name }}</span>
         <PageLink v-else :href="`/profile/${whitePlayer.name}`">{{ whitePlayer.name }}</PageLink>
         <span v-if="whitePlayer.elo" class="text-grey">&nbsp;({{ whitePlayer.elo }})</span>
       </span>
       <span class="d-flex align-center">
         <span :class="['play-icon', unknownColor ? 'unknown' : 'black', cleanResult[1] == 1 ? 'winner' : '']" />
+        <span v-if="blackPlayer.title"><chess-title :title="blackPlayer.title" size="x-small" />&nbsp;</span>
         <span v-if="blackPlayer.id == null">{{ blackPlayer.name }}</span>
         <PageLink v-else :href="`/profile/${blackPlayer.name}`">{{ blackPlayer.name }}</PageLink>
         <span v-if="blackPlayer.elo" class="text-grey">&nbsp;({{ blackPlayer.elo }})</span>
@@ -72,11 +74,11 @@ export default {
   name: 'ChessGameResultRow',
   props: {
     whitePlayer: {
-      type: Object as PropType<{id: string | null, name: string, elo?: string|number}>,
+      type: Object as PropType<{id: string | null, name: string, elo?: string|number, title?: string}>,
       required: true
     },
     blackPlayer: {
-      type: Object as PropType<{id: string | null, name: string, elo?: string|number}>,
+      type: Object as PropType<{id: string | null, name: string, elo?: string|number, title?: string}>,
       required: true
     },
     unknownColor: {
