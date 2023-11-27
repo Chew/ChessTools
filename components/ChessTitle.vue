@@ -1,7 +1,9 @@
 <template>
   <v-tooltip :text="title" location="top">
     <template #activator="{ props }">
-      <span v-bind="props" ref="titleElement" class="badge text-bg-danger title-badge" data-bs-toggle="tooltip" :title="title">{{ abbreviation() }}</span>
+      <v-chip v-bind="props" ref="titleElement" variant="flat" color="red" :size="size">
+        <b>{{ abbreviation() }}</b>
+      </v-chip>
     </template>
   </v-tooltip>
 </template>
@@ -17,6 +19,10 @@ export default defineComponent({
     title: {
       type: String,
       required: true
+    },
+    size: {
+      type: String,
+      default: 'default'
     }
   },
 
@@ -42,7 +48,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.title-badge {
-  padding: 0.15em 0.3em!important;
-}
+
 </style>

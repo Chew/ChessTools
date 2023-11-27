@@ -4,7 +4,7 @@
       US Chess Member: Loading...
     </h1>
     <h1 v-else>
-      US Chess Member: <ChessTitle v-if="title() !== 'Untitled'" :title="title()" /> {{ memberInfo.member.name }}
+      US Chess Member: <ChessTitle v-if="title() !== 'Untitled'" :title="title()" size="large" /> {{ memberInfo.member.name }}
     </h1>
 
     <p>Member ID: {{ memberId }}</p>
