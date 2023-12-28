@@ -6,6 +6,9 @@ export default defineEventHandler(async (event) => {
     const body = await readBody(event)
     const { firstName, lastName, state } = body
 
+    // get current epoch millis
+    const now = Date.now()
+
     // Make the search body
     const searchBody = [[
         'SearchDisplay', 'run', {
@@ -14,7 +17,7 @@ export default defineEventHandler(async (event) => {
             display: 'Table',
             sort: [['sort_name', 'ASC']],
             limit: 50,
-            seed: 1703773805368,
+            seed: now,
             filters: { first_name: firstName, last_name: lastName, 'Contact_Address_contact_id_01.state_province_id': state.join(',') },
             afform: 'afsearchPlayerSearch1'
         }
@@ -45,7 +48,7 @@ export default defineEventHandler(async (event) => {
 
         totalPlayers,
         results
-    } as USCFPlayerSearchResponse
+    } as unknown as USCFPlayerSearchResponse
 })
 
 function parsePlayerRow(row: USCFAPISearchResponse['values'][0]) {
