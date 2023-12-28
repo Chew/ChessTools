@@ -1,31 +1,40 @@
-import { parse } from 'node-html-parser'
-import { gatherElements } from '~/utils/elements'
+import type { USCFAPISearchResponse } from '~/types/uscf'
+import { USCFPlayerSearchResponse } from '~/types/requests'
+import { zeroToNull } from '~/utils/responses'
 
 export default defineEventHandler(async (event) => {
     const body = await readBody(event)
-    const { name, state } = body
+    const { firstName, lastName, state } = body
 
-    // url encode the name and state
-    const nameEncoded = encodeURIComponent(name)
-    const stateEncoded = encodeURIComponent(state)
+    // Make the search body
+    const searchBody = [[
+        'SearchDisplay', 'run', {
+            return: 'page:1',
+            savedSearch: 'Member_Player_Search',
+            display: 'Table',
+            sort: [['sort_name', 'ASC']],
+            limit: 50,
+            seed: 1703773805368,
+            filters: { first_name: firstName, last_name: lastName, 'Contact_Address_contact_id_01.state_province_id': state.join(',') },
+            afform: 'afsearchPlayerSearch1'
+        }
+    ]]
 
     // Fetch the HTML page from the USCF website and parse it
-    const data = await fetch(`https://www.uschess.org/datapage/player-search.php?name=${nameEncoded}&state=${stateEncoded}&order=N&rating=R&mode=Find`)
-        .then(response => response.text())
-        .then((data) => {
-            // remove <nobr> tags
-            return data.replaceAll('<nobr>', '').replaceAll('</nobr>', '')
-        })
-        .then((data) => {
-            return parse(data)
-        })
+    const data: USCFAPISearchResponse[] = await $fetch('https://new.uschess.org/civicrm/ajax/api4', {
+        method: 'POST',
+        // we need a x-www-form-urlencoded body, calls: and then our json
+        body: 'calls=' + encodeURIComponent(JSON.stringify(searchBody)),
+        // add ajax headers
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-Token': '1'
+        }
+    })
 
-    // Gather all the <tr> elements and put their children into a matrix
-    const elements: string[][] = gatherElements(data)
-
-    const totalPlayers = parseInt(elements[2][0].split(': ')[1])
-
-    const playerRows = elements.slice(4, totalPlayers + 4)
+    const totalPlayers = data[0].count
+    const playerRows = data[0].values
 
     const results = playerRows.map(parsePlayerRow)
 
@@ -36,24 +45,24 @@ export default defineEventHandler(async (event) => {
 
         totalPlayers,
         results
-    }
+    } as USCFPlayerSearchResponse
 })
 
-function parsePlayerRow(row: string[]) {
-    const trimmedRows = row.map(r => r.trim())
+function parsePlayerRow(row: USCFAPISearchResponse['values'][0]) {
+    const data = row.data
 
     return {
-        id: parseInt(row[0]),
+        id: data.external_identifier,
         ratings: {
-            regular: row[1].includes('Unrated') ? null : parseInt(row[1]),
-            quick: row[2].includes('Unrated') ? null : parseInt(row[2]),
-            blitz: row[3].includes('Unrated') ? null : parseInt(row[3]),
-            onlineRegular: row[4].includes('Unrated') ? null : parseInt(row[4]),
-            onlineQuick: row[5].includes('Unrated') ? null : parseInt(row[5]),
-            onlineBlitz: row[6].includes('Unrated') ? null : parseInt(row[6])
+            regular: zeroToNull(data['Player_Details.Rating']),
+            quick: zeroToNull(data['Player_Details.Quick_Rating']),
+            blitz: zeroToNull(data['Player_Details.Blitz_Rating']),
+            onlineRegular: zeroToNull(data['Player_Details.Online_Regular_Rating']),
+            onlineQuick: zeroToNull(data['Player_Details.Online_Quick_Rating']),
+            onlineBlitz: zeroToNull(data['Player_Details.Online_Blitz_Rating'])
         },
-        state: trimmedRows[7],
-        expirationDate: trimmedRows[8],
-        name: trimmedRows[9]
+        state: data['Contact_Address_contact_id_01.state_province_id:label'],
+        expirationDate: data.DATE_Migration_Latest_Membership_End_Date,
+        name: data.display_name
     }
 }

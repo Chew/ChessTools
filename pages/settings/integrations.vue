@@ -148,11 +148,15 @@
                       <v-col cols="12">
                         <h2>Search by Name</h2>
                       </v-col>
-                      <v-col cols="8">
-                        <v-text-field v-model="uscfName" label="Name" />
+                      <v-col cols="4">
+                        <v-text-field v-model="uscfFirstName" label="First Name" />
                       </v-col>
                       <v-col cols="4">
-                        <v-select v-model="uscfState" :items="uscfStates" item-title="name" item-value="abbr" label="State" />
+                        <v-text-field v-model="uscfLastName" label="Last Name" />
+                      </v-col>
+                      <v-col cols="4">
+                        <v-select v-model="uscfState" :items="uscfStates" item-title="name" item-value="id" label="State"
+                                  :multiple="true" :clearable="true" :chips="true" hint="Leave blank to search all states" />
                       </v-col>
                       <v-col cols="12">
                         <v-btn color="blue-darken-1" variant="tonal" :block="true" :loading="uscfSearching" @click="uscfSearch">
@@ -336,8 +340,9 @@ export default defineComponent({
       // forms
       uscfLinkDialog: false,
       uscfId: '' as string | number,
-      uscfName: '',
-      uscfState: 'ANY',
+      uscfFirstName: '',
+      uscfLastName: '',
+      uscfState: [],
       uscfResults: [] as USCFPlayerSearchResult[],
       uscfSearching: false,
 
@@ -421,7 +426,8 @@ export default defineComponent({
         headers: useRequestHeaders(['cookie']),
         method: 'POST',
         body: {
-          name: this.uscfName,
+          firstName: this.uscfFirstName,
+          lastName: this.uscfLastName,
           state: this.uscfState
         }
       }).then((data) => {
